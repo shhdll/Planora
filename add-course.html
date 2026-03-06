@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>Planora - Add Course</title>
+</head>
+
+<body>
+
+<img 
+    src="images/planora_header.png"
+    width="100%"
+    alt="Planora Header"
+>
+
+<h1>Add a New Course</h1>
+<p>Enter the course details to start planning your study schedule.</p>
+
+<form onsubmit="alert('Course added successfully!'); window.location.href='courses.html'; return false;">
+
+<label for="courseName">Course Name</label><br>
+<input type="text" id="courseName" placeholder="Web Applications Development" required>
+<br><br>
+
+<label for="courseCode">Course Code</label><br>
+<input type="text" id="courseCode" placeholder="SWE381" required>
+<br><br>
+
+<label for="instructor">Instructor Name</label><br>
+<input type="text" id="instructor" placeholder="Dr. Rawan">
+<br><br>
+
+<label for="creditHours">Credit Hours</label><br>
+<input type="number" id="creditHours" placeholder="3">
+<br><br>
+
+<button type="submit">Add Course</button>
+
+<br><br>
+
+<a href="courses.html">Back to Courses</a>
+
+</form>
+
+
+<footer>
+<p>&copy; 2026 Planora. All Rights Reserved.</p>
+<p>
+Contact: <a href="mailto:support@planora.com">support@planora.com</a>
+</p>
+</footer>
+
+</body>
+</html>
