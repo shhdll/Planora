@@ -1,0 +1,313 @@
+/* --- Styles from Home Page Internal CSS --- */
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+}
+
+.top-background {
+    background-color: #1e293b;
+    padding-bottom: 120px; /* Gives space for the overlapping card */
+}
+
+/* Header Styling */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px 40px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.logo img {
+    height: 100pt;
+    width: auto;
+    margin-right: 10px;
+    float: left;
+}
+
+nav {
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+nav a {
+    color: #e2e8f0;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+nav a:hover {
+    color: white;
+}
+
+.btn-register {
+    background-color: #3b82f6;
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* Desk Card (The white box overlapping the blue) */
+.desk-card {
+    display: flex;
+    background-color: white;
+    max-width: 900px;
+    margin: -80px auto 40px; /* Negative top margin pulls it up over the blue */
+    padding: 40px 50px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    position: relative;
+    align-items: center;
+    gap: 30px;
+}
+
+.desk-text {
+    flex: 1;
+}
+
+.desk-text h2 {
+    color: #1e293b;
+    font-size: 2.5rem;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+.desk-text p {
+    color: #475569;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.btn-create {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+}
+
+.desk-image {
+    flex: 1;
+    text-align: center;
+}
+
+.desk-image img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Features Section */
+.features {
+    display: flex;
+    max-width: 1000px;
+    margin: 0 auto 60px;
+    justify-content: space-between;
+    gap: 30px;
+    padding: 0 40px;
+}
+
+/* Each feature has a box */
+.feature-box {
+    flex: 1;
+    text-align: center;
+}
+
+.feature-box img {
+    height: 60px;
+    margin-bottom: 15px;
+}
+
+.feature-box h3 {
+    font-size: 1rem;
+    color: #1e293b;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+}
+
+.feature-box p {
+    font-size: 0.9rem;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+/* --- Styles from General CSS block --- */
+
+/* HEADINGS */
+h1, h2, h3 {
+    text-align: center;
+    color: #2c3e50;
+}
+
+/* مو كل اللي بعد هالمنطقه استدخدمناهم بالاندكس
+
+/* CONTENT CONTAINER */
+.container {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+}
+
+/* FORMS */
+form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 60%;
+    margin: auto;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+button {
+    background-color: #3498db;
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+/* LINKS */
+a {
+    text-decoration: none;
+    color: #3498db;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* LISTS (courses page) */
+ul {
+    list-style: none;
+    padding: 0;
+    width: 60%;
+    margin: auto;
+}
+
+li {
+    background: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* DASHBOARD */
+.content {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+}
+
+.overview {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 200px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+.buttons a {
+    background: #3498db;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 6px;
+}
+
+.buttons a:hover {
+    background: #2980b9;
+}
+
+.deadline, .studyPlan {
+    background: white;
+    padding: 15px;
+    margin-top: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* TABLE (statistics & study plan) */
+table {
+    width: 80%;
+    margin: auto;
+    border-collapse: collapse;
+    background: white;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+th {
+    background-color: #3498db;
+    color: white;
+}
+
+/* FOOTER */
+footer {
+    background-color: #1e293b;
+    color: #94a3b8;
+    text-align: center;
+    padding: 25px 20px;
+    font-size: 0.9rem;
+    margin-top: 30px;
+}
+
+footer a {
+    color: #94a3b8;
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: white;
+}
