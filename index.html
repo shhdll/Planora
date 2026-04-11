@@ -1,42 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <link rel="stylesheet" href="style2.css">
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="keywords" content="study, planner, KSU, SWE381, academic">
     <meta name="description" content="Smart Study Planner helps students create weekly study plans and stay on track.">
-
+    <link rel="stylesheet" href="style.css">
+    
     <title>Planora - Home</title>
 </head>
 
+
+
 <body>
 
-    <h1>Planora</h1>
+    <div class="header-index">
+        <header> 
+            <div class="logo">
+                <a href="index.html"><img src="planora_logo.png" alt="Smart Study Planner Logo"></a>
+            </div> 
+            
+            <nav>
+                <a href="about-us.html">About Us</a> | 
+                <a href="login.html">Login</a> | 
+                <a href="register.html" class="header-btn">Register</a>
+            </nav> 
+        </header>
+    </div>
 
-    <p>
-        <a href="index.html">Home</a> | 
-        <a href="login.html">Login</a> | 
-        <a href="register.html">Register</a>
-    </p>
 
-    <h2>Welcome</h2>
-    <p>
-        Plan smarter, stay focused, and make every study session count. Your weekly study schedule starts here!
-    </p>
 
-    <img 
-        src="images/planora_logo.png"
-        width="150" 
-        height="150"
-        alt="Smart Study Planner Logo" 
-    >
+    <main>
+        <section class="desk-card">
+            <div class="desk-text">
+                <h2>Welcome</h2>
+                <p>Plan smarter, stay focused, and make every study session count. Your weekly study schedule starts here!</p>
+                <a href="login.html"><button class="body-btn">CREATE YOUR FIRST SCHEDULE</button></a>
+            </div>
+
+            <div class="desk-image">
+                <img src="desk-icon.png" alt="Desk Illustration">
+            </div>
+        </section>
+
+        
+        <section class="features">
+            <div class="feature-box">
+                <img src="calendar-icon.png" alt="Rule Based Scheduling Icon">
+                <h3>RULE-BASED SCHEDULING</h3>
+                <p>A smart calendar that automatically organizes your study sessions based on your schedule and academic goals.</p>
+            </div>
+
+            <div class="feature-box">
+                <img src="bar-icon.png" alt="Progress Tracking Icon">
+                <h3>PROGRESS TRACKING</h3>
+                <p>Monitor your study journey through intuitive visual indicatiors that keep you motivated to hit your study milestones.</p>
+            </div>
+            
+            <div class="feature-box">
+                <img src="bell-icon.png" alt="Deadline Alerts Icon">
+                <h3>DEADLINE ALERTS</h3>
+                <p>Receive timely notification and reminders for upcoming exams and assignments so you never miss a due date.</p>
+            </div>
+        </section>
+    </main>
 
     <footer>
-        <p>&copy; 2026 Planora. All Rights Reserved.</p>
-        <p>
-            Contact: <a href="mailto:support@planora.com">support@planora.com</a>
-        </p>
+        <p>&copy 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
     </footer>
 
 </body>

@@ -2,56 +2,72 @@
 <html lang="en">
 
 <head>
-    <link rel="stylesheet" href="style2.css">
-<meta charset="UTF-8">
-<title>Planora - Deadline</title>
+    <meta charset="UTF-8">
+    <title>Planora - Deadline</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <div class="header-func">
+        <header> 
+            <div class="logo">
+                <a href="index.html"><img src="planora_logo.png" alt="Smart Study Planner Logo"></a>
+            </div> 
+            
+            <nav>
+                <a href="dashboard.html">DashBoard</a> | 
+                <a href="courses.html">Courses</a> | 
+                <a href="deadlines.html">Deadlines</a> | 
+                <a href="availability.html">Availability</a> |
+                <a href="study-plan.html">Study Plan</a> |
+                <a href="statistics.html">Statistics</a> |
+                <a href="index.html" class="btn-create">Log Out</a>
+            </nav> 
+        </header>
+    </div>
 
-<img 
-    src="images/planora_header.png"
-    width=100%
-    alt="Planora Header"
->
-
-<h1>Add a Deadline</h1>
-
-<p>Track your assignments and exams to stay organized.</p>
-
-
-<form onsubmit="alert('Deadline added successfully!'); window.location.href='courses.html'; return false;">
-
- <!--
-<label>Course Name</label><br>
-<input type="text" placeholder="Web Applications Development" required>
-<br><br>   اذا الاضافه من الكورس مانحتاجه -->
-
-<label>Title</label><br>
-<input type="text" placeholder="Midterm Exam" required>
-<br><br>
-
-<label>Deadline Date</label><br>
-<input type="date" required>
-<br><br>
-
-<label>Deadline Time</label><br>
-<input type="time">
-<br><br>
-
-<button type="submit">Add Deadline</button>
-<br><br>
-
-<a href="courses.html">Back to Courses</a>
- 
-</form>
+    <div>
+        <h1>Add a Deadline</h1>
+        <p>Track your assignments and exams to stay organized.</p>
+    </div>
 
 
- <footer>
-        <p>&copy; 2026 Planora. All Rights Reserved.</p>
-        <p>
-            Contact: <a href="mailto:support@planora.com">support@planora.com</a>
-        </p>
+    <form onsubmit="alert('Deadline added successfully!'); window.location.href='courses.html'; return false;">
+
+        <!--
+        <label>Course Name</label><br>
+        <input type="text" placeholder="Web Applications Development" required>
+        <br><br>   اذا الاضافه من الكورس مانحتاجه -->
+
+         <label>Type</label><br>
+        <select class="input-format" required>
+            <option value="">Select Type</option>
+            <option value="exam">Exam</option>
+            <option value="assignment">Assignment</option>
+        </select>
+        <br><br>
+
+        <label>Title</label><br>
+        <input class="input-format" type="text" placeholder="Midterm Exam" required>
+        <br><br>
+
+        <label>Deadline Date</label><br>
+        <input class="input-format" type="date" required>
+        <br><br>
+
+        <label>Deadline Time</label><br>
+        <input class="input-format" type="time">
+        <br><br>
+
+        <button type="submit">Add Deadline</button>
+        <br>
+
+        <a href="courses.html">Back to Courses</a>
+    
+    </form>
+
+    <footer>
+        <p>&copy 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
     </footer>
 
 </body>

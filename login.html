@@ -2,55 +2,47 @@
 <html lang="en">
 
 <head>
-    <link rel="stylesheet" href="style2.css">
-<meta charset="UTF-8">
-<title>Planora - Login </title>
+    <meta charset="UTF-8">
+    <title>Planora - Login</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
- 
-<img 
-    src="images/planora_header.png"
-    width=100%
-    alt="Planora Header"
->
 
-<h1>Welcome Back!</h1>
-<h2>Login</h2>
+    <a href="index.html">
+        <img src="header.png" alt="Planora Header" class="banner">
+    </a>
+    
+    <div class="container">
+        <h1>Welcome Back!</h1>
+        <h2>Log In</h2>
 
-<form>
+        <form onsubmit="window.location.href='dashboard.html'; return false;">
+            <br>
+            <label>Email</label><br>
+            <input class="input-format" type="email" placeholder="example@email.com" required><br><br>
 
-<label>Email</label><br>
-<input type="email"
-placeholder="example@email.com" required><br><br>
+            <label>Password</label><br>
+            <input class="input-format" type="password" placeholder="*******" required><br><br>
 
-<label>Password</label><br>
-<input type="password" 
-placeholder= "*******"
-required><br><br>
+            <div>
+                <a href="reset-password.html">Forgot Password?</a>
+            </div>
 
-<a href="reset-password.html">Forgot Password</a> <br><br>
-
-<button onclick="location.href='dashboard.html'">Login</button>
-
-</form>
-
-<p>
-Don't have an account?
-<a href="register.html">Register</a>  <br><br>
-
-<a href="index.html">Home</a>
-
-</p>
-
+            <button type="submit">Log In</button>
+        </form>
+    </div>
+    
+    <div class="container">
+        <p>
+            Don't have an account? <a href="register.html">Register</a> <br>
+            return <a href="index.html">Home</a> 
+        </p>
+    </div>
 
     <footer>
-        <p>&copy; 2026 Planora. All Rights Reserved.</p>
-        <p>
-            Contact: <a href="mailto:support@planora.com">support@planora.com</a>
-        </p>
+        <p>&copy 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
     </footer>
-
 
 </body>
 </html>

@@ -2,55 +2,62 @@
 <html lang="en">
 
 <head>
-    <link rel="stylesheet" href="style2.css">
-<meta charset="UTF-8">
-<title>Planora - Add Course</title>
+    <meta charset="UTF-8">
+    <title>Planora - Add Course</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <div class="header-func">
+        <header> 
+            <div class="logo">
+                <a href="index.html"><img src="planora_logo.png" alt="Smart Study Planner Logo"></a>
+            </div> 
+            
+            <nav>
+                <a href="dashboard.html">DashBoard</a> | 
+                <a href="courses.html">Courses</a> | 
+                <a href="deadlines.html">Deadlines</a> | 
+                <a href="availability.html">Availability</a> |
+                <a href="study-plan.html">Study Plan</a> |
+                <a href="statistics.html">Statistics</a> |
+                <a href="index.html" class="btn-create">Log Out</a>
+            </nav> 
+        </header>
+    </div>
 
-<img 
-    src="images/planora_header.png"
-    width="100%"
-    alt="Planora Header"
->
+    <div>
+        <h1>Add a New Course</h1>
+        <p>Enter the course details to start planning your study schedule.</p>
+    </div>
 
-<h1>Add a New Course</h1>
-<p>Enter the course details to start planning your study schedule.</p>
+    <form onsubmit="alert('Course added successfully!'); window.location.href='courses.html'; return false;">
 
-<form onsubmit="alert('Course added successfully!'); window.location.href='courses.html'; return false;">
+        <label for="courseName">Course Name</label><br>
+        <input class="input-format" type="text" id="courseName" placeholder="Web Applications Development" required>
+        <br><br>
 
-<label for="courseName">Course Name</label><br>
-<input type="text" id="courseName" placeholder="Web Applications Development" required>
-<br><br>
+        <label for="courseCode">Course Code</label><br>
+        <input class="input-format" type="text" id="courseCode" placeholder="SWE381" required>
+        <br><br>
 
-<label for="courseCode">Course Code</label><br>
-<input type="text" id="courseCode" placeholder="SWE381" required>
-<br><br>
+        <label for="instructor">Instructor Name</label><br>
+        <input class="input-format" type="text" id="instructor" placeholder="Dr. Rawan">
+        <br><br>
 
-<label for="instructor">Instructor Name</label><br>
-<input type="text" id="instructor" placeholder="Dr. Rawan">
-<br><br>
+        <label for="creditHours">Credit Hours</label><br>
+        <input class="input-format" type="number" id="creditHours" placeholder="3">
+        <br><br>
 
-<label for="creditHours">Credit Hours</label><br>
-<input type="number" id="creditHours" placeholder="3">
-<br><br>
+        <button type="submit">Add Course</button>
 
-<button type="submit">Add Course</button>
+        <br>
 
-<br><br>
+        <a href="courses.html">Back to Courses</a>
+    </form>
 
-<a href="courses.html">Back to Courses</a>
-
-</form>
-
-
-<footer>
-<p>&copy; 2026 Planora. All Rights Reserved.</p>
-<p>
-Contact: <a href="mailto:support@planora.com">support@planora.com</a>
-</p>
-</footer>
-
+    <footer>
+        <p>&copy 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
+    </footer>
 </body>
 </html>

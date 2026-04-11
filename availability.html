@@ -2,61 +2,66 @@
 <html lang="en">
 
 <head>
-    <link rel="stylesheet" href="style2.css">
-<meta charset="UTF-8">
-<title>Planora - Availability</title>
+    <meta charset="UTF-8">
+    <title>Planora - Availability</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <div class="header-func">
+        <header> 
+            <div class="logo">
+                <a href="index.html"><img src="planora_logo.png" alt="Smart Study Planner Logo"></a>
+            </div> 
+            
+            <nav>
+                <a href="dashboard.html">DashBoard</a> | 
+                <a href="courses.html">Courses</a> | 
+                <a href="deadlines.html">Deadlines</a> | 
+                <a href="availability.html">Availability</a> |
+                <a href="study-plan.html">Study Plan</a> |
+                <a href="statistics.html">Statistics</a> |
+                <a href="index.html" class="btn-create">Log Out</a>
+            </nav> 
+        </header>
+    </div>
 
-<img 
-    src="images/planora_header.png"
-    width=100%
-    alt="Planora Header"
->
+    <div>
+        <h1>Set Your Weekly Study Availability</h1>
+        <p>Let Planora know when you are available to study, so we can help you create a better study plan.</p>
+    </div>
 
-<h1>Set Your Weekly Study Availability</h1>
+    <form onsubmit="alert('Availability saved successfully!'); window.location.href='dashboard.html'; return false;">
+        <label>Select Available Days: </label><br><br>
+        <input type="checkbox" name="days" value="sun">Sunday  
+        <input type="checkbox" name="days" value="mon">Monday  
+        <input type="checkbox" name="days" value="tue">Tuesday  
+        <input type="checkbox" name="days" value="wed">Wednesday  
+        <input type="checkbox" name="days" value="thu">Thursday  
+        <input type="checkbox" name="days" value="fri">Friday  
+        <input type="checkbox" name="days" value="sat">Saturday  
 
-<p>Let Planora know when you are available to study,
- so we can help you create a better study plan.</p>
-<form onsubmit="alert('Availability saved successfully!'); window.location.href='dashboard.html'; return false;">
+        <br><br><br>
 
-<label>Select Available Days</label><br>
+        <label>Start Time</label><br>
+        <input class="input-format" type="time" required>
 
-<input type="checkbox"> Sunday<br>
-<input type="checkbox"> Monday<br>
-<input type="checkbox"> Tuesday<br>
-<input type="checkbox"> Wednesday<br>
-<input type="checkbox"> Thursday<br>
-<input type="checkbox"> Friday<br>
-<input type="checkbox"> Saturday<br>
+        <br><br>
 
-<br>
+        <label>End Time</label><br>
+        <input class="input-format" type="time" required>
 
-<label>Start Time</label><br>
-<input type="time" required>
+        <br><br>
 
-<br><br>
+        <button class="input-format" type="submit">Save Availability</button>
 
-<label>End Time</label><br>
-<input type="time" required>
+        <br>
 
-<br><br>
+        <a href="dashboard.html">Back</a>
+    </form>
 
-<button type="submit">Save Availability</button>
-
-<br><br>
-
-<a href="dashboard.html">Back</a>
-</form>
-
- <footer>
-        <p>&copy; 2026 Planora. All Rights Reserved.</p>
-        <p>
-            Contact: <a href="mailto:support@planora.com">support@planora.com</a>
-        </p>
+    <footer>
+        <p>&copy 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
     </footer>
-
 </body>
-
 </html>

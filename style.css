@@ -1,85 +1,379 @@
+/* --- Styles from Home Page Internal CSS --- */
 
-/*/* dashboard page 
+body {
+    margin: 0;
+    font-family: Canva Sans, Open Sans, sans-serif !important;
+    background-color: #f4f6f9;
+    color: #333;
+    padding-bottom: 100px;
 
-body{
+}
 
-font-family: Arial;
-background-color:#f4f6f9;
-margin:0;
-padding:0;
+.header-index {/*************************************************************************/
+    background-color: #1e293b;
+    padding-bottom: 120px; /* Gives space for the overlapping card in index.html */
+}
+
+.header-func {/*************************************************************************/
+    background-color: #1e293b;
+}
+
+/* For Header Styling */
+header { /*************************************************************************/
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 20px 40px;
+
+}
+
+.header-btn { /*************************************************************************/
+    background-color: #3b82f6;
+    color: white;
+    padding: 8px 20px;
+    font-weight: 500;
+    border-radius: 25px;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+}
+
+.body-btn { /*************************************************************************/
+    background-color: #3b82f6;
+    color: white;
+    padding: 8px 20px;
+    font-weight: bold;
+    border-radius: 25px;
+    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+    display: block;  
+    width: fit-content;    /* Keeps it from stretching to 100% width */
+    margin: auto;
+}
+
+div p { /*************************************************************************/
+    text-align: center;
+     margin-top: 20px;
+}
+
+nav { /*************************************************************************/
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+nav a { /*************************************************************************/
+    color: #e2e8f0;
+    text-decoration: none;
+    font-size: 15px;
+}
+
+nav a:hover { /*************************************************************************/
+    color: white;
+    text-decoration: underline;
 }
 
 
-header{
-background:#2c3e50;
-color:white;
-text-align:center;
-padding:20px;
+.logo { /*************************************************************************/
+    display: flex;
+    align-items: center;
+    /* 
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    */ 
 }
 
-.content{
-width:80%;
-margin:auto;
-padding:20px;
+.logo img { /*************************************************************************/
+    height: 100pt;
+    width: auto;
+    margin-right: 10px;
+    float: left;
 }
 
-h2{
-margin-top:30px;
+.picture img { /*************************************************************************/
+    height: 100pt;
+    width: auto;
+    margin-right: 10px;
+    float: left;
 }
 
-.overview{
-display:flex;
-gap:20px;
-margin-top:20px;
+
+
+/* Desk Card (The white box overlapping the blue) */
+.desk-card {/*************************************************************************/
+    display: flex;
+    background-color: white;
+    max-width: 900px;
+    margin: -80px auto 40px; /* Negative top margin pulls it up over the blue */
+    padding: 40px 50px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    position: relative;
+    align-items: center;
+    gap: 30px;
 }
 
-.card{
-background:white;
-padding:20px;
-border-radius:8px;
-width:200px;
-text-align:center;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
+.desk-text {/*************************************************************************/
+    flex: 1;
 }
 
-.buttons{
-display:flex;
-flex-wrap:wrap;
-gap:15px;
-margin-top:20px;
+.desk-text h2 {/*************************************************************************/
+    color: #1e293b;
+    font-size: 2.5rem;
+    margin-top: 0;
+    margin-bottom: 15px;
 }
 
-.buttons a{
-background:#3498db;
-color:white;
-padding:12px 18px;
-text-decoration:none;
-border-radius:6px;
-font-weight:bold;
+.desk-text p {/*************************************************************************/
+    color: #475569;
+    line-height: 1.6;
+    margin-bottom: 25px;
 }
 
-.buttons a:hover{
-background:#2980b9;
+
+.desk-image {/*************************************************************************/
+    flex: 1;
+    text-align: center;
 }
 
-.deadline{
-background:white;
-padding:15px;
-margin-top:10px;
-border-radius:8px;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
+.desk-image img {/*************************************************************************/
+    max-width: 100%;
+    height: auto;
 }
 
-.studyPlan{
-background:white;
-padding:15px;
-margin-top:10px;
-border-radius:8px;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
+
+/* Features Section */
+.features {/*************************************************************************/
+    display: flex;
+    max-width: 1000px;
+    margin: 0 auto 60px;
+    justify-content: space-between;
+    gap: 30px;
+    padding: 0 40px;
 }
 
-.studyPlan p{
-margin:8px 0;
+/* Each feature has a box */
+.feature-box {/*************************************************************************/
+    flex: 1;
+    text-align: center;
+}
+
+.feature-box img {/*************************************************************************/
+    height: 60px;
+    margin-bottom: 15px;
+}
+
+.feature-box h3 {/*************************************************************************/
+    font-size: 1rem;
+    color: #1e293b;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+}
+
+.feature-box p {/*************************************************************************/
+    font-size: 0.9rem;
+    color: #64748b;
+    line-height: 1.5;
+}
+/* End Of Features Section */
+
+
+/* --- Styles from General CSS block --- */
+
+/* HEADINGS */
+h1, h2, h3 {
+    text-align: center;
+    color: #2c3e50;
+}
+
+.banner {/*************************************************************************/
+    display: block;
+    width: 100%; 
+    max-width: 100%; 
+}
+
+/* مو كل اللي بعد هالمنطقه استدخدمناهم بالاندكس
+
+/* CONTENT CONTAINER */
+.container {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+}
+
+/* FORMS */
+form {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 60%;
+    margin: auto;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+
+.input-format {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 15pt;
+    background-color: #3498db;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+/* LINKS */
+a {
+    text-decoration: none;
+    color: #3498db;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* LISTS (courses page) */
+ul {
+    list-style: none;
+    padding: 0;
+    width: 60%;
+    margin: auto;
+}
+
+li {
+    background: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* DASHBOARD */
+.content {
+    width: 80%;
+    margin: auto;
+    padding: 20px;
+    padding-bottom: 100px;
 
 }
-/* end of dashboard page */
+
+.overview {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.card {/*************************************************************************/
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 200px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease-out; /* Lifts the card up slightly */
+}
+
+.card:hover {
+    transform: translateY(-5px); /* lifts the card up slightly when hovering the cursor over the card */
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card:hover {/*************************************************************************/
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 200px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+.buttons a {
+    background: #3498db;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 6px;
+}
+
+.buttons a:hover {
+    background: #2980b9;
+}
+
+.deadline, .studyPlan {
+    background: white;
+    padding: 15px;
+    margin-top: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* TABLE (statistics & study plan) */
+table {
+    width: 80%;
+    margin: auto;
+    border-collapse: collapse;
+    background: white;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+th {
+    background-color: #3498db;
+    color: white;
+}
+
+
+/* FOOTER */
+footer {
+    background-color: #1e293b;
+    color: #94a3b8;
+    text-align: center;
+    padding: 25px 20px;
+    font-size: 0.9rem;
+    margin-top: 30px;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+footer a {
+    color: #94a3b8;
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: white;
+}

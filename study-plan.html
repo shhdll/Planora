@@ -2,70 +2,90 @@
 <html lang="en">
 
 <head>
-    <link rel="stylesheet" href="style2.css">
-<meta charset="UTF-8">
-<title>Planora - Study Plan</title>
+    <meta charset="UTF-8">
+    <title>Planora - Study Plan</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <div class="header-func">
+        <header> 
+            <div class="logo">
+                <a href="index.html"><img src="planora_logo.png" alt="Smart Study Planner Logo"></a>
+            </div> 
+            
+            <nav>
+                <a href="dashboard.html">DashBoard</a> | 
+                <a href="courses.html">Courses</a> | 
+                <a href="deadlines.html">Deadlines</a> | 
+                <a href="availability.html">Availability</a> |
+                <a href="study-plan.html">Study Plan</a> |
+                <a href="statistics.html">Statistics</a> |
+                <a href="index.html" class="btn-create">Log Out</a>
+            </nav> 
+        </header>
+    </div>
 
-  <img 
-    src="images/planora_header.png"
-    width=100%
-    alt="Planora Header"
->
+    <div>
+        <h1>Your Study Plan</h1>
+        <br>
+        <p>No Study Plan Yet, your study plan will appear here after you add your courses, deadlines, and availability.</p><br>
+    </div>
 
-<h1>Your Study Plan</h1>
+    <hr>
 
-<p>This page displays your weekly study schedule.</p>
+    <h3>Example Study Plan</h3>
+    <table border="1">
+        <tr>
+            <th>Day</th>
+            <th>Session</th>
+            <th>Study Time</th>
+            <th>Action</th>
+        </tr>
 
-<h3>No Study Plan Yet</h3>
+        <tr>
+            <td>Sunday</td>
+            <td>Web Applications Development</td>
+            <td>6:00 PM - 7:30 PM</td>
 
-<p>Your study plan will appear here after you add your courses, deadlines, and availability.</p>
+            <td>
+                <input type="radio" name="status1" value="completed"> Complete
+                <input type="radio" name="status1" value="missed"> Missed
+            </td>
+        </tr>
 
-<hr>
+        <tr>
+            <td>Monday</td>
+            <td>Database Systems</td>
+            <td>5:00 PM - 6:30 PM</td>
+            <td>
+                <input type="radio" name="status2" value="completed"> Complete
+                <input type="radio" name="status2" value="missed"> Missed
+            </td>
+        </tr>
 
-<h3>Example Study Plan</h3>
+        <tr>
+            <td>Tuesday</td>
+            <td>Operating Systems</td>
+            <td>7:00 PM - 8:30 PM</td>
+            <td>
+                <input type="radio" name="status3" value="completed"> Complete
+                <input type="radio" name="status3" value="missed"> Missed
+            </td>
+        </tr>
+    </table>
 
-<table border="1" cellpadding="10">
+    <br><br>
+    <hr>
+    <br><br>
 
-<tr>
-<th>Day</th>
-<th>Course</th>
-<th>Study Time</th>
-</tr>
+    <div class="buttons">
+        <a href="dashboard.html">Back</a>
+    </div>
 
-<tr>
-<td>Sunday</td>
-<td>Web Applications Development</td>
-<td>6:00 PM - 7:30 PM</td>
-</tr>
-
-<tr>
-<td>Monday</td>
-<td>Database Systems</td>
-<td>5:00 PM - 6:30 PM</td>
-</tr>
-
-<tr>
-<td>Tuesday</td>
-<td>Operating Systems</td>
-<td>7:00 PM - 8:30 PM</td>
-</tr>
-
-</table>
-
-<br>
-
-<a href="dashboard.html">Back</a>
-
- <footer>
-        <p>&copy; 2026 Planora. All Rights Reserved.</p>
-        <p>
-            Contact: <a href="mailto:support@planora.com">support@planora.com</a>
-        </p>
+    <footer>
+        <p>&copy 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
     </footer>
 
 </body>
-
 </html>
