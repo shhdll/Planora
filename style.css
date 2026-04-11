@@ -22,7 +22,7 @@ body {
 header { /*************************************************************************/
     display: flex;
     justify-content: space-between;
-    align-items: end;
+    align-items: 
     max-width: 100%;
     margin: 0 auto;
     padding: 20px 40px;
@@ -350,6 +350,44 @@ th, td {
 }
 
 th {
+    background-color: #3498db;
+    color: white;
+}
+
+.study-table {
+    width: 80%;
+    margin: auto;
+    border-collapse: collapse;
+    background: white;
+}
+
+.study-table th,
+.study-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.study-table th {
+    background-color: #3498db;
+    color: white;
+}
+
+.stats-table {
+    width: 80%;
+    margin: auto;
+    border-collapse: collapse;
+    background: white;
+}
+
+.stats-table th,
+.stats-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.stats-table th {
     background-color: #3498db;
     color: white;
 }
