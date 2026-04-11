@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="style2.css">
+<meta charset="UTF-8">
+<title>Planora - Availability</title>
+</head>
+
+<body>
+
+<img 
+    src="images/planora_header.png"
+    width=100%
+    alt="Planora Header"
+>
+
+<h1>Set Your Weekly Study Availability</h1>
+
+<p>Let Planora know when you are available to study,
+ so we can help you create a better study plan.</p>
+<form onsubmit="alert('Availability saved successfully!'); window.location.href='dashboard.html'; return false;">
+
+<label>Select Available Days</label><br>
+
+<input type="checkbox"> Sunday<br>
+<input type="checkbox"> Monday<br>
+<input type="checkbox"> Tuesday<br>
+<input type="checkbox"> Wednesday<br>
+<input type="checkbox"> Thursday<br>
+<input type="checkbox"> Friday<br>
+<input type="checkbox"> Saturday<br>
+
+<br>
+
+<label>Start Time</label><br>
+<input type="time" required>
+
+<br><br>
+
+<label>End Time</label><br>
+<input type="time" required>
+
+<br><br>
+
+<button type="submit">Save Availability</button>
+
+<br><br>
+
+<a href="dashboard.html">Back</a>
+</form>
+
+ <footer>
+        <p>&copy; 2026 Planora. All Rights Reserved.</p>
+        <p>
+            Contact: <a href="mailto:support@planora.com">support@planora.com</a>
+        </p>
+    </footer>
+
+</body>
+
+</html>
