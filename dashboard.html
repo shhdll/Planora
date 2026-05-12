@@ -3,34 +3,37 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Welcome to Planora!</title>
+    <title>Planora - Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+
     <a href="index.html">
         <img src="images/header.png" alt="Planora Header" class="banner">
     </a>
 
     <div class="content">
 
-        <h2>Welcome Student!</h2>
+        <!-- Greeting: filled by JS -->
+        <h2 id="dashboard-greeting">Welcome!</h2>
 
+        <!-- Overview Cards -->
         <div class="overview">
 
             <div class="card">
                 <h3>Total Courses</h3>
-                <p>4</p>
+                <p id="stat-courses">0</p>
             </div>
 
             <div class="card">
                 <h3>Upcoming Deadlines</h3>
-                <p>2</p>
+                <p id="stat-deadlines">0</p>
             </div>
 
             <div class="card">
-                <h3>Study Sessions This Week</h3>
-                <p>6</p>
+                <h3>Sessions This Week</h3>
+                <p id="stat-sessions">0</p>
             </div>
 
         </div>
@@ -38,56 +41,33 @@
         <h2>Quick Actions</h2>
 
         <div class="buttons">
-
-            <a href="index.html">Home</a>
-
-            <a href="courses.html">Add Courses</a>
-
+            <a href="courses.html">My Courses</a>
             <a href="deadlines.html">Add Deadlines</a>
-
             <a href="availability.html">Set Availability</a>
-
-            <a href="study-plan.html">Generate Study Plan</a>
-
-            <a href="statistics.html">View Statistics</a>
-
-            <a href="index.html">Logout</a>
-
+            <a href="study-plan.html">Study Plan</a>
+            <a href="statistics.html">Statistics</a>
+            <a href="#" onclick="handleLogout()">Logout</a>
         </div>
 
-        <h2>Upcoming Deadline</h2>
-
-        <div class="deadline">
-            Web Project - 29/3/2026
+        <h2>Upcoming Deadlines</h2>
+        <div id="deadlines-list">
+            <div class="deadline">No upcoming deadlines. Add some in the Deadlines page.</div>
         </div>
 
         <br>
 
         <h2>Today's Study Plan</h2>
-        
         <div class="studyPlan" style="margin-top: 0;">
-            <table style="width: 100%;">
+            <table style="width: 100%;" id="today-plan-table">
                 <tr>
                     <th>Time</th>
                     <th>Course</th>
-                </tr>
-                <tr>
-                    <td><strong>8:00 - 8:50</strong></td>
-                    <td>SWE333</td>
-                </tr>
-                <tr>
-                    <td><strong>9:00 - 9:50</strong></td>
-                    <td>SWE381</td>
-                </tr>
-                <tr>
-                    <td><strong>10:00 - 10:50</strong></td>
-                    <td>CSC227</td>
-                </tr>
-                <tr>
-                    <td><strong>11:00 - 11:50</strong></td>
-                    <td>IS230</td>
+                    <th>Status</th>
                 </tr>
             </table>
+            <p id="no-sessions-msg" style="text-align:center; color:#64748b; padding: 10px;">
+                No study sessions today. Generate a study plan first.
+            </p>
         </div>
 
     </div>
@@ -95,6 +75,106 @@
     <footer>
         <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
     </footer>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+
+        // redirect to login if not authenticated 
+        Session.require();
+
+        const user = Session.getUser();
+
+        // Greeting 
+        document.getElementById("dashboard-greeting").textContent =
+            `Welcome, ${user.name}! 👋`;
+
+        // get data scoped to this user
+        function userKey(key) {
+            return `${user.id}_${key}`;
+        }
+
+        // Courses count 
+        const courses = Storage.get(userKey("courses")) || [];
+        document.getElementById("stat-courses").textContent = courses.length;
+
+        // Upcoming deadlines (next 7 days) 
+        const allDeadlines = Storage.get(userKey("deadlines")) || [];
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        const upcoming = allDeadlines
+            .filter(d => {
+                const days = DateUtils.daysUntil(d.date);
+                return days >= 0;
+            })
+            .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+        document.getElementById("stat-deadlines").textContent = upcoming.length;
+
+        // Render deadline list 
+        const deadlineContainer = document.getElementById("deadlines-list");
+        if (upcoming.length > 0) {
+            deadlineContainer.innerHTML = "";
+            upcoming.slice(0, 5).forEach(d => {
+                const days = DateUtils.daysUntil(d.date);
+                const urgency = days <= 2 ? "color:#ef4444; font-weight:bold;" : "";
+                const div = document.createElement("div");
+                div.className = "deadline";
+                div.innerHTML = `
+                    <span style="${urgency}">${d.title} — ${DateUtils.formatDisplay(d.date)}</span>
+                    <span style="float:right; color:#64748b; font-size:0.85rem;">
+                        ${days === 0 ? "Today!" : days === 1 ? "Tomorrow" : `In ${days} days`}
+                    </span>`;
+                deadlineContainer.appendChild(div);
+            });
+        }
+
+        // Today's study sessions 
+        const studyPlan = Storage.get(userKey("studyPlan")) || [];
+        const todayStr  = DateUtils.today();
+        const todaySessions = studyPlan.filter(s => s.date === todayStr);
+
+        document.getElementById("stat-sessions").textContent = todaySessions.length;
+
+        const table  = document.getElementById("today-plan-table");
+        const noMsg  = document.getElementById("no-sessions-msg");
+
+        if (todaySessions.length > 0) {
+            noMsg.style.display = "none";
+            todaySessions.forEach(s => {
+                const row = table.insertRow();
+                const statusColor = s.status === "completed"
+                    ? "#22c55e" : s.status === "missed"
+                    ? "#ef4444" : "#64748b";
+
+                row.innerHTML = `
+                    <td><strong>${s.startTime} – ${s.endTime}</strong></td>
+                    <td>${s.course}</td>
+                    <td style="color:${statusColor}; font-weight:600; text-transform:capitalize;">
+                        ${s.status || "pending"}
+                    </td>`;
+            });
+        }
+    </script>
+
+    <!-- 
+    Removed all hardcoded static data (the fake "4 courses", "2 deadlines", "6 sessions", fake timetable rows)
+    Added id attributes to the three stat cards: stat-courses, stat-deadlines, stat-sessions
+    Added id="dashboard-greeting" to the welcome heading
+    Added id="deadlines-list" to the deadlines section
+    Added id="today-plan-table" and id="no-sessions-msg" to the study plan section
+    Added a Status column to the study plan table
+    Changed the Logout button from <a href="index.html">Logout</a> to <a href="#" onclick="handleLogout()">
+    Removed the Home quick action button (you're already past home when logged in)
+
+    Calls Session.require() — redirects to login if not logged in
+    Reads the user's name and displays it in the greeting
+    Reads courses from localStorage and shows the real count
+    Reads deadlines, filters to upcoming ones, sorts by date, shows count and list
+    Colors deadlines red if due in 2 days or less
+    Reads today's study sessions from the plan and renders them in the table
+    Shows a "no sessions" message if the plan is empty -->
 
 </body>
 </html>

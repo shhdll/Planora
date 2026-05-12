@@ -12,37 +12,51 @@
     <a href="index.html">
         <img src="images/header.png" alt="Planora Header" class="banner">
     </a>
-    
+
     <div class="container">
         <h1>Welcome Back!</h1>
         <h2>Log In</h2>
 
-        <form onsubmit="window.location.href='dashboard.html'; return false;">
+        <form id="login-form">
             <br>
             <label>Email</label><br>
-            <input class="input-format" type="email" placeholder="example@email.com" required><br><br>
+            <input id="login-email" class="input-format" type="email"
+                placeholder="example@email.com" required><br><br>
 
             <label>Password</label><br>
-            <input class="input-format" type="password" placeholder="*******" required><br><br>
+            <input id="login-password" class="input-format" type="password"
+                placeholder="*******" required><br><br>
 
             <div>
                 <a href="reset-password.html">Forgot Password?</a>
             </div>
+            <br>
 
             <button type="submit">Log In</button>
         </form>
     </div>
-    
+
     <div class="container">
         <p>
             Don't have an account? <a href="register.html">Register</a> <br>
-            return <a href="index.html">Home</a> 
+            Return <a href="index.html">Home</a>
         </p>
     </div>
 
     <footer>
-        <p>&copy 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
+        <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
     </footer>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        // If already logged in, skip login page
+        Session.redirectIfLoggedIn();
+
+        // Attach form handler
+        document.getElementById("login-form").addEventListener("submit", handleLogin);
+    </script>
 
 </body>
 </html>
