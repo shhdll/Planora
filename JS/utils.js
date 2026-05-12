@@ -75,11 +75,9 @@ const DateUtils = {
   },
 };
 
-//  Toast Notification 
-// Lightweight in-page flash message (no alert() calls needed)
+//  Toast notification (this is used to give more time for the messages that pops up)
 
 function showToast(message, type = "success") {
-  // Remove any existing toast
   const existing = document.getElementById("planora-toast");
   if (existing) existing.remove();
 

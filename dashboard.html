@@ -159,22 +159,23 @@
     </script>
 
     <!-- 
-    Removed all hardcoded static data (the fake "4 courses", "2 deadlines", "6 sessions", fake timetable rows)
-    Added id attributes to the three stat cards: stat-courses, stat-deadlines, stat-sessions
-    Added id="dashboard-greeting" to the welcome heading
-    Added id="deadlines-list" to the deadlines section
-    Added id="today-plan-table" and id="no-sessions-msg" to the study plan section
-    Added a Status column to the study plan table
-    Changed the Logout button from <a href="index.html">Logout</a> to <a href="#" onclick="handleLogout()">
-    Removed the Home quick action button (you're already past home when logged in)
+    1. Removed all hardcoded static data (the fake "4 courses", "2 deadlines", "6 sessions", fake timetable rows)
+    2. Added id attributes to the three stat cards: stat-courses, stat-deadlines, stat-sessions
+    3. Added id="dashboard-greeting" to the welcome heading
+    4. Added id="deadlines-list" to the deadlines section
+    5. Added id="today-plan-table" and id="no-sessions-msg" to the study plan section
+    6. Added a Status column to the study plan table
+    7. Changed the Logout button from <a href="index.html">Logout</a> to <a href="#" onclick="handleLogout()">
+    8. Removed the Home quick action button (you're already past home when logged in)
 
-    Calls Session.require() — redirects to login if not logged in
-    Reads the user's name and displays it in the greeting
-    Reads courses from localStorage and shows the real count
-    Reads deadlines, filters to upcoming ones, sorts by date, shows count and list
-    Colors deadlines red if due in 2 days or less
-    Reads today's study sessions from the plan and renders them in the table
-    Shows a "no sessions" message if the plan is empty -->
+    9. Calls Session.require() — redirects to login if not logged in
+    10. Reads the user's name and displays it in the greeting
+    11. Reads courses from localStorage and shows the real count
+    12. Reads deadlines, filters to upcoming ones, sorts by date, shows count and list
+    13. Colors deadlines red if due in 2 days or less
+    14. Reads today's study sessions from the plan and renders them in the table
+    15. Shows a "no sessions" message if the plan is empty
+    -->
 
 </body>
 </html>
