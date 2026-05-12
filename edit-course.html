@@ -9,41 +9,49 @@
 
 <body>
     <div class="header-func">
-        <header> 
+        <header>
             <div class="logo">
-                <a href="index.html"><img src="planora_logo.png" alt="Smart Study Planner Logo"></a>
-            </div> 
-            
+                <a href="index.html"><img src="images/planora_logo.png" alt="Smart Study Planner Logo"></a>
+            </div>
+
             <nav>
-                <a href="index.html">Home</a> | 
-                <a href="dashboard.html">DashBoard</a> | 
-                <a href="courses.html">Courses</a> | 
-                <a href="deadlines.html">Deadlines</a> | 
+                <a href="index.html">Home</a> |
+                <a href="dashboard.html">Dashboard</a> |
+                <a href="courses.html">Courses</a> |
+                <a href="deadlines.html">Deadlines</a> |
                 <a href="availability.html">Availability</a> |
                 <a href="study-plan.html">Study Plan</a> |
                 <a href="statistics.html">Statistics</a> |
-                <a href="index.html" class="btn-create">Log Out</a>
-            </nav> 
+                <a href="#" onclick="handleLogout()">Log Out</a>
+            </nav>
         </header>
     </div>
 
     <h1>Edit Course</h1>
 
-    <form onsubmit="alert('Saved successfully!'); window.location.href='courses.html'; return false;">
+    <form id="edit-course-form">
+
+        <!-- Hidden field to carry the course ID through the form -->
+        <input type="hidden" id="courseId">
+
         <label>Course Name</label><br>
-        <input class="input-format" type="text" placeholder="Web Applications Development">
+        <input class="input-format" type="text" id="courseName"
+            placeholder="Web Applications Development" required>
         <br><br>
 
         <label>Course Code</label><br>
-        <input class="input-format" type="text" placeholder="SWE381">
+        <input class="input-format" type="text" id="courseCode"
+            placeholder="SWE381" required>
         <br><br>
 
         <label>Instructor</label><br>
-        <input class="input-format" type="text" placeholder="Dr.Rawan">
+        <input class="input-format" type="text" id="instructor"
+            placeholder="Dr. Rawan">
         <br><br>
 
         <label>Credit Hours</label><br>
-        <input class="input-format" type="number" id="creditHours" placeholder="3">
+        <input class="input-format" type="number" id="creditHours"
+            placeholder="3" min="1" max="6">
         <br><br>
 
         <button type="submit">Save Changes</button>
@@ -51,12 +59,32 @@
         <br>
 
         <a href="courses.html">Back to Courses</a>
-
     </form>
 
     <footer>
-        <p>&copy 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
+        <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
     </footer>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/courses.js"></script>
+    <script>
+        Session.require();
+        loadEditForm();
+        document.getElementById("edit-course-form").addEventListener("submit", handleEditCourse);
+    </script>
+
+    <!--
+    1. Removed onsubmit="alert(...)" from <form>
+    2. Added id="edit-course-form" to <form> for the event listener
+    3. Added id attributes to all inputs: courseName, courseCode, instructor, creditHours
+    4. Added hidden input id="courseId" to carry the course ID through the form
+    5. Changed Log Out href to onclick="handleLogout()"
+    6. Fixed logo image path from "planora_logo.png" to "images/planora_logo.png"
+    7. Added <script> tags for utils.js, auth.js, courses.js
+    8. Added inline script: Session.require() + loadEditForm() pre-fills fields from localStorage
+       using ?id= from the URL + attaches handleEditCourse to the form
+    -->
 
 </body>
 </html>

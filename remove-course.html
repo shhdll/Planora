@@ -9,44 +9,77 @@
 
 <body>
     <div class="header-func">
-        <header> 
+        <header>
             <div class="logo">
-                <a href="index.html"><img src="planora_logo.png" alt="Smart Study Planner Logo"></a>
-            </div> 
-            
+                <a href="index.html"><img src="images/planora_logo.png" alt="Smart Study Planner Logo"></a>
+            </div>
+
             <nav>
-                <a href="index.html">Home</a> | 
-                <a href="dashboard.html">DashBoard</a> | 
-                <a href="courses.html">Courses</a> | 
-                <a href="deadlines.html">Deadlines</a> | 
+                <a href="index.html">Home</a> |
+                <a href="dashboard.html">Dashboard</a> |
+                <a href="courses.html">Courses</a> |
+                <a href="deadlines.html">Deadlines</a> |
                 <a href="availability.html">Availability</a> |
                 <a href="study-plan.html">Study Plan</a> |
                 <a href="statistics.html">Statistics</a> |
-                <a href="index.html" class="btn-create">Log Out</a>
-            </nav> 
+                <a href="#" onclick="handleLogout()">Log Out</a>
+            </nav>
         </header>
     </div>
 
-    <br>
-    <br>
-    <form onsubmit="alert('Course removed successfully!'); window.location.href='courses.html'; return false;">
+    <br><br>
+
+    <form id="remove-course-form">
+
+        <input type="hidden" id="courseId">
+
         <div>
             <h1>Remove Course</h1>
             <p>Are you sure you want to remove this course?</p>
-            <p><strong>Web Applications Development</strong></p>
+            <p><strong id="course-name-display"></strong></p>
             <br>
         </div>
 
-        <button type="submit">Yes, Remove The Course</button>
+        <button type="submit"
+            style="background-color:#ef4444; border-color:#ef4444;">
+            Yes, Remove The Course
+        </button>
 
         <div class="buttons">
             <a href="courses.html">Cancel</a>
         </div>
+
     </form>
+
     <br>
 
     <footer>
-        <p>&copy 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
+        <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
     </footer>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/courses.js"></script>
+    <script>
+        Session.require();
+        loadRemoveConfirm();
+        document.getElementById("remove-course-form").addEventListener("submit", handleRemoveCourse);
+    </script>
+
+    <!--
+    1. Removed onsubmit="alert(...)" from <form>
+    2. Added id="remove-course-form" to <form> for the event listener
+    3. Replaced hardcoded course name "Web Applications Development" with
+       <strong id="course-name-display"></strong> — filled dynamically by JS
+    4. Added hidden input id="courseId" to carry the course ID
+    5. Styled the remove button red (background #ef4444) to signal a destructive action
+    6. Changed Log Out href to onclick="handleLogout()"
+    7. Fixed logo image path from "planora_logo.png" to "images/planora_logo.png"
+    8. Fixed &copy typo to &copy; (missing semicolon in footer)
+    9. Added <script> tags for utils.js, auth.js, courses.js
+    10. Added inline script: Session.require() + loadRemoveConfirm() reads ?id= from URL
+        and fills the course name + attaches handleRemoveCourse to the form
+    -->
+
 </body>
 </html>

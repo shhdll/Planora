@@ -9,48 +9,30 @@
 
 <body>
     <div class="header-func">
-        <header> 
+        <header>
             <div class="logo">
                 <a href="index.html"><img src="images/planora_logo.png" alt="Smart Study Planner Logo"></a>
-            </div> 
-            
+            </div>
+
             <nav>
-                <a href="index.html">Home</a> | 
-                <a href="dashboard.html">DashBoard</a> | 
-                <a href="courses.html">Courses</a> | 
-                <a href="deadlines.html">Deadlines</a> | 
+                <a href="index.html">Home</a> |
+                <a href="dashboard.html">Dashboard</a> |
+                <a href="courses.html">Courses</a> |
+                <a href="deadlines.html">Deadlines</a> |
                 <a href="availability.html">Availability</a> |
                 <a href="study-plan.html">Study Plan</a> |
                 <a href="statistics.html">Statistics</a> |
-                <a href="index.html" class="btn-create">Log Out</a>
-            </nav> 
+                <a href="#" onclick="handleLogout()">Log Out</a>
+            </nav>
         </header>
     </div>
 
     <h1>Your Courses</h1>
 
-    <ul>
-        <li>
-            Web Applications Development (SWE381)
-            <p>
-            <a href="edit-course.html">Edit</a> |
-            <a href="remove-course.html">Remove</a> |
-            <a href="deadlines.html">Add Deadline</a>
-            </p>
-        </li>
-
-        <li>
-            Database Systems (CS340)
-            <p>
-            <a href="edit-course.html">Edit</a> |
-            <a href="remove-course.html">Remove</a> |
-            <a href="deadlines.html">Add Deadline</a>
-            </p>
-        </li>
-    </ul>
+    <ul id="courses-list"></ul>
 
     <br>
-    
+
     <div class="buttons">
         <p>
             <a href="add-course.html">Add New Course</a>
@@ -62,6 +44,23 @@
     <footer>
         <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
     </footer>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/courses.js"></script>
+    <script>
+        Session.require();
+        renderCourses();
+    </script>
+
+    <!--
+    1. Removed hardcoded static course list items (Web Applications, Database Systems)
+    2. Added id="courses-list" to <ul> so JS can target and populate it dynamically
+    3. Changed Log Out href from "index.html" to onclick="handleLogout()" for real session clearing
+    4. Added inline script: Session.require() guards the page, renderCourses() builds the list
+    5. Edit and Remove links now pass ?id= query param so JS knows which course was selected
+    6. "Add Deadline" link passes ?courseId= so the deadlines page can pre-select the course
+    -->
 
 </body>
 </html>
