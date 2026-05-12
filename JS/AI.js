@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupEventListeners();
 });
 
-// 1. Inject CSS and HTML
+//Inject CSS and HTML
 
 const SPARK_ICON_SVG = `<svg class="planora-spark-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="12" cy="12" r="2.25" fill="currentColor"/><path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" opacity="0.9"/><path d="M6 6l2.5 2.5M16 16l2.5 2.5M18 6l-2.5 2.5M8 16l-2.5 2.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity="0.45"/></svg>`;
 function injectHTML() {

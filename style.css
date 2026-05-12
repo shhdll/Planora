@@ -3,10 +3,11 @@
 body {
     margin: 0;
     font-family: Canva Sans, Open Sans, sans-serif !important;
-    background-color: #fdfeff;
+    background-color: #f9fafc;
     color: #333;
-    padding-bottom: 100px;
-
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .header-index { /* header for the index page */
@@ -335,23 +336,26 @@ th {
     font-weight: bold;
 }
 
-/* FOOTER */
-footer { /* override the footer with additional attributes */
-    background-color: #1e293b;
-    color: #94a3b8;
-    text-align: center;
-    padding: 25px 20px;
-    font-size: 0.9rem;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
+/* FOOTER - Stays at bottom without being fixed */
+footer {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 45%, #312e81 100%) !important;
+    color: #94a3b8 !important;
+    text-align: center !important;
+    padding: 20px 16px !important;
+    font-size: 0.875rem !important;
+    width: 100% !important;
+    margin-top: auto !important;
+    border-top: 1px solid rgba(148, 163, 184, 0.15) !important;
+    position: relative !important;
 }
 
-footer a { /* change color of link in footer */
-    color: #94a3b8;
-    text-decoration: none;
+footer a {
+    color: #cbd5e1 !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
 }
 
-footer a:hover { /* change color of link in footer when hovering over it */
-    color: white;
+footer a:hover {
+    color: white !important;
+    text-decoration: underline !important;
 }
