@@ -10,52 +10,34 @@ body {
     min-height: 100vh;
 }
 
-.header-index { /* header for the index page */
-    background-color: #1e293b;
-    padding-bottom: 120px; /* Gives space for the overlapping card in index.html */
-}
 
-.header-func { /* header for the other pages */
-    background-color: #1e293b;
-}
-
-/* For Header Styling */
-header { /* override default header*/
-    display: flex;
-    justify-content: space-between;
-    align-items: end;
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 20px 40px;
-}
-
-.header-btn { /* for the highlighted button in the header */
-    background-color: #3b82f6;
+.header-btn {
+    background-color: #103b80;
     color: white;
     padding: 8px 20px;
     font-weight: 500;
     border-radius: 25px;
-    box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 4px 6px rgba(102, 126, 164, 0.3);
 }
 
-.body-btn { /* special button to attract the user in index page "CREATE YOUR FIRST SCHEDULE" */
-    background-color: #3b82f6;
+.body-btn { /* "CREATE YOUR FIRST SCHEDULE" */
+    background-color: #1b7bb2;
     color: white;
     padding: 8px 20px;
     font-weight: bold;
     border-radius: 25px;
     box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
     display: block;  
-    width: fit-content;    /* Keeps it from stretching to 100% width */
+    width: fit-content;   
     margin: auto;
 }
 
-div p { /* style a paragraph inside a div tag */
+div p {
     text-align: center;
      margin-top: 20px;
 }
 
-nav { /* override the navigation tag */
+nav { 
     color: white;
     display: flex;
     align-items: center;
@@ -73,24 +55,113 @@ nav a:hover { /* for a link inside a nav tag when hovering over it */
     text-decoration: underline;
 }
 
-.logo { 
+
+/* Site Header */
+.site-header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 45%, #312e81 100%);
+  color: #f8fafc;
+  padding: 0 clamp(16px, 3vw, 40px);
+  position: relative;
+  overflow: hidden;
+}
+
+.site-header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% -20%, rgba(99, 102, 241, 0.35), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(34, 211, 238, 0.2), transparent);
+  pointer-events: none;
+}
+
+.site-header--hero {
+  padding-bottom: clamp(100px, 15vw, 140px);
+}
+
+.site-header .inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    min-height: 90px;
+    padding: 0 40px;
+    box-sizing: border-box;
 }
 
-.logo img { /* for adding the website's logo to the header */
-    height: 100pt;
+.site-header .logo {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    margin-right: auto;
+}
+
+.site-header .logo img {
+    height: 200px;
     width: auto;
-    margin-right: 10px;
-    float: left;
 }
 
-/* Desk Card (The white box overlapping the blue in the index) */
-.desk-card { /**/
+.site-nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.site-nav a {
+    color: #cbd5e1;
+    font-weight: 500;
+    font-size: 1.3rem;
+    padding: 8px 16px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.site-nav a:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  text-decoration: none;
+}
+
+.site-nav .nav-cta {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+  color: #fff !important;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+.site-nav .nav-cta:hover {
+  filter: brightness(1.08);
+  color: #fff;
+}
+
+@media (max-width: 600px) {
+  .site-header .inner {
+    min-height: auto;
+    padding: 10px 0;
+  }
+
+  .site-header .logo img {
+    height: clamp(48px, 14vw, 64px);
+  }
+
+  .site-nav a {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+}
+
+
+/* Desk Card*/
+.desk-card {
     display: flex;
     background-color: white;
     max-width: 900px;
-    margin: -80px auto 40px; /* Negative top margin pulls it up over the blue */
+    margin: -80px auto 40px; 
     padding: 40px 50px;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
@@ -99,88 +170,98 @@ nav a:hover { /* for a link inside a nav tag when hovering over it */
     gap: 30px;
 }
 
-.desk-text { /* style the text by using flex growth */
+.desk-text {
     flex: 1;
 }
 
-.desk-text h2 {/* header for the desk card */
+.desk-text h2 {
     color: #1e293b;
     font-size: 2.5rem;
     margin-top: 0;
     margin-bottom: 15px;
 }
 
-.desk-image {/* positioning the image inside the card */
+.desk-image {
     flex: 1;
     text-align: center;
 }
 
-.desk-image img { /**/
+.desk-image img {
     max-width: 100%;
     height: auto;
 }
-/* End Of desk Section */
 
 
 /* Features Section */
-.features { /* for the three icons in the index page */
+.features {
     display: flex;
     max-width: 1000px;
-    margin: 0 auto 60px;
+    margin: 40px auto 80px;
     justify-content: space-between;
     gap: 30px;
     padding: 0 40px;
+    position: relative;
+    z-index: 5;
 }
 
-
-.feature-box { /* each feature has a box */
+.feature-box {
     flex: 1;
     text-align: center;
+    background: white;      
+    padding: 30px 20px;      
+    border-radius: 12px;      
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+    transition: transform 0.3s ease;
 }
 
-.feature-box img { /* the small icon images displayed for the feature */
+.feature-box:hover {
+    transform: translateY(-10px); /* Makes them pop when hovered */
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.feature-box img {
     height: 60px;
     margin-bottom: 15px;
 }
 
-.feature-box h3 { /* the specific heading for the feature box */
-    font-size: 1rem;
+.feature-box h3 {
+    font-size: 1.1rem;
     color: #1e293b;
     margin-bottom: 10px;
     letter-spacing: 0.5px;
+    text-transform: uppercase; 
 }
 
-.feature-box p { /* the paragraph inside the feature box */
+.feature-box p {
     font-size: 0.9rem;
     color: #64748b;
-    line-height: 1.5;
+    line-height: 1.6;
+    margin-top: 0; 
 }
-/* End Of Features Section */
-
 
 
 /* --- Styles from General CSS block --- */
 
 /* HEADINGS */
-h1, h2, h3 { /* override the headings with additional features */
+h1, h2, h3 {
     text-align: center;
     color: #2c3e50;
 }
 
-.banner { /* the banner displayed above for the login and register page */
+.banner {
     display: block;
     width: 100%; 
     max-width: 100%; 
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.container { /* content container */
+.container {
     width: 80%;
     margin: auto;
     padding: 20px;
 }
 
-form { /* forms */
+form {
     background: white;
     padding: 20px;
     border-radius: 8px;
@@ -189,8 +270,7 @@ form { /* forms */
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-
-.input-format { /* modify the way input components are displayed */
+.input-format {
     width: 100%;
     padding: 10px;
     margin-top: 5px;
@@ -198,10 +278,9 @@ form { /* forms */
     border-radius: 5px;
     border: 1px solid #ccc;
     box-sizing: border-box;
-    
 }
 
-button { /* button for the form */
+button {
     width: 100%;
     padding: 10px;
     margin-top: 5px;
@@ -215,30 +294,29 @@ button { /* button for the form */
     cursor: pointer;
 }
 
-button:hover {  /* button for the form when hovering over it */
+button:hover {
     background-color: #2980b9;
 }
 
-a { /* styling links */
+a {
     text-decoration: none;
     color: #3498db;
     font-weight: bold;
 }
 
-a:hover { /* links when hovered over */
+a:hover {
     text-decoration: underline;
 }
 
 /* LISTS (courses page) */
-
-ul { /* overriding the unordered list tag to style courses */
+ul {
     list-style: none;
     padding: 0;
     width: 60%;
     margin: auto;
 }
 
-li { /* styling list item */
+li {
     background: white;
     padding: 15px;
     margin-bottom: 10px;
@@ -247,53 +325,53 @@ li { /* styling list item */
 }
 
 /* DASHBOARD */
-.content { /* styling the front dashboard page */
+.content {
     width: 80%;
     margin: auto;
     padding: 20px;
     padding-bottom: 100px;
 }
 
-.overview { /* styling the front dashboard page */
+.overview {
     display: flex;
     gap: 20px;
     justify-content: center;
 }
 
-.card { /* styling the three cards displayed in the front dashboard page */
+.card {
     background: white;
     padding: 20px;
     border-radius: 8px;
     width: 200px;
     text-align: center;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease-out; /* Lifts the card up slightly */
+    transition: transform 0.3s ease-out;
 }
 
-.card:hover { /* styling the cards when hovered over */
-    transform: translateY(-5px); /* lifts the card up slightly when hovering the cursor over the card */
+.card:hover {
+    transform: translateY(-5px);
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
-.buttons { /* additional back / cancel / add buttons */
+.buttons {
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
     justify-content: center;
 }
 
-.buttons a { /* the buttons including a link to them */
+.buttons a {
     background: #3498db;
     color: white;
     padding: 12px 18px;
     border-radius: 6px;
 }
 
-.buttons a:hover { /* the buttons including a link to them when hovered over */
+.buttons a:hover {
     background: #2980b9;
 }
 
-.deadline, .studyPlan { /* styling them in the dashboard page */
+.deadline, .studyPlan {
     background: white;
     padding: 15px;
     margin-top: 10px;
@@ -355,7 +433,7 @@ th {
 }
 
 .auth-top img {
-    height: 60px;
+    height: 150px;
     width: auto;
 }
 
@@ -477,27 +555,25 @@ th {
     width: 100%;
 }
 
+
 /* FOOTER */
 footer {
-    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 45%, #312e81 100%) !important;
-    color: #94a3b8 !important;
-    text-align: center !important;
-    padding: 20px 19px !important;
-    font-size: 0.875rem !important;
-    width: auto !important;       
-    display: block !important;  
-    box-sizing: border-box !important; 
-    overflow: hidden !important;
-    
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 45%, #312e81 100%);
+    color: #94a3b8;
+    text-align: center;
+    padding: 12px 19px;
+    font-size: 0.875rem;
+    box-sizing: border-box;
+    margin-top: auto;
 }
 
 footer a {
-    color: #cbd5e1 !important;
-    font-weight: 500 !important;
-    text-decoration: none !important;
+    color: #cbd5e1;
+    font-weight: 500;
+    text-decoration: none;
 }
 
 footer a:hover {
-    color: white !important;
-    text-decoration: underline !important;
+    color: white;
+    text-decoration: underline;
 }
