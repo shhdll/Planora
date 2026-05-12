@@ -3,57 +3,49 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Planora - Login</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body class="page-auth">
 
-    <a href="index.html">
-        <img src="images/header.png" alt="Planora Header" class="banner">
-    </a>
+    <div class="auth-top">
+        <a href="index.html"><img src="images/planora_logo.png" alt="Planora"></a>
+    </div>
 
-    <div class="container">
-        <h1>Welcome Back!</h1>
-        <h2>Log In</h2>
+    <div class="auth-wrap">
+        <div class="auth-card">
+            <h1>Welcome back</h1>
+            <p class="subtitle">Log in to your study workspace</p>
 
-        <form id="login-form">
-            <br>
-            <label>Email</label><br>
-            <input id="login-email" class="input-format" type="email"
-                placeholder="example@email.com" required><br><br>
+            <form id="login-form">
+                <label for="login-email">Email</label>
+                <input id="login-email" class="input-format" type="email" placeholder="you@university.edu" required>
 
-            <label>Password</label><br>
-            <input id="login-password" class="input-format" type="password"
-                placeholder="*******" required><br><br>
+                <label for="login-password">Password</label>
+                <input id="login-password" class="input-format" type="password" placeholder="••••••••" required>
 
-            <div>
-                <a href="reset-password.html">Forgot Password?</a>
+                <p style="margin: 0 0 8px;"><a href="reset-password.html">Forgot password?</a></p>
+
+                <button type="submit">Log in</button>
+            </form>
+
+            <div class="auth-footer">
+                New here? <a href="register.html">Create an account</a><br>
+                <a href="index.html">Back to home</a>
             </div>
-            <br>
-
-            <button type="submit">Log In</button>
-        </form>
+        </div>
     </div>
 
-    <div class="container">
-        <p>
-            Don't have an account? <a href="register.html">Register</a> <br>
-            Return <a href="index.html">Home</a>
-        </p>
-    </div>
-
-    <footer>
-        <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
+    <footer class="site-footer">
+        <p>&copy; 2026 Planora. All rights reserved. · <a href="mailto:support@planora.com">support@planora.com</a></p>
     </footer>
 
-    <script src="js/utils.js"></script>
-    <script src="js/auth.js"></script>
+    <script src="JS/utils.js"></script>
+    <script src="JS/auth.js"></script>
     <script>
-        // If already logged in, skip login page
         Session.redirectIfLoggedIn();
-
-        // Attach form handler
         document.getElementById("login-form").addEventListener("submit", handleLogin);
     </script>
 

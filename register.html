@@ -3,61 +3,53 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Planora - Register</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body class="page-auth">
 
-    <a href="index.html">
-        <img src="images/header.png" alt="Planora Header" class="banner">
-    </a>
-
-    <h1>Create An Account</h1>
-
-    <div class="container">
-        <form id="register-form">
-
-            <label>Full Name</label><br>
-            <input id="reg-name" class="input-format" type="text"
-                placeholder="Muneerah Mansour" required><br><br>
-
-            <label>Email</label><br>
-            <input id="reg-email" class="input-format" type="email"
-                placeholder="example@email.com" required><br><br>
-
-            <label>Password</label><br>
-            <input id="reg-password" class="input-format" type="password"
-                placeholder="At least 6 characters" required><br><br>
-
-            <label>Confirm Password</label><br>
-            <input id="reg-confirm" class="input-format" type="password"
-                placeholder="Re-enter your password" required><br><br>
-
-            <button type="submit">Register</button>
-
-        </form>
+    <div class="auth-top">
+        <a href="index.html"><img src="images/planora_logo.png" alt="Planora"></a>
     </div>
 
-    <div class="container">
-        <p>
-            Already have an account?
-            <a href="login.html">Login</a> <br><br>
-            Return <a href="index.html">Home</a>
-        </p>
+    <div class="auth-wrap">
+        <div class="auth-card">
+            <h1>Create your account</h1>
+            <p class="subtitle">Free workspace for your semester</p>
+
+            <form id="register-form">
+                <label for="reg-name">Full name</label>
+                <input id="reg-name" class="input-format" type="text" placeholder="Alex Rivera" required>
+
+                <label for="reg-email">Email</label>
+                <input id="reg-email" class="input-format" type="email" placeholder="you@university.edu" required>
+
+                <label for="reg-password">Password</label>
+                <input id="reg-password" class="input-format" type="password" placeholder="At least 6 characters" required>
+
+                <label for="reg-confirm">Confirm password</label>
+                <input id="reg-confirm" class="input-format" type="password" placeholder="Re-enter password" required>
+
+                <button type="submit">Register</button>
+            </form>
+
+            <div class="auth-footer">
+                Already have an account? <a href="login.html">Log in</a><br>
+                <a href="index.html">Back to home</a>
+            </div>
+        </div>
     </div>
 
-    <footer>
-        <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
+    <footer class="site-footer">
+        <p>&copy; 2026 Planora. All rights reserved. · <a href="mailto:support@planora.com">support@planora.com</a></p>
     </footer>
 
-    <script src="js/utils.js"></script>
-    <script src="js/auth.js"></script>
+    <script src="JS/utils.js"></script>
+    <script src="JS/auth.js"></script>
     <script>
-        // If already logged in, skip registration
         Session.redirectIfLoggedIn();
-
-        // Attach form handler
         document.getElementById("register-form").addEventListener("submit", handleRegister);
     </script>
 
