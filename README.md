@@ -8,47 +8,63 @@
 
 ## Project Overview
 
-Planora is a web application that helps students plan, organize, and track their study activities. It generates personalized study schedules, monitors progress, and adapts plans using rule-based logic.
+Planora is a web application designed to help students organize and manage their study schedules more effectively. The system allows users to create personalized study plans, track progress, manage deadlines, and stay consistent with their academic goals.
 
 ---
 
 ## Features
 
-- Create an account and securely log in/out  
-- Add, edit, and remove courses  
-- Enter assignment deadlines and exam dates  
-- Define weekly availability for study sessions  
-- Automatically generate weekly study plans  
-- Track completed or missed study sessions  
-- View statistics and progress trends  
-- Receive reminders for upcoming sessions and deadlines  
+- User account registration and authentication
+- Add, edit, and remove courses
+- Manage assignments and exam deadlines
+- Set weekly study availability
+- Generate personalized weekly study plans
+- Track completed and missed study sessions
+- View study progress and statistics
+- Receive reminders for upcoming tasks and sessions
 
 ---
 
-## Prerequisites
+## Live Demo
 
-Before running this project, install the following:
+```txt
+https://planora-f2a2b.web.app
+```
 
-| Requirement | Version | Download |
-|---|---|---|
-| Node.js | v14+ | https://nodejs.org/ |
-| npm | Included with Node.js | - |
-| Git | Latest | https://git-scm.com/ |
+No installation is required to use the hosted version.
 
 ---
 
-## Quick Setup
-
-### 1. Clone the Repository
+## Clone the Project
 
 ```bash
 git clone https://github.com/shhdll/Planora.git
-cd Planora/backend
+cd planora
 ```
 
 ---
 
-### 2. Install Dependencies
+## Requirements
+
+Make sure the following are installed on your machine:
+
+- Node.js
+- npm
+- Firebase CLI
+
+Check installed versions:
+
+```bash
+node -v
+npm -v
+firebase --version
+```
+
+---
+
+## Install Dependencies
+
+Install the required packages:
 
 ```bash
 npm install
@@ -56,79 +72,56 @@ npm install
 
 ---
 
-### 3. Environment Setup
+## Firebase Deployment
 
-Create a `.env` file inside the `backend` folder:
-
-```bash
-touch .env
-```
-
-Add the following variables:
-
-```env
-PORT=5000
-MONGO_URI='..'
-JWT_SECRET='..'
-```
-
----
-
-## Running the Server
-
-### Development Mode
+### 1. Login to Firebase
 
 ```bash
-npm run dev
-```
-
-### Expected Output
-
-```
-Server running on http://localhost:5000
-MongoDB connected successfully
+firebase login
 ```
 
 ---
 
-## Project Structure
+### 2. Initialize Firebase
 
+Run:
+
+```bash
+firebase init
 ```
-Planora/
-│
-├── backend/
-│   ├── models/
-│   ├── routes/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── config/
-│   ├── server.js
-│   ├── package.json
-│
-├── frontend/
-│
-└── README.md
+
+Select the following options during setup:
+
+| Setting | Value |
+|---|---|
+| Features | Hosting |
+| Project Setup | Use existing project |
+| Firebase Project | `planora-f2a2b` |
+| Public Directory | `.` |
+| Single-page app (SPA) | No |
+| GitHub automatic deploys | No |
+| Overwrite existing files | No |
+
+---
+
+### 3. Deploy the Website
+
+```bash
+firebase deploy
+```
+
+After deployment, the website will be available at:
+
+```txt
+https://planora-f2a2b.web.app
 ```
 
 ---
 
-## Tech Stack
+## Updating the Website
 
-### Frontend
-- HTML
-- CSS
-- JavaScript
+After making changes, redeploy using:
 
-### Backend
-- Node.js
-- Express.js
-
-### Database
-- MongoDB Atlas
-- Mongoose
-
-### Authentication
-- JWT (JSON Web Tokens)
-- bcryptjs
-
-
+```bash
+firebase deploy --only hosting
+```
