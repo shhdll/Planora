@@ -116,12 +116,16 @@
         function loadDashboardData() {
             try {
                 // Get courses
-                const courses = Storage.get(userKey("courses")) || [];
-                const statCourses = document.getElementById("stat-courses");
-                if (statCourses) statCourses.textContent = courses.length;
+            // Get courses
+const courses = Storage.get(userKey("courses")) || [];
+const statCourses = document.getElementById("stat-courses");
+
+if (statCourses) {
+    statCourses.textContent = courses.length;
+}
 
                 // Get deadlines
-                const allDeadlines = Storage.get(userKey("deadlines")) || [];
+const allDeadlines = Deadline.getAll();
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
 
@@ -207,7 +211,8 @@
             loadDashboardData();
         }
     </script>
-
+    <script src="JS/deadlines.js"></script>
+<script src="JS/reminder.js"></script>
 </body>
 
 </html>
