@@ -1,5 +1,4 @@
 // Storage Helpers 
-
 const Storage = {
   get(key) {
     try {
@@ -18,8 +17,7 @@ const Storage = {
   },
 };
 
-// Session Helpers 
-
+// Session Helpers (LocalStorage only)
 const Session = {
   // Returns the currently logged-in user, or null
   getUser() {
@@ -37,7 +35,6 @@ const Session = {
   },
 
   // Redirect to login if no active session
-  // Call this at the top of every protected page
   require() {
     if (!Session.getUser()) {
       window.location.href = "login.html";
@@ -45,7 +42,6 @@ const Session = {
   },
 
   // Redirect to dashboard if already logged in
-  // Call this on login/register pages so logged-in users skip them
   redirectIfLoggedIn() {
     if (Session.getUser()) {
       window.location.href = "dashboard.html";
@@ -54,10 +50,9 @@ const Session = {
 };
 
 // Date Helpers 
-
 const DateUtils = {
   today() {
-    return new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
+    return new Date().toISOString().split("T")[0];
   },
 
   formatDisplay(dateStr) {
@@ -75,8 +70,7 @@ const DateUtils = {
   },
 };
 
-//  Toast notification (this is used to give more time for the messages that pops up)
-
+// Toast notification
 function showToast(message, type = "success") {
   const existing = document.getElementById("planora-toast");
   if (existing) existing.remove();

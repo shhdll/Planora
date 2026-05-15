@@ -43,68 +43,22 @@
     </footer>
 
     <script src="JS/utils.js"></script>
+    <script src="JS/auth.js"></script>
     <script>
-        // API URL
-        const API_URL = 'http://localhost:5000/api';
-
-        // Check if already logged in
-        if (localStorage.getItem('authToken')) {
-            window.location.href = "dashboard.html";
+        // Check if user is already logged in
+        if (typeof Session !== 'undefined') {
+            Session.redirectIfLoggedIn();
         }
-
-        // Login function
-        async function handleLogin(event) {
-            event.preventDefault();
-
-            const email = document.getElementById("login-email").value.trim().toLowerCase();
-            const password = document.getElementById("login-password").value;
-
-            if (!email || !password) {
-                showToast("Please enter your email and password.", "error");
-                return;
+        
+        // Attach login handler
+        document.getElementById("login-form").addEventListener("submit", function(e) {
+            if (typeof handleLogin !== 'undefined') {
+                handleLogin(e);
+            } else {
+                console.error("handleLogin function not found. Make sure auth.js is loaded.");
+                e.preventDefault();
             }
-
-            // Show loading state
-            const submitBtn = event.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
-            submitBtn.textContent = "Logging in...";
-            submitBtn.disabled = true;
-
-            try {
-                const response = await fetch(`${API_URL}/auth/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email, password })
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    // Save token and user data
-                    localStorage.setItem('authToken', data.token);
-                    localStorage.setItem('currentUser', JSON.stringify(data.user));
-                    
-                    showToast(`Welcome back, ${data.user.name}!`, "success");
-
-                    setTimeout(() => {
-                        window.location.href = "dashboard.html";
-                    }, 1000);
-                } else {
-                    showToast(data.message || "Invalid email or password", "error");
-                }
-            } catch (error) {
-                console.error("Login error:", error);
-                showToast("Cannot connect to server. Make sure backend is running on port 5000", "error");
-            } finally {
-                submitBtn.textContent = originalText;
-                submitBtn.disabled = false;
-            }
-        }
-
-        // Attach event listener
-        document.getElementById("login-form").addEventListener("submit", handleLogin);
+        });
     </script>
 
 </body>
