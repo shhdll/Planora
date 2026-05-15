@@ -9,53 +9,58 @@
 <body class="page-app">
     <div class="app-shell">
         <div id="sidebar-container"></div>
-        <main class="app-main">
-            <img src="images/header.png" alt="Planora" class="banner">
-            <div class="page-header">
-                <h1>Your study statistics</h1>
-                <p>Track your study progress and stay motivated.</p>
-            </div>
+        <div class="app-content-wrap">
+            <div id="topbar-container"></div>
+            <main class="app-main">
+                <div class="page-header">
+                    <h1>Your study statistics</h1>
+                    <p>Track your study progress and stay motivated.</p>
+                </div>
 
-            <h2>Study overview</h2>
-            <table>
-                <tr><th>Statistic</th><th>Value</th></tr>
-                <tr><td class="bold">Total courses</td><td>3</td></tr>
-                <tr><td class="bold">Total study sessions</td><td>38 hours</td></tr>
-                <tr><td class="bold">Study hours this week</td><td>10 hours</td></tr>
-                <tr><td class="bold">Completed sessions</td><td>2</td></tr>
-            </table>
+                <h2>Study overview</h2>
+                <table>
+                    <tr><th>Statistic</th><th>Value</th></tr>
+                    <tr><td class="bold">Total courses</td><td>3</td></tr>
+                    <tr><td class="bold">Total study sessions</td><td>38 hours</td></tr>
+                    <tr><td class="bold">Study hours this week</td><td>10 hours</td></tr>
+                    <tr><td class="bold">Completed sessions</td><td>2</td></tr>
+                </table>
 
-            <h2>Progress trends</h2>
-            <table>
-                <tr><th>Category</th><th>Subject</th><th>Activity</th></tr>
-                <tr>
-                    <td class="bold">Most studied</td>
-                    <td>Web Applications Development (SWE381)</td>
-                    <td class="positive">+2h vs last week</td>
-                </tr>
-                <tr>
-                    <td class="bold">Least studied</td>
-                    <td>Database Systems (CS340)</td>
-                    <td class="negative">-1h vs last week</td>
-                </tr>
-                <tr>
-                    <td class="bold">Weekly goal</td>
-                    <td>85% of target reached</td>
-                    <td>On track</td>
-                </tr>
-            </table>
+                <h2>Progress trends</h2>
+                <table>
+                    <tr><th>Category</th><th>Subject</th><th>Activity</th></tr>
+                    <tr>
+                        <td class="bold">Most studied</td>
+                        <td>Web Applications Development (SWE381)</td>
+                        <td class="positive">+2h vs last week</td>
+                    </tr>
+                    <tr>
+                        <td class="bold">Least studied</td>
+                        <td>Database Systems (CS340)</td>
+                        <td class="negative">-1h vs last week</td>
+                    </tr>
+                    <tr>
+                        <td class="bold">Weekly goal</td>
+                        <td>85% of target reached</td>
+                        <td>On track</td>
+                    </tr>
+                </table>
 
-            <p style="margin-top: 24px;">Great job! Keep following your study plan to stay on track.</p>
-        </main>
+                <p style="margin-top: 24px;">Great job! Keep following your study plan to stay on track.</p>
+            </main>
+
+            <footer>
+                <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
+            </footer>
+        </div>
     </div>
-    <footer>
-        <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
-    </footer>
-    <script src="JS/sidebar.js"></script>
+
     <script src="JS/utils.js"></script>
+    <script src="JS/sidebar.js"></script>
+    <script src="JS/topbar.js"></script>
     <script src="JS/auth.js"></script>
-    <script>Session.require();</script>
     <script src="JS/config.js"></script>
     <script src="JS/AI.js"></script>
+    <script>Session.require();</script>
 </body>
 </html>

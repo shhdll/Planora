@@ -9,59 +9,64 @@
 <body class="page-app">
     <div class="app-shell">
         <div id="sidebar-container"></div>
-        <main class="app-main">
-            <img src="images/header.png" alt="Planora" class="banner">
-            <div class="page-header">
-                <h1>Your study plan</h1>
-                <p>Your study plan will appear here after you add your courses, deadlines, and availability.</p>
-            </div>
+        <div class="app-content-wrap">
+            <div id="topbar-container"></div>
+            <main class="app-main">
+                <div class="page-header">
+                    <h1>Your study plan</h1>
+                    <p>Your study plan will appear here after you add your courses, deadlines, and availability.</p>
+                </div>
 
-            <h2>Example study plan</h2>
-            <table>
-                <tr>
-                    <th>Day</th>
-                    <th>Session</th>
-                    <th>Study time</th>
-                    <th>Action</th>
-                </tr>
-                <tr>
-                    <td>Sunday</td>
-                    <td>Web Applications Development</td>
-                    <td>6:00 PM - 7:30 PM</td>
-                    <td>
-                        <input type="radio" name="status1" value="completed"> Complete
-                        <input type="radio" name="status1" value="missed"> Missed
-                    </td>
-                </tr>
-                <tr>
-                    <td>Monday</td>
-                    <td>Database Systems</td>
-                    <td>5:00 PM - 6:30 PM</td>
-                    <td>
-                        <input type="radio" name="status2" value="completed"> Complete
-                        <input type="radio" name="status2" value="missed"> Missed
-                    </td>
-                </tr>
-                <tr>
-                    <td>Tuesday</td>
-                    <td>Operating Systems</td>
-                    <td>7:00 PM - 8:30 PM</td>
-                    <td>
-                        <input type="radio" name="status3" value="completed"> Complete
-                        <input type="radio" name="status3" value="missed"> Missed
-                    </td>
-                </tr>
-            </table>
-        </main>
+                <h2>Example study plan</h2>
+                <table>
+                    <tr>
+                        <th>Day</th>
+                        <th>Session</th>
+                        <th>Study time</th>
+                        <th>Action</th>
+                    </tr>
+                    <tr>
+                        <td>Sunday</td>
+                        <td>Web Applications Development</td>
+                        <td>6:00 PM - 7:30 PM</td>
+                        <td>
+                            <input type="radio" name="status1" value="completed"> Complete
+                            <input type="radio" name="status1" value="missed"> Missed
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Monday</td>
+                        <td>Database Systems</td>
+                        <td>5:00 PM - 6:30 PM</td>
+                        <td>
+                            <input type="radio" name="status2" value="completed"> Complete
+                            <input type="radio" name="status2" value="missed"> Missed
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Tuesday</td>
+                        <td>Operating Systems</td>
+                        <td>7:00 PM - 8:30 PM</td>
+                        <td>
+                            <input type="radio" name="status3" value="completed"> Complete
+                            <input type="radio" name="status3" value="missed"> Missed
+                        </td>
+                    </tr>
+                </table>
+            </main>
+
+            <footer>
+                <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
+            </footer>
+        </div>
     </div>
-    <footer>
-        <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
-    </footer>
-    <script src="JS/sidebar.js"></script>
+
     <script src="JS/utils.js"></script>
+    <script src="JS/sidebar.js"></script>
+    <script src="JS/topbar.js"></script>
     <script src="JS/auth.js"></script>
-    <script>Session.require();</script>
     <script src="JS/config.js"></script>
     <script src="JS/AI.js"></script>
+    <script>Session.require();</script>
 </body>
 </html>

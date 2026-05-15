@@ -12,44 +12,38 @@
 
     <div class="app-shell">
         <div id="sidebar-container"></div>
+        <div class="app-content-wrap">
+            <div id="topbar-container"></div>
+            <main class="app-main">
+                <div class="page-header">
+                    <h1>Your courses</h1>
+                    <p>Manage your courses below</p>
+                </div>
 
-        <main class="app-main">
-            <img src="images/header.png" alt="Planora" class="banner">
-            <div class="page-header">
-                <h1>Your Courses</h1>
-                <p>Manage your courses below</p>
-            </div>
+                <div class="buttons">
+                    <a href="add-course.html">Add new course</a>
+                </div>
 
-            <div class="buttons">
-                <a href="add-course.html">Add new course</a>
-            </div>
+                <ul id="courses-list"></ul>
+            </main>
 
-            <ul id="courses-list"></ul>
-        </main>
+            <footer>
+                <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
+            </footer>
+        </div>
     </div>
 
-    <footer>
-        <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
-    </footer>
-
+    <script src="JS/utils.js"></script>
     <script src="JS/sidebar.js"></script>
-    <script src="js/utils.js"></script>
+    <script src="JS/topbar.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/courses.js"></script>
+    <script src="JS/config.js"></script>
+    <script src="JS/AI.js"></script>
     <script>
         Session.require();
         renderCourses();
     </script>
-    <script src="JS/config.js"></script>
-    <script src="JS/AI.js"></script>
 
 </body>
 </html>
-    <!--
-    1. Removed hardcoded static course list items (Web Applications, Database Systems)
-    2. Added id="courses-list" to <ul> so JS can target and populate it dynamically
-    3. Changed Log Out href from "index.html" to onclick="handleLogout()" for real session clearing
-    4. Added inline script: Session.require() guards the page, renderCourses() builds the list
-    5. Edit and Remove links now pass ?id= query param so JS knows which course was selected
-    6. "Add Deadline" link passes ?courseId= so the deadlines page can pre-select the course
-    -->

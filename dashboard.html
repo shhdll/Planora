@@ -13,95 +13,90 @@
     <div class="app-shell">
         <div id="sidebar-container"></div>
 
-        <main class="app-main">
-            <div class="page-header">
-                <h1 id="dashboard-greeting">Welcome!</h1>
-                <p>Your study dashboard at a glance</p>
-            </div>
+        <div class="app-content-wrap">
+            <div id="topbar-container"></div>
 
-            <!-- Overview Cards -->
-            <div class="overview">
-                <div class="card">
-                    <h3>Total courses</h3>
-                    <p id="stat-courses">0</p>
+            <main class="app-main">
+                <div class="page-header">
+                    <h1 id="dashboard-greeting">Welcome!</h1>
+                    <p>Your study dashboard at a glance</p>
                 </div>
-                <div class="card">
-                    <h3>Upcoming deadlines</h3>
-                    <p id="stat-deadlines">0</p>
-                </div>
-                <div class="card">
-                    <h3>Sessions today</h3>
-                    <p id="stat-sessions">0</p>
-                </div>
-            </div>
 
-            <h2>Quick actions</h2>
-            <div class="buttons">
-                <a href="courses.html">My courses</a>
-                <a href="deadlines.html">Deadlines</a>
-                <a href="availability.html">Availability</a>
-                <a href="study-plan.html">Study plan</a>
-                <a href="statistics.html">Statistics</a>
-            </div>
-
-            <h2>Upcoming deadlines</h2>
-            <div id="deadlines-list">
-                <div class="deadline">No upcoming deadlines yet. Add some on the Deadlines page.</div>
-            </div>
-
-            <h2>Today&rsquo;s study plan</h2>
-            <div class="studyPlan">
-                <div class="table-wrap">
-                    <table id="today-plan-table">
-                        <tr>
-                            <th>Time</th>
-                            <th>Course</th>
-                            <th>Status</th>
-                        </tr>
-                    </table>
+                <div class="overview">
+                    <div class="card">
+                        <h3>Total courses</h3>
+                        <p id="stat-courses">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Upcoming deadlines</h3>
+                        <p id="stat-deadlines">0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Sessions today</h3>
+                        <p id="stat-sessions">0</p>
+                    </div>
                 </div>
-                <p id="no-sessions-msg" style="text-align:center; color:#64748b; padding: 12px;">
-                    No study sessions today. Generate a study plan first.
-                </p>
-            </div>
-        </main>
+
+                <h2>Quick actions</h2>
+                <div class="buttons">
+                    <a href="courses.html">My courses</a>
+                    <a href="deadlines.html">Deadlines</a>
+                    <a href="availability.html">Availability</a>
+                    <a href="study-plan.html">Study plan</a>
+                    <a href="statistics.html">Statistics</a>
+                </div>
+
+                <h2>Upcoming deadlines</h2>
+                <div id="deadlines-list">
+                    <div class="deadline">No upcoming deadlines yet. Add some on the Deadlines page.</div>
+                </div>
+
+                <h2>Today&rsquo;s study plan</h2>
+                <div class="studyPlan">
+                    <div class="table-wrap">
+                        <table id="today-plan-table">
+                            <tr>
+                                <th>Time</th>
+                                <th>Course</th>
+                                <th>Status</th>
+                            </tr>
+                        </table>
+                    </div>
+                    <p id="no-sessions-msg" style="text-align:center; color:#64748b; padding: 12px;">
+                        No study sessions today. Generate a study plan first.
+                    </p>
+                </div>
+            </main>
+
+            <footer>
+                <p>&copy; 2026 Planora. All rights reserved. · <a href="mailto:support@planora.com">support@planora.com</a></p>
+            </footer>
+        </div>
     </div>
-
-    <footer class="site-footer">
-        <p>&copy; 2026 Planora. All rights reserved. · <a href="mailto:support@planora.com">support@planora.com</a></p>
-    </footer>
 
     <script src="JS/utils.js"></script>
     <script src="JS/sidebar.js"></script>
+    <script src="JS/topbar.js"></script>
+    <script src="JS/AI.js"></script>
     <script>
-        // Check if user is logged in (localStorage only)
-        // Make sure Session is defined before using it
         if (typeof Session === 'undefined') {
-            console.error("Session helper not loaded. Check utils.js path.");
             window.location.href = "login.html";
         }
-        
+
         const user = Session.getUser();
         if (!user) {
             showToast("Please log in to continue", "info");
-            setTimeout(() => {
-                window.location.href = "login.html";
-            }, 500);
+            setTimeout(() => { window.location.href = "login.html"; }, 500);
             throw new Error("User not logged in");
         }
 
-        // Display greeting
         const greetingElement = document.getElementById("dashboard-greeting");
         if (greetingElement) {
             greetingElement.innerHTML = `Welcome, ${escapeHtml(user.name)}! 👋`;
         }
 
-        // Helper function to get user-specific storage keys
-        function userKey(key) {
-            return `${user.email}_${key}`;
-        }
+        function userKey(key) { return `${user.email}_${key}`; }
 
-        // Helper function to escape HTML to prevent XSS
         function escapeHtml(str) {
             if (!str) return '';
             return str
@@ -112,31 +107,20 @@
                 .replace(/'/g, '&#39;');
         }
 
-        // Load dashboard data from localStorage
         function loadDashboardData() {
             try {
-                // Get courses
                 const courses = Storage.get(userKey("courses")) || [];
                 const statCourses = document.getElementById("stat-courses");
                 if (statCourses) statCourses.textContent = courses.length;
 
-                // Get deadlines
                 const allDeadlines = Storage.get(userKey("deadlines")) || [];
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-
                 const upcoming = allDeadlines
-                    .filter(d => {
-                        if (!d.date) return false;
-                        const days = DateUtils.daysUntil(d.date);
-                        return days >= 0;
-                    })
+                    .filter(d => d.date && DateUtils.daysUntil(d.date) >= 0)
                     .sort((a, b) => new Date(a.date) - new Date(b.date));
 
                 const statDeadlines = document.getElementById("stat-deadlines");
                 if (statDeadlines) statDeadlines.textContent = upcoming.length;
 
-                // Render deadlines
                 const deadlineContainer = document.getElementById("deadlines-list");
                 if (deadlineContainer) {
                     if (upcoming.length > 0) {
@@ -154,11 +138,10 @@
                             deadlineContainer.appendChild(div);
                         });
                     } else {
-                        deadlineContainer.innerHTML = '<div class="deadline">No upcoming deadlines yet. Add some on the Deadlines page.</div>';
+                        deadlineContainer.innerHTML = '<div class="deadline">No upcoming deadlines yet.</div>';
                     }
                 }
 
-                // Get study plan
                 const studyPlan = Storage.get(userKey("studyPlan")) || [];
                 const todayStr = DateUtils.today();
                 const todaySessions = studyPlan.filter(s => s.date === todayStr);
@@ -170,25 +153,16 @@
                 const noMsg = document.getElementById("no-sessions-msg");
 
                 if (table) {
-                    // Clear existing rows (keep header)
-                    while (table.rows.length > 1) {
-                        table.deleteRow(1);
-                    }
-
+                    while (table.rows.length > 1) table.deleteRow(1);
                     if (todaySessions.length > 0 && noMsg) {
                         noMsg.style.display = "none";
                         todaySessions.forEach(s => {
                             const row = table.insertRow();
-                            const statusColor = s.status === "completed"
-                                ? "#22c55e" : s.status === "missed"
-                                    ? "#ef4444" : "#64748b";
-
+                            const statusColor = s.status === "completed" ? "#22c55e" : s.status === "missed" ? "#ef4444" : "#64748b";
                             row.innerHTML = `
                                 <td><strong>${escapeHtml(s.startTime)} &ndash; ${escapeHtml(s.endTime)}</strong></td>
                                 <td>${escapeHtml(s.course)}</td>
-                                <td style="color:${statusColor}; font-weight:600; text-transform:capitalize;">
-                                    ${escapeHtml(s.status || "pending")}
-                                </td>`;
+                                <td style="color:${statusColor}; font-weight:600; text-transform:capitalize;">${escapeHtml(s.status || "pending")}</td>`;
                         });
                     } else if (noMsg) {
                         noMsg.style.display = "block";
@@ -200,7 +174,6 @@
             }
         }
 
-        // Load all data when page is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', loadDashboardData);
         } else {
@@ -209,5 +182,4 @@
     </script>
 
 </body>
-
 </html>

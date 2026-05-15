@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Planora - Remove Course</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -11,39 +12,38 @@
 
     <div class="app-shell">
         <div id="sidebar-container"></div>
+        <div class="app-content-wrap">
+            <div id="topbar-container"></div>
+            <main class="app-main">
+                <form id="remove-course-form">
+                    <input type="hidden" id="courseId">
 
-        <main class="app-main">
-            <img src="images/header.png" alt="Planora" class="banner">
+                    <div class="page-header">
+                        <h1>Remove course</h1>
+                        <p>Are you sure you want to remove this course?</p>
+                        <p><strong id="course-name-display"></strong></p>
+                    </div>
 
-            <form id="remove-course-form">
+                    <button type="submit"
+                        style="background-color:#c0534a; border-color:#c0534a; width:fit-content; padding:12px 18px; font-size:1rem; margin:5px auto 15px; display:block;">
+                        Yes, remove the course
+                    </button>
 
-                <input type="hidden" id="courseId">
+                    <div class="buttons">
+                        <a href="courses.html">Cancel</a>
+                    </div>
+                </form>
+            </main>
 
-                <div class="page-header">
-                    <h1>Remove Course</h1>
-                    <p>Are you sure you want to remove this course?</p>
-                    <p><strong id="course-name-display"></strong></p>
-                </div>
-
-                <button type="submit"
-                    style="background-color:#c0534a; border-color:#c0534a; width:fit-content; padding:12px 18px; font-size:1rem; margin:5px auto 15px; display:block;">
-                    Yes, Remove The Course
-                </button>
-
-                <div class="buttons">
-                    <a href="courses.html">Cancel</a>
-                </div>
-
-            </form>
-        </main>
+            <footer>
+                <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
+            </footer>
+        </div>
     </div>
 
-    <footer>
-        <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
-    </footer>
-
-    <script src="JS/sidebar.js"></script>
     <script src="JS/utils.js"></script>
+    <script src="JS/sidebar.js"></script>
+    <script src="JS/topbar.js"></script>
     <script src="JS/auth.js"></script>
     <script src="JS/courses.js"></script>
     <script src="JS/config.js"></script>

@@ -1,0 +1,50 @@
+<header class="app-topbar">
+    <div class="app-topbar__right">
+
+        <!-- Notification Bell + Dropdown -->
+        <div class="topbar-btn-wrap">
+            <button class="topbar-icon-btn" id="notif-btn" aria-label="Notifications">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                <span class="topbar-notif-badge" id="notif-badge" style="display:none">0</span>
+            </button>
+            <div class="topbar-dropdown" id="notif-dropdown">
+                <div class="topbar-dropdown__header">
+                    <span>Notifications</span>
+                </div>
+                <div class="topbar-dropdown__body" id="notif-list">
+                    <p class="topbar-dropdown__empty">No notifications yet</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Button + Dropdown -->
+        <div class="topbar-btn-wrap">
+            <button class="topbar-profile-btn" id="profile-btn">
+                <div class="topbar-avatar" id="topbar-avatar">?</div>
+                <span class="topbar-profile-name" id="topbar-name">User</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"/>
+                </svg>
+            </button>
+            <div class="topbar-dropdown" id="profile-dropdown">
+                <div class="topbar-dropdown__header">
+                    <div class="topbar-dropdown__avatar" id="dropdown-avatar">?</div>
+                    <div>
+                        <p class="topbar-dropdown__name" id="dropdown-name">User</p>
+                        <p class="topbar-dropdown__email" id="dropdown-email">email@example.com</p>
+                    </div>
+                </div>
+                <div class="topbar-dropdown__body">
+                    <a href="#" class="topbar-dropdown__item" onclick="handleLogout(); return false;">
+                        <img src="images/logout-icon.png" alt="" style="width:14px; height:14px; vertical-align:-2px; margin-right:8px;">
+                        Log out
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</header>
