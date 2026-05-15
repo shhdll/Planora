@@ -8,29 +8,38 @@ class Reminder {
   // Check upcoming deadlines
   static async checkDeadlines() {
 
+<<<<<<< HEAD
     // get all deadlines from Firestore (using Deadline class from deadlines.js)
     const deadlines = await Deadline.getAll();
+=======
+    const deadlines = Deadline.getAll();
+>>>>>>> b36a63a79e13c265943b72821b2b78dada77b527
 
-    // current date/time
     const now = new Date();
 
     deadlines.forEach((deadline) => {
 
-      // ignore completed deadlines
-      if (deadline.completed) return;
+        if (deadline.completed) return;
 
-      // deadline date
-      const dueDate = new Date(deadline.dueDate);
+        if (!deadline.dueDate) return;
 
+<<<<<<< HEAD
       // difference in milliseconds
       const diff = dueDate - now;
 
       // convert to hours
       const hoursLeft = diff / (1000 * 60 * 60);
+=======
+        const dueDate =
+            new Date(deadline.dueDate);
 
-      // if deadline is within 24 hours
-      if (hoursLeft <= 24 && hoursLeft > 0) {
+        if (isNaN(dueDate.getTime())) return;
+>>>>>>> b36a63a79e13c265943b72821b2b78dada77b527
 
+        const diff =
+            dueDate.getTime() - now.getTime();
+
+<<<<<<< HEAD
         // toast message (using warning style)
         showToast(
           `Reminder: ${deadline.title} is due soon!`,
@@ -42,8 +51,24 @@ class Reminder {
           `${deadline.title} is due soon! Course: ${deadline.course}`
         );
       }
+=======
+        const hoursLeft =
+            diff / (1000 * 60 * 60);
+
+        if (hoursLeft <= 24 && hoursLeft > 0) {
+
+            showToast(
+                `Reminder: ${deadline.title} is due soon!`,
+                "warning"
+            );
+
+            Reminder.sendBrowserNotification(
+                `${deadline.title} is due soon!`
+            );
+        }
+>>>>>>> b36a63a79e13c265943b72821b2b78dada77b527
     });
-  }
+}
 
   // Browser notification
   static sendBrowserNotification(message) {
