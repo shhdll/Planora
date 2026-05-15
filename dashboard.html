@@ -3,102 +3,91 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Planora - Dashboard</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
+<body class="page-app">
 
-    <a href="index.html">
-        <img src="images/header.png" alt="Planora Header" class="banner">
-    </a>
+    <div class="app-shell">
+        <div id="sidebar-container"></div>
 
-    <div class="content">
-
-        <!-- Greeting: filled by JS -->
-        <h2 id="dashboard-greeting">Welcome!</h2>
-
-        <!-- Overview Cards -->
-        <div class="overview">
-
-            <div class="card">
-                <h3>Total Courses</h3>
-                <p id="stat-courses">0</p>
+        <main class="app-main">
+            <div class="page-header">
+                <h1 id="dashboard-greeting">Welcome!</h1>
+                <p>Your study dashboard at a glance</p>
             </div>
 
-            <div class="card">
-                <h3>Upcoming Deadlines</h3>
-                <p id="stat-deadlines">0</p>
+            <!-- Overview Cards -->
+            <div class="overview">
+                <div class="card">
+                    <h3>Total courses</h3>
+                    <p id="stat-courses">0</p>
+                </div>
+                <div class="card">
+                    <h3>Upcoming deadlines</h3>
+                    <p id="stat-deadlines">0</p>
+                </div>
+                <div class="card">
+                    <h3>Sessions today</h3>
+                    <p id="stat-sessions">0</p>
+                </div>
             </div>
 
-            <div class="card">
-                <h3>Sessions This Week</h3>
-                <p id="stat-sessions">0</p>
+            <h2>Quick actions</h2>
+            <div class="buttons">
+                <a href="courses.html">My courses</a>
+                <a href="deadlines.html">Deadlines</a>
+                <a href="availability.html">Availability</a>
+                <a href="study-plan.html">Study plan</a>
+                <a href="statistics.html">Statistics</a>
             </div>
 
-        </div>
+            <h2>Upcoming deadlines</h2>
+            <div id="deadlines-list">
+                <div class="deadline">No upcoming deadlines yet. Add some on the Deadlines page.</div>
+            </div>
 
-        <h2>Quick Actions</h2>
-
-        <div class="buttons">
-            <a href="courses.html">My Courses</a>
-            <a href="deadlines.html">Add Deadlines</a>
-            <a href="availability.html">Set Availability</a>
-            <a href="study-plan.html">Study Plan</a>
-            <a href="statistics.html">Statistics</a>
-            <a href="#" onclick="handleLogout()">Logout</a>
-        </div>
-
-        <h2>Upcoming Deadlines</h2>
-        <div id="deadlines-list">
-            <div class="deadline">No upcoming deadlines. Add some in the Deadlines page.</div>
-        </div>
-
-        <br>
-
-        <h2>Today's Study Plan</h2>
-        <div class="studyPlan" style="margin-top: 0;">
-            <table style="width: 100%;" id="today-plan-table">
-                <tr>
-                    <th>Time</th>
-                    <th>Course</th>
-                    <th>Status</th>
-                </tr>
-            </table>
-            <p id="no-sessions-msg" style="text-align:center; color:#64748b; padding: 10px;">
-                No study sessions today. Generate a study plan first.
-            </p>
-        </div>
-
+            <h2>Today&rsquo;s study plan</h2>
+            <div class="studyPlan">
+                <div class="table-wrap">
+                    <table id="today-plan-table">
+                        <tr>
+                            <th>Time</th>
+                            <th>Course</th>
+                            <th>Status</th>
+                        </tr>
+                    </table>
+                </div>
+                <p id="no-sessions-msg" style="text-align:center; color:#64748b; padding: 12px;">
+                    No study sessions today. Generate a study plan first.
+                </p>
+            </div>
+        </main>
     </div>
 
-    <footer>
-        <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
+    <footer class="site-footer">
+        <p>&copy; 2026 Planora. All rights reserved. · <a href="mailto:support@planora.com">support@planora.com</a></p>
     </footer>
 
-    <script src="js/utils.js"></script>
-    <script src="js/auth.js"></script>
+    <script src="JS/sidebar.js"></script>
+    <script src="JS/utils.js"></script>
+    <script src="JS/auth.js"></script>
     <script>
-
-        // redirect to login if not authenticated 
         Session.require();
 
         const user = Session.getUser();
 
-        // Greeting 
-        document.getElementById("dashboard-greeting").textContent =
-            `Welcome, ${user.name}! 👋`;
+        document.getElementById("dashboard-greeting").innerHTML = `Welcome, ${user.name}! 👋`;
 
-        // get data scoped to this user
         function userKey(key) {
             return `${user.id}_${key}`;
         }
 
-        // Courses count 
         const courses = Storage.get(userKey("courses")) || [];
         document.getElementById("stat-courses").textContent = courses.length;
 
-        // Upcoming deadlines (next 7 days) 
         const allDeadlines = Storage.get(userKey("deadlines")) || [];
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -112,7 +101,6 @@
 
         document.getElementById("stat-deadlines").textContent = upcoming.length;
 
-        // Render deadline list 
         const deadlineContainer = document.getElementById("deadlines-list");
         if (upcoming.length > 0) {
             deadlineContainer.innerHTML = "";
@@ -122,7 +110,7 @@
                 const div = document.createElement("div");
                 div.className = "deadline";
                 div.innerHTML = `
-                    <span style="${urgency}">${d.title} — ${DateUtils.formatDisplay(d.date)}</span>
+                    <span style="${urgency}">${d.title} &mdash; ${DateUtils.formatDisplay(d.date)}</span>
                     <span style="float:right; color:#64748b; font-size:0.85rem;">
                         ${days === 0 ? "Today!" : days === 1 ? "Tomorrow" : `In ${days} days`}
                     </span>`;
@@ -130,15 +118,18 @@
             });
         }
 
-        // Today's study sessions 
         const studyPlan = Storage.get(userKey("studyPlan")) || [];
-        const todayStr  = DateUtils.today();
+        const todayStr = DateUtils.today();
         const todaySessions = studyPlan.filter(s => s.date === todayStr);
 
         document.getElementById("stat-sessions").textContent = todaySessions.length;
 
-        const table  = document.getElementById("today-plan-table");
-        const noMsg  = document.getElementById("no-sessions-msg");
+        const table = document.getElementById("today-plan-table");
+        const noMsg = document.getElementById("no-sessions-msg");
+
+        while (table.rows.length > 1) {
+            table.deleteRow(1);
+        }
 
         if (todaySessions.length > 0) {
             noMsg.style.display = "none";
@@ -146,22 +137,27 @@
                 const row = table.insertRow();
                 const statusColor = s.status === "completed"
                     ? "#22c55e" : s.status === "missed"
-                    ? "#ef4444" : "#64748b";
+                        ? "#ef4444" : "#64748b";
 
                 row.innerHTML = `
-                    <td><strong>${s.startTime} – ${s.endTime}</strong></td>
+                    <td><strong>${s.startTime} &ndash; ${s.endTime}</strong></td>
                     <td>${s.course}</td>
                     <td style="color:${statusColor}; font-weight:600; text-transform:capitalize;">
                         ${s.status || "pending"}
                     </td>`;
             });
+        } else {
+            noMsg.style.display = "block";
         }
     </script>
     <script src="JS/config.js"></script>
     <script src="JS/AI.js"></script>
 
+</body>
 
-    <!-- 
+</html>
+
+<!-- 
     1. Removed all hardcoded static data (the fake "4 courses", "2 deadlines", "6 sessions", fake timetable rows)
     2. Added id attributes to the three stat cards: stat-courses, stat-deadlines, stat-sessions
     3. Added id="dashboard-greeting" to the welcome heading
@@ -179,6 +175,3 @@
     14. Reads today's study sessions from the plan and renders them in the table
     15. Shows a "no sessions" message if the plan is empty
     -->
-
-</body>
-</html>

@@ -1,68 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Planora - Availability</title>
     <link rel="stylesheet" href="style.css">
 </head>
+<body class="page-app">
+    <div class="app-shell">
+        <div id="sidebar-container"></div>
+        <main class="app-main">
+            <div class="page-header">
+                <h1>Set your weekly availability</h1>
+                <p>Let Planora know when you're free to study.</p>
+            </div>
 
-<body>
-    <div class="header-func">
-        <header> 
-            <div class="logo">
-                <a href="index.html"><img src="images/planora_logo.png" alt="Smart Study Planner Logo"></a>
-            </div> 
-            
-            <nav>
-                <a href="index.html">Home</a> | 
-                <a href="dashboard.html">DashBoard</a> | 
-                <a href="courses.html">Courses</a> | 
-                <a href="deadlines.html">Deadlines</a> | 
-                <a href="availability.html">Availability</a> |
-                <a href="study-plan.html">Study Plan</a> |
-                <a href="statistics.html">Statistics</a> |
-                <a href="index.html" class="btn-create">Log Out</a>
-            </nav> 
-        </header>
+            <form onsubmit="alert('Availability saved successfully!'); window.location.href='dashboard.html'; return false;">
+                <label>Select available days</label><br><br>
+                <input type="checkbox" name="days" value="sun"> Sunday
+                <input type="checkbox" name="days" value="mon"> Monday
+                <input type="checkbox" name="days" value="tue"> Tuesday
+                <input type="checkbox" name="days" value="wed"> Wednesday
+                <input type="checkbox" name="days" value="thu"> Thursday
+                <input type="checkbox" name="days" value="fri"> Friday
+                <input type="checkbox" name="days" value="sat"> Saturday
+                <br><br>
+                <label>Start time</label>
+                <input class="input-format" type="time" required>
+                <label>End time</label>
+                <input class="input-format" type="time" required>
+                <button type="submit">Save availability</button>
+            </form>
+        </main>
     </div>
-
-    <div>
-        <h1>Set Your Weekly Study Availability</h1>
-        <p>Let Planora know when you are available to study, so we can help you create a better study plan.</p>
-    </div>
-
-    <form onsubmit="alert('Availability saved successfully!'); window.location.href='dashboard.html'; return false;">
-        <label>Select Available Days: </label><br><br>
-        <input type="checkbox" name="days" value="sun">Sunday  
-        <input type="checkbox" name="days" value="mon">Monday  
-        <input type="checkbox" name="days" value="tue">Tuesday  
-        <input type="checkbox" name="days" value="wed">Wednesday  
-        <input type="checkbox" name="days" value="thu">Thursday  
-        <input type="checkbox" name="days" value="fri">Friday  
-        <input type="checkbox" name="days" value="sat">Saturday  
-
-        <br><br><br>
-
-        <label>Start Time</label><br>
-        <input class="input-format" type="time" required>
-
-        <br><br>
-
-        <label>End Time</label><br>
-        <input class="input-format" type="time" required>
-
-        <br><br>
-
-        <button class="input-format" type="submit">Save Availability</button>
-
-        <br>
-
-        <a href="dashboard.html">Back</a>
-    </form>
-
     <footer>
-        <p>&copy 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
+        <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
     </footer>
+    <script src="JS/sidebar.js"></script>
+    <script src="JS/utils.js"></script>
+    <script src="JS/auth.js"></script>
+    <script>Session.require();</script>
+    <script src="JS/config.js"></script>
+    <script src="JS/AI.js"></script>
 </body>
 </html>

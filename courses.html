@@ -3,48 +3,35 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Planora - Courses</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-    <div class="header-func">
-        <header>
-            <div class="logo">
-                <a href="index.html"><img src="images/planora_logo.png" alt="Smart Study Planner Logo"></a>
+<body class="page-app">
+
+    <div class="app-shell">
+        <div id="sidebar-container"></div>
+
+        <main class="app-main">
+            <div class="page-header">
+                <h1>Your Courses</h1>
+                <p>Manage your courses below</p>
             </div>
 
-            <nav>
-                <a href="index.html">Home</a> |
-                <a href="dashboard.html">Dashboard</a> |
-                <a href="courses.html">Courses</a> |
-                <a href="deadlines.html">Deadlines</a> |
-                <a href="availability.html">Availability</a> |
-                <a href="study-plan.html">Study Plan</a> |
-                <a href="statistics.html">Statistics</a> |
-                <a href="#" onclick="handleLogout()">Log Out</a>
-            </nav>
-        </header>
-    </div>
+            <div class="buttons">
+                <a href="add-course.html">Add new course</a>
+            </div>
 
-    <h1>Your Courses</h1>
-
-    <ul id="courses-list"></ul>
-
-    <br>
-
-    <div class="buttons">
-        <p>
-            <a href="add-course.html">Add New Course</a>
-            <br><br><br>
-            <a href="dashboard.html">Back</a>
-        </p>
+            <ul id="courses-list"></ul>
+        </main>
     </div>
 
     <footer>
         <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
     </footer>
 
+    <script src="JS/sidebar.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/courses.js"></script>
@@ -55,7 +42,8 @@
     <script src="JS/config.js"></script>
     <script src="JS/AI.js"></script>
 
-
+</body>
+</html>
     <!--
     1. Removed hardcoded static course list items (Web Applications, Database Systems)
     2. Added id="courses-list" to <ul> so JS can target and populate it dynamically
@@ -64,6 +52,3 @@
     5. Edit and Remove links now pass ?id= query param so JS knows which course was selected
     6. "Add Deadline" link passes ?courseId= so the deadlines page can pre-select the course
     -->
-
-</body>
-</html>

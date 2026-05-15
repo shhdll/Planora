@@ -1,92 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Planora - Study Plan</title>
     <link rel="stylesheet" href="style.css">
 </head>
+<body class="page-app">
+    <div class="app-shell">
+        <div id="sidebar-container"></div>
+        <main class="app-main">
+            <div class="page-header">
+                <h1>Your study plan</h1>
+                <p>Your study plan will appear here after you add your courses, deadlines, and availability.</p>
+            </div>
 
-<body>
-    <div class="header-func">
-        <header> 
-            <div class="logo">
-                <a href="index.html"><img src="images/planora_logo.png" alt="Smart Study Planner Logo"></a>
-            </div> 
-            
-            <nav>
-                <a href="index.html">Home</a> | 
-                <a href="dashboard.html">DashBoard</a> | 
-                <a href="courses.html">Courses</a> | 
-                <a href="deadlines.html">Deadlines</a> | 
-                <a href="availability.html">Availability</a> |
-                <a href="study-plan.html">Study Plan</a> |
-                <a href="statistics.html">Statistics</a> |
-                <a href="index.html" class="btn-create">Log Out</a>
-            </nav> 
-        </header>
+            <h2>Example study plan</h2>
+            <table>
+                <tr>
+                    <th>Day</th>
+                    <th>Session</th>
+                    <th>Study time</th>
+                    <th>Action</th>
+                </tr>
+                <tr>
+                    <td>Sunday</td>
+                    <td>Web Applications Development</td>
+                    <td>6:00 PM - 7:30 PM</td>
+                    <td>
+                        <input type="radio" name="status1" value="completed"> Complete
+                        <input type="radio" name="status1" value="missed"> Missed
+                    </td>
+                </tr>
+                <tr>
+                    <td>Monday</td>
+                    <td>Database Systems</td>
+                    <td>5:00 PM - 6:30 PM</td>
+                    <td>
+                        <input type="radio" name="status2" value="completed"> Complete
+                        <input type="radio" name="status2" value="missed"> Missed
+                    </td>
+                </tr>
+                <tr>
+                    <td>Tuesday</td>
+                    <td>Operating Systems</td>
+                    <td>7:00 PM - 8:30 PM</td>
+                    <td>
+                        <input type="radio" name="status3" value="completed"> Complete
+                        <input type="radio" name="status3" value="missed"> Missed
+                    </td>
+                </tr>
+            </table>
+        </main>
     </div>
-
-    <div>
-        <h1>Your Study Plan</h1>
-        <br>
-        <p>No Study Plan Yet, your study plan will appear here after you add your courses, deadlines, and availability.</p><br>
-    </div>
-
-    <hr>
-
-    <h2>Example Study Plan</h2>
-    <table>
-        <tr>
-            <th>Day</th>
-            <th>Session</th>
-            <th>Study Time</th>
-            <th>Action</th>
-        </tr>
-
-        <tr>
-            <td>Sunday</td>
-            <td>Web Applications Development</td>
-            <td>6:00 PM - 7:30 PM</td>
-
-            <td>
-                <input type="radio" name="status1" value="completed"> Complete
-                <input type="radio" name="status1" value="missed"> Missed
-            </td>
-        </tr>
-
-        <tr>
-            <td>Monday</td>
-            <td>Database Systems</td>
-            <td>5:00 PM - 6:30 PM</td>
-            <td>
-                <input type="radio" name="status2" value="completed"> Complete
-                <input type="radio" name="status2" value="missed"> Missed
-            </td>
-        </tr>
-
-        <tr>
-            <td>Tuesday</td>
-            <td>Operating Systems</td>
-            <td>7:00 PM - 8:30 PM</td>
-            <td>
-                <input type="radio" name="status3" value="completed"> Complete
-                <input type="radio" name="status3" value="missed"> Missed
-            </td>
-        </tr>
-    </table>
-
-    <br><br>
-    <hr>
-    <br><br>
-
-    <div class="buttons">
-        <a href="dashboard.html">Back</a>
-    </div>
-
     <footer>
         <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
     </footer>
-
+    <script src="JS/sidebar.js"></script>
+    <script src="JS/utils.js"></script>
+    <script src="JS/auth.js"></script>
+    <script>Session.require();</script>
+    <script src="JS/config.js"></script>
+    <script src="JS/AI.js"></script>
 </body>
 </html>

@@ -632,7 +632,243 @@ th {
     width: 100%;
 }
 
+/* --- App Shell & Sidebar Styles --- */
 
+/* CSS Variables for Sidebar */
+:root {
+    --sidebar-bg: linear-gradient(135deg, #0f172a 0%, #1e1b4b 45%, #312e81 100%);
+    --sidebar-border: rgba(148, 163, 184, 0.15);
+    --sidebar-text: #cbd5e1;
+    --sidebar-text-hover: #ffffff;
+    --radius-md: 10px;
+    --color-text: #1e293b;
+    --color-muted: #64748b;
+}
+
+/* Page App Container */
+.page-app {
+    min-height: 100vh;
+    background: #f9fafc;
+}
+
+.app-shell {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.app-sidebar {
+    width: 288px;
+    flex-shrink: 0;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--sidebar-border);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px 16px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+
+/* Brand/Logo Section */
+.app-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 12px 24px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--sidebar-border);
+    text-decoration: none;
+}
+
+.app-brand:hover {
+    opacity: 0.92;
+    text-decoration: none;
+}
+
+.app-brand-logo {
+    height: 170px;
+    width: auto;
+    border-radius: 10px;
+}
+
+/* Navigation */
+.app-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.app-nav__link {
+    display: block;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    color: var(--sidebar-text);
+    font-weight: 500;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.app-nav__link:hover {
+    color: var(--sidebar-text-hover);
+    background: rgba(255, 255, 255, 0.06);
+    text-decoration: none;
+}
+
+.app-nav__link[aria-current="page"] {
+    color: #fff;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.35), rgba(34, 211, 238, 0.12));
+    border: 1px solid rgba(148, 163, 184, 0.15);
+}
+
+/* Sidebar Footer */
+.app-sidebar__footer {
+    padding-top: 16px;
+    border-top: 1px solid var(--sidebar-border);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.app-nav__link--muted {
+    font-size: 1.1rem;
+    opacity: 0.75;
+}
+#sidebar-container {
+    width: 288px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 45%, #312e81 100%);
+}
+
+/* Main Content Area */
+.app-main {
+    margin-left: 288px;
+    flex: 1;
+    min-width: 0;
+    padding: clamp(20px, 3vw, 36px);
+    max-width: 1100px;
+    background: #f9fafc;
+}
+
+/* Page Header */
+.page-header {
+    margin-bottom: 28px;
+}
+
+.page-header h1 {
+    margin: 0 0 8px;
+    font-size: clamp(1.5rem, 3vw, 1.85rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-align: left;
+    color: var(--color-text);
+}
+
+.page-header p {
+    margin: 0;
+    color: var(--color-muted);
+    text-align: left;
+    max-width: 560px;
+}
+
+/* Override dashboard styles for sidebar layout */
+.page-app .content {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.page-app .overview {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.page-app .card {
+    flex: 1;
+    min-width: 180px;
+}
+
+.page-app .buttons {
+    justify-content: flex-start;
+    margin-bottom: 30px;
+}
+
+.page-app h2 {
+    text-align: left;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+.page-app .deadline, 
+.page-app .studyPlan {
+    margin-top: 0;
+}
+
+.page-app table {
+    width: 100%;
+    margin: 0;
+}
+
+/* Responsive Sidebar */
+@media (max-width: 768px) {
+    .app-shell {
+        flex-direction: column;
+    }
+    
+    .app-sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+        padding: 16px;
+    }
+    
+    .app-nav {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+    
+    .app-nav__link {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
+    
+    .app-sidebar__footer {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .app-main {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .app-sidebar {
+        padding: 12px;
+    }
+    
+    .app-brand {
+        padding: 4px 8px 12px;
+    }
+    
+    .app-brand-logo {
+        height: 35px;
+    }
+    
+    .app-nav__link {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+    }
+}
 /* FOOTER */
 footer {
     background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 45%, #312e81 100%);
