@@ -42,14 +42,109 @@
         </div>
     </div>
 
-    
+    <footer class="site-footer">
+        <p>&copy; 2026 Planora. All rights reserved. · <a href="mailto:support@planora.com">support@planora.com</a></p>
+    </footer>
 
-    <script src="JS/utils.js"></script>
-    <script src="JS/auth.js"></script>
     <script>
-        Session.redirectIfLoggedIn();
-        document.getElementById("register-form").addEventListener("submit", handleRegister);
+        // API URL - change to your backend port (5000)
+        const API_URL = 'http://localhost:5000/api';
+
+        // Check if already logged in
+        if (localStorage.getItem('authToken')) {
+            window.location.href = "dashboard.html";
+        }
+
+        // Toast function if not in utils
+        function showToast(message, type) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.position = 'fixed';
+            toast.style.bottom = '20px';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.backgroundColor = type === 'error' ? '#ef4444' : '#22c55e';
+            toast.style.color = 'white';
+            toast.style.padding = '12px 24px';
+            toast.style.borderRadius = '8px';
+            toast.style.zIndex = '9999';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Register function
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById("reg-name").value.trim();
+            const email = document.getElementById("reg-email").value.trim().toLowerCase();
+            const password = document.getElementById("reg-password").value;
+            const confirm = document.getElementById("reg-confirm").value;
+
+            // Validation
+            if (!name || !email || !password || !confirm) {
+                showToast("Please fill in all fields.", "error");
+                return;
+            }
+
+            if (password.length < 6) {
+                showToast("Password must be at least 6 characters.", "error");
+                return;
+            }
+
+            if (password !== confirm) {
+                showToast("Passwords do not match.", "error");
+                return;
+            }
+
+            // Show loading state
+            const submitBtn = document.querySelector('#register-form button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = "Creating account...";
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Save token and user data
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    
+                    showToast(`Welcome to Planora, ${name}! 🎉`, "success");
+
+                    setTimeout(() => {
+                        window.location.href = "dashboard.html";
+                    }, 1000);
+                } else {
+                    showToast(data.message || "Registration failed", "error");
+                }
+            } catch (error) {
+                console.error("Registration error:", error);
+                showToast("Cannot connect to server. Make sure backend is running on port 5000", "error");
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Attach event listener when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById("register-form");
+            if (form) {
+                form.addEventListener("submit", handleRegister);
+            }
+        });
     </script>
 
 </body>
+
 </html>

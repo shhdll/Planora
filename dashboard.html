@@ -73,81 +73,136 @@
 
     <script src="JS/sidebar.js"></script>
     <script src="JS/utils.js"></script>
-    <script src="JS/auth.js"></script>
     <script>
-        Session.require();
+        // Check if user is logged in (using backend token)
+        if (!localStorage.getItem('authToken') || !localStorage.getItem('currentUser')) {
+            window.location.href = "login.html";
+        }
 
-        const user = Session.getUser();
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        const API_URL = 'http://localhost:5000/api';
 
+        // Display greeting
         document.getElementById("dashboard-greeting").innerHTML = `Welcome, ${user.name}! 👋`;
 
-        function userKey(key) {
-            return `${user.id}_${key}`;
-        }
-
-        const courses = Storage.get(userKey("courses")) || [];
-        document.getElementById("stat-courses").textContent = courses.length;
-
-        const allDeadlines = Storage.get(userKey("deadlines")) || [];
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const upcoming = allDeadlines
-            .filter(d => {
-                const days = DateUtils.daysUntil(d.date);
-                return days >= 0;
-            })
-            .sort((a, b) => new Date(a.date) - new Date(b.date));
-
-        document.getElementById("stat-deadlines").textContent = upcoming.length;
-
-        const deadlineContainer = document.getElementById("deadlines-list");
-        if (upcoming.length > 0) {
-            deadlineContainer.innerHTML = "";
-            upcoming.slice(0, 5).forEach(d => {
-                const days = DateUtils.daysUntil(d.date);
-                const urgency = days <= 2 ? "color:#ef4444; font-weight:bold;" : "";
-                const div = document.createElement("div");
-                div.className = "deadline";
-                div.innerHTML = `
-                    <span style="${urgency}">${d.title} &mdash; ${DateUtils.formatDisplay(d.date)}</span>
-                    <span style="float:right; color:#64748b; font-size:0.85rem;">
-                        ${days === 0 ? "Today!" : days === 1 ? "Tomorrow" : `In ${days} days`}
-                    </span>`;
-                deadlineContainer.appendChild(div);
+        // Helper function for authenticated API calls
+        async function apiRequest(endpoint, options = {}) {
+            const token = localStorage.getItem('authToken');
+            
+            const response = await fetch(`${API_URL}${endpoint}`, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                    ...options.headers
+                }
             });
+            
+            const data = await response.json();
+            
+            if (!response.ok) {
+                if (response.status === 401) {
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('currentUser');
+                    window.location.href = "login.html";
+                }
+                throw new Error(data.message || 'API request failed');
+            }
+            
+            return data;
         }
 
-        const studyPlan = Storage.get(userKey("studyPlan")) || [];
-        const todayStr = DateUtils.today();
-        const todaySessions = studyPlan.filter(s => s.date === todayStr);
+        // Load dashboard data from backend
+        async function loadDashboardData() {
+            try {
+                // Get courses
+                const coursesData = await apiRequest('/courses');
+                const courses = coursesData.courses || [];
+                document.getElementById("stat-courses").textContent = courses.length;
 
-        document.getElementById("stat-sessions").textContent = todaySessions.length;
+                // Get deadlines
+                const deadlinesData = await apiRequest('/deadlines');
+                const allDeadlines = deadlinesData.deadlines || [];
+                
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
 
-        const table = document.getElementById("today-plan-table");
-        const noMsg = document.getElementById("no-sessions-msg");
+                const upcoming = allDeadlines
+                    .filter(d => {
+                        const days = DateUtils.daysUntil(d.date);
+                        return days >= 0;
+                    })
+                    .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-        while (table.rows.length > 1) {
-            table.deleteRow(1);
+                document.getElementById("stat-deadlines").textContent = upcoming.length;
+
+                // Render deadlines
+                const deadlineContainer = document.getElementById("deadlines-list");
+                if (upcoming.length > 0) {
+                    deadlineContainer.innerHTML = "";
+                    upcoming.slice(0, 5).forEach(d => {
+                        const days = DateUtils.daysUntil(d.date);
+                        const urgency = days <= 2 ? "color:#ef4444; font-weight:bold;" : "";
+                        const div = document.createElement("div");
+                        div.className = "deadline";
+                        div.innerHTML = `
+                            <span style="${urgency}">${d.title} &mdash; ${DateUtils.formatDisplay(d.date)}</span>
+                            <span style="float:right; color:#64748b; font-size:0.85rem;">
+                                ${days === 0 ? "Today!" : days === 1 ? "Tomorrow" : `In ${days} days`}
+                            </span>`;
+                        deadlineContainer.appendChild(div);
+                    });
+                }
+
+                // Get study plan
+                const studyPlanData = await apiRequest('/studyplan');
+                const studyPlan = studyPlanData.studyPlan || [];
+                const todayStr = DateUtils.today();
+                const todaySessions = studyPlan.filter(s => s.date === todayStr);
+
+                document.getElementById("stat-sessions").textContent = todaySessions.length;
+
+                const table = document.getElementById("today-plan-table");
+                const noMsg = document.getElementById("no-sessions-msg");
+
+                // Clear existing rows (keep header)
+                while (table.rows.length > 1) {
+                    table.deleteRow(1);
+                }
+
+                if (todaySessions.length > 0) {
+                    noMsg.style.display = "none";
+                    todaySessions.forEach(s => {
+                        const row = table.insertRow();
+                        const statusColor = s.status === "completed"
+                            ? "#22c55e" : s.status === "missed"
+                                ? "#ef4444" : "#64748b";
+
+                        row.innerHTML = `
+                            <td><strong>${s.startTime} &ndash; ${s.endTime}</strong></td>
+                            <td>${s.course?.name || s.course || 'Unknown Course'}</td>
+                            <td style="color:${statusColor}; font-weight:600; text-transform:capitalize;">
+                                ${s.status || "pending"}
+                             </td>`;
+                    });
+                } else {
+                    noMsg.style.display = "block";
+                }
+
+            } catch (error) {
+                console.error("Error loading dashboard:", error);
+                showToast("Error loading data. Make sure backend is running.", "error");
+            }
         }
 
-        if (todaySessions.length > 0) {
-            noMsg.style.display = "none";
-            todaySessions.forEach(s => {
-                const row = table.insertRow();
-                const statusColor = s.status === "completed"
-                    ? "#22c55e" : s.status === "missed"
-                        ? "#ef4444" : "#64748b";
+        // Load all data
+        loadDashboardData();
 
-                row.innerHTML = `
-                    <td><strong>${s.startTime} &ndash; ${s.endTime}</strong></td>
-                    <td>${s.course}</td>
-                    <td style="color:${statusColor}; font-weight:600; text-transform:capitalize;">
-                        ${s.status || "pending"}
-                    </td>`;
-            });
-        } else {
-            noMsg.style.display = "block";
+        // Logout function
+        function handleLogout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            window.location.href = "login.html";
         }
     </script>
     <script src="JS/config.js"></script>
@@ -156,22 +211,3 @@
 </body>
 
 </html>
-
-<!-- 
-    1. Removed all hardcoded static data (the fake "4 courses", "2 deadlines", "6 sessions", fake timetable rows)
-    2. Added id attributes to the three stat cards: stat-courses, stat-deadlines, stat-sessions
-    3. Added id="dashboard-greeting" to the welcome heading
-    4. Added id="deadlines-list" to the deadlines section
-    5. Added id="today-plan-table" and id="no-sessions-msg" to the study plan section
-    6. Added a Status column to the study plan table
-    7. Changed the Logout button from <a href="index.html">Logout</a> to <a href="#" onclick="handleLogout()">
-    8. Removed the Home quick action button (you're already past home when logged in)
-
-    9. Calls Session.require() — redirects to login if not logged in
-    10. Reads the user's name and displays it in the greeting
-    11. Reads courses from localStorage and shows the real count
-    12. Reads deadlines, filters to upcoming ones, sorts by date, shows count and list
-    13. Colors deadlines red if due in 2 days or less
-    14. Reads today's study sessions from the plan and renders them in the table
-    15. Shows a "no sessions" message if the plan is empty
-    -->
