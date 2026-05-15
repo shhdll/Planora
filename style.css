@@ -327,8 +327,19 @@ h1, h2, h3 {
 
 .banner {
     display: block;
-    width: 100%; 
-    max-width: 100%; 
+    width: 100%;
+    max-width: 100%;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Inside sidebar pages: break out of app-main padding so banner spans sidebar-end to page-right */
+.app-main .banner {
+    width: calc(100% + 2 * clamp(20px, 3vw, 36px));
+    max-width: none;
+    margin-top: calc(-1 * clamp(20px, 3vw, 36px));
+    margin-left: calc(-1 * clamp(20px, 3vw, 36px));
+    margin-right: calc(-1 * clamp(20px, 3vw, 36px));
+    margin-bottom: clamp(16px, 2vw, 24px);
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
@@ -774,7 +785,6 @@ th {
 
 /* Main Content Area */
 .app-main {
-    margin-left: 288px;
     flex: 1;
     min-width: 0;
     padding: clamp(20px, 3vw, 36px);
