@@ -705,7 +705,10 @@ th {
 }
 
 .app-nav__link {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
     padding: 10px 14px;
     border-radius: var(--radius-md);
     color: var(--sidebar-text);
@@ -714,6 +717,29 @@ th {
     text-decoration: none;
     transition: all 0.2s ease;
 }
+
+/* Course count badge */
+.app-nav__badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    background: rgba(99, 102, 241, 0.25);
+    color: #c7d2fe;
+    border-radius: 999px;
+    padding: 1px 7px;
+    min-width: 18px;
+    text-align: center;
+}
+
+/* Availability status dot */
+.app-nav__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.app-nav__dot--set   { background: #4ade80; }
+.app-nav__dot--unset { background: rgba(148, 163, 184, 0.4); }
 
 .app-nav__link:hover {
     color: var(--sidebar-text-hover);
