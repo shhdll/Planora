@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const router = express.Router();
@@ -13,25 +12,11 @@ const UserSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
-// Fixed pre-save middleware
-UserSchema.pre('save', function(next) {
-    const user = this;
-    if (!user.isModified('password')) {
-        return next();
-    }
-    bcrypt.genSalt(10, function(err, salt) {
-        if (err) return next(err);
-        bcrypt.hash(user.password, salt, function(err, hash) {
-            if (err) return next(err);
-            user.password = hash;
-            next();
-        });
-    });
-});
+// REMOVED: The UserSchema.pre('save') middleware that used bcrypt has been deleted.
 
-// Match password method
+// Match password method (Direct plain-text comparison)
 UserSchema.methods.matchPassword = async function(enteredPassword) {
-    return await bcrypt.compare(enteredPassword, this.password);
+    return enteredPassword === this.password;
 };
 
 // Get JWT token
@@ -77,7 +62,7 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ success: false, message: 'User already exists' });
         }
         
-        // Create user
+        // Create user (Will save password as plain text now)
         const user = await User.create({ name, email, password });
         
         // Send response
