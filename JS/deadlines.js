@@ -145,7 +145,11 @@ class Deadline {
     // gets user input from form field
     const title = document.getElementById("deadline-title").value; 
     const course = document.getElementById("deadline-course").value;
-    const dueDate = document.getElementById("deadline-date").value;
+    
+    const date = document.getElementById("deadline-date").value;
+const time = document.getElementById("deadline-time").value || "23:59";
+
+const dueDate = `${date}T${time}`;
     const priority = document.getElementById("deadline-priority").value;
     const description = document.getElementById("deadline-description").value;
 

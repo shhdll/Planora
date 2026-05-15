@@ -117,8 +117,8 @@
 
                 const allDeadlines = Deadline.getAll();
                 const upcoming = allDeadlines
-                    .filter(d => d.date && DateUtils.daysUntil(d.date) >= 0)
-                    .sort((a, b) => new Date(a.date) - new Date(b.date));
+                    .filter(d => d.dueDate && DateUtils.daysUntil(d.dueDate) >= 0)
+                    .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
 
                 const statDeadlines = document.getElementById("stat-deadlines");
                 if (statDeadlines) statDeadlines.textContent = upcoming.length;
@@ -128,12 +128,12 @@
                     if (upcoming.length > 0) {
                         deadlineContainer.innerHTML = "";
                         upcoming.slice(0, 5).forEach(d => {
-                            const days = DateUtils.daysUntil(d.date);
+                            const days = DateUtils.daysUntil(d.dueDate);
                             const urgency = days <= 2 ? "color:#ef4444; font-weight:bold;" : "";
                             const div = document.createElement("div");
                             div.className = "deadline";
                             div.innerHTML = `
-                                <span style="${urgency}">${escapeHtml(d.title)} &mdash; ${DateUtils.formatDisplay(d.date)}</span>
+                                <span style="${urgency}">${escapeHtml(d.title)} &mdash; ${DateUtils.formatDisplay(d.dueDate)}</span>
                                 <span style="float:right; color:#64748b; font-size:0.85rem;">
                                     ${days === 0 ? "Today!" : days === 1 ? "Tomorrow" : `In ${days} days`}
                                 </span>`;

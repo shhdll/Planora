@@ -29,8 +29,14 @@
                     <label>Deadline date</label>
                     <input id="deadline-date" class="input-format" type="date" required>
                     <label>Deadline time</label>
-                    <input id="deadline-priority" class="input-format" type="time">
-                    <input id="deadline-description" type="hidden" value="">
+                    <input id="deadline-time" class="input-format" type="time"> 
+                    <label>Priority</label>
+
+<select id="deadline-priority" class="input-format">
+    <option value="High">High</option>
+    <option value="Medium" selected>Medium</option>
+    <option value="Low">Low</option>
+</select>                   <input id="deadline-description" type="hidden" value="">
                     <button type="submit">Add deadline</button>
                 </form>
             </main>
