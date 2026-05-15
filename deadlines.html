@@ -17,19 +17,20 @@
                     <p>Track your assignments and exams to stay organized.</p>
                 </div>
 
-                <form onsubmit="alert('Deadline added successfully!'); window.location.href='courses.html'; return false;">
+                <form id="deadline-form">
                     <label>Deadline type</label>
-                    <select class="input-format" required>
+                    <select id="deadline-course" class="input-format" required>
                         <option value="">Select type</option>
                         <option value="exam">Exam</option>
                         <option value="assignment">Assignment</option>
                     </select>
                     <label>Title</label>
-                    <input class="input-format" type="text" placeholder="Midterm Exam" required>
+                    <input id="deadline-title" class="input-format" type="text" placeholder="Midterm Exam" required>
                     <label>Deadline date</label>
-                    <input class="input-format" type="date" required>
+                    <input id="deadline-date" class="input-format" type="date" required>
                     <label>Deadline time</label>
-                    <input class="input-format" type="time">
+                    <input id="deadline-priority" class="input-format" type="time">
+                    <input id="deadline-description" type="hidden" value="">
                     <button type="submit">Add deadline</button>
                 </form>
             </main>
@@ -46,6 +47,8 @@
     <script src="JS/auth.js"></script>
     <script src="JS/config.js"></script>
     <script src="JS/AI.js"></script>
+    <script src="JS/deadlines.js"></script>
+    <script src="JS/reminders.js"></script>
     <script>Session.require();</script>
 </body>
 </html>
