@@ -42,25 +42,118 @@
         <p>&copy; 2026 Planora. All rights reserved. · <a href="mailto:support@planora.com">support@planora.com</a></p>
     </footer>
 
-    <script src="JS/utils.js"></script>
-    <script src="JS/auth.js"></script>
-    <script>
-        // Check if user is already logged in
-        if (typeof Session !== 'undefined') {
-            Session.redirectIfLoggedIn();
+    <!-- Firebase Module Scripts -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"
+            }
+        }
+    </script>
+    
+    <script type="module">
+        // Import Firebase
+        import { auth } from './JS/firebase-config.js';
+        import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        
+        // Get DOM elements
+        const form = document.getElementById("login-form");
+        const emailInput = document.getElementById("login-email");
+        const passwordInput = document.getElementById("login-password");
+        
+        // Helper function for toast notifications
+        function showMessage(message, type) {
+            const toast = document.createElement("div");
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${type === 'error' ? '#ef4444' : '#22c55e'};
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                z-index: 10000;
+                font-weight: bold;
+                font-family: "Plus Jakarta Sans", sans-serif;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
         
-        // Attach login handler
-        document.getElementById("login-form").addEventListener("submit", function(e) {
-            if (typeof handleLogin !== 'undefined') {
-                handleLogin(e);
-            } else {
-                console.error("handleLogin function not found. Make sure auth.js is loaded.");
-                e.preventDefault();
+        // Handle form submission
+        async function handleLogin(event) {
+            event.preventDefault();
+            console.log("Login function called!"); // Debug log
+            
+            const email = emailInput.value.trim().toLowerCase();
+            const password = passwordInput.value;
+            
+            console.log("Attempting login for:", email); // Debug
+            
+            if (!email || !password) {
+                showMessage("Enter email and password", "error");
+                return;
             }
-        });
+            
+            try {
+                console.log("Signing in with Firebase..."); // Debug
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                console.log("Login successful:", user.email); // Debug
+                
+                // Get user name from localStorage (from registration)
+                const users = JSON.parse(localStorage.getItem("users") || "[]");
+                const userData = users.find(u => u.email === email);
+                const userName = userData ? userData.name : email.split('@')[0];
+                
+                // Save current user session
+                localStorage.setItem("currentUser", JSON.stringify({ 
+                    name: userName, 
+                    email: user.email, 
+                    uid: user.uid 
+                }));
+                
+                showMessage(`Welcome back, ${userName}!`, "success");
+                
+                console.log("Redirecting to dashboard..."); // Debug
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 500);
+                
+            } catch (error) {
+                console.error("Login error:", error);
+                let errorMessage = "Invalid credentials";
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage = "User not found. Please register first.";
+                } else if (error.code === 'auth/wrong-password') {
+                    errorMessage = "Incorrect password";
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = "Invalid email address";
+                } else if (error.code === 'auth/too-many-requests') {
+                    errorMessage = "Too many attempts. Try again later";
+                }
+                showMessage(errorMessage, "error");
+            }
+        }
+        
+        // Attach event listener
+        if (form) {
+            form.addEventListener("submit", handleLogin);
+            console.log("Form listener attached!"); // Debug
+        } else {
+            console.error("Login form not found!");
+        }
+        
+        // Check if user is already logged in (via Firebase)
+        if (auth.currentUser) {
+            console.log("User already logged in, redirecting...");
+            window.location.href = "dashboard.html";
+        }
     </script>
 
 </body>
-
 </html>

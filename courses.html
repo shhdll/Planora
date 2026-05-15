@@ -6,14 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Planora - Courses</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="topbar.css">
 </head>
 
 <body class="page-app">
 
     <div class="app-shell">
-        <div id="sidebar-container"></div>
+        <div id="sidebar-container">
+            <!-- Sidebar will be injected here -->
+        </div>
+
         <div class="app-content-wrap">
             <div id="topbar-container"></div>
+
             <main class="app-main">
                 <div class="page-header">
                     <h1>Your courses</h1>
@@ -24,25 +29,53 @@
                     <a href="add-course.html">Add new course</a>
                 </div>
 
-                <ul id="courses-list"></ul>
+                <ul id="courses-list">Loading...</ul>
             </main>
 
             <footer>
-                <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
+                <p>&copy; 2026 Planora. All rights reserved. · <a href="mailto:support@planora.com">support@planora.com</a></p>
             </footer>
         </div>
     </div>
 
-    <script src="JS/utils.js"></script>
-    <script src="JS/sidebar.js"></script>
-    <script src="JS/topbar.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/courses.js"></script>
-    <script src="JS/config.js"></script>
-    <script src="JS/AI.js"></script>
-    <script>
-        Session.require();
-        renderCourses();
+    <!-- Firebase Module Scripts (Exactly identical to Dashboard) -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+                "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+            }
+        }
+    </script>
+    
+    <script type="module" src="JS/firebase-config.js"></script>
+    <script type="module" src="JS/utils.js"></script>
+    <script type="module" src="JS/sidebar.js"></script>
+    <script type="module" src="JS/topbar.js"></script>
+    <script type="module" src="JS/deadlines.js"></script>
+    <script type="module" src="JS/reminders.js"></script>
+    <script type="module" src="JS/AI.js"></script>
+    
+    <script type="module">
+        import { auth } from './JS/firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { renderCourses } from './JS/courses.js';
+
+        // Share auth instance instantly with topbar.js
+        window.firebaseAuth = auth;
+
+        // Route protector that runs cleanly without any import timing crashes
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                renderCourses(); 
+            } else {
+                if (typeof showToast === "function") {
+                    showToast("Please log in to continue", "info");
+                }
+                setTimeout(() => { window.location.href = "login.html"; }, 500);
+            }
+        });
     </script>
 
 </body>

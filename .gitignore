@@ -22,4 +22,6 @@ npm-debug.log*
 # IDE and Text Editor configs
 .vscode/
 .idea/
-*.swpdccd
+*.swp
+*.swo
+*~

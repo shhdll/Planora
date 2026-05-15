@@ -1,5 +1,14 @@
 // JS/AI.js
 
+// Import Firebase (for getting real user data)
+import { db, auth } from './firebase-config.js';
+import {
+  collection,
+  query,
+  where,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 // Get the API key from config.js (Groq)
 const GROQ_API_KEY = typeof CONFIG !== 'undefined' ? CONFIG.GROQ_KEY : "";
 const GROQ_MODEL = typeof CONFIG !== 'undefined' && CONFIG.GROQ_MODEL ? CONFIG.GROQ_MODEL : "llama-4-scout";
@@ -473,18 +482,40 @@ function getPlanoraUser() {
       const u = Session.getUser();
       if (u) return u;
     }
+    // Fallback to Firebase auth
+    if (auth && auth.currentUser) {
+      return { 
+        name: auth.currentUser.displayName || auth.currentUser.email?.split('@')[0] || "Student", 
+        id: auth.currentUser.uid 
+      };
+    }
     const raw = localStorage.getItem("currentUser");
     if (raw) return JSON.parse(raw);
   } catch (_) {}
   return { name: "Student", id: "guest" };
 }
 
-function getCoursesForUser(user) {
-  const key = `${user.id}_courses`;
+// Get courses from Firestore
+async function getCoursesForUser(user) {
   try {
-    if (typeof Storage !== "undefined" && Storage.get) {
-      return Storage.get(key) || [];
+    // Use Firebase if user is authenticated
+    if (auth && auth.currentUser) {
+      const coursesQuery = query(collection(db, "courses"), where("userId", "==", auth.currentUser.uid));
+      const coursesSnapshot = await getDocs(coursesQuery);
+      const courses = [];
+      coursesSnapshot.forEach((doc) => {
+        const courseData = doc.data();
+        courses.push({
+          name: courseData.name,
+          code: courseData.code,
+          id: doc.id
+        });
+      });
+      return courses;
     }
+    
+    // Fallback to localStorage
+    const key = `courses_${user.id}`;
     const raw = localStorage.getItem(key);
     return raw ? JSON.parse(raw) : [];
   } catch (_) {
@@ -510,9 +541,9 @@ async function handleChat() {
   input.value = "";
 
   const user = getPlanoraUser();
-  const courses = getCoursesForUser(user);
+  const courses = await getCoursesForUser(user);
   const courseNames = courses
-    .map((c) => (typeof c === "string" ? c : c.name || c.courseCode || ""))
+    .map((c) => c.name || c.courseCode || "")
     .filter(Boolean)
     .join(", ");
 

@@ -1,4 +1,8 @@
-// Storage Helpers 
+// Import Firebase Auth for session management
+import { auth } from './firebase-config.js';
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+// Storage Helpers (Now syncs with Firebase, but maintains localStorage for backward compatibility)
 const Storage = {
   get(key) {
     try {
@@ -17,39 +21,67 @@ const Storage = {
   },
 };
 
-// Session Helpers (LocalStorage only)
+// Session Helpers (Now powered by Firebase Auth)
 const Session = {
   // Returns the currently logged-in user, or null
   getUser() {
+    // First check Firebase Auth state (source of truth)
+    const firebaseUser = auth.currentUser;
+    if (firebaseUser) {
+      // Get additional user data from localStorage for compatibility
+      const localUser = Storage.get("currentUser");
+      return {
+        email: firebaseUser.email,
+        uid: firebaseUser.uid,
+        name: localUser?.name || firebaseUser.email.split('@')[0]
+      };
+    }
+    
+    // Fallback to localStorage for backward compatibility
     return Storage.get("currentUser");
   },
 
   // Save logged-in user to session
   setUser(user) {
+    // Store in localStorage for backward compatibility
     Storage.set("currentUser", user);
+    // Note: The actual Firebase user is set by Firebase Auth during login
   },
 
   // Clear session (logout)
-  clear() {
+  async clear() {
+    // Remove from localStorage
     Storage.remove("currentUser");
+    // Note: Actual Firebase logout happens in auth.js handleLogout
   },
 
   // Redirect to login if no active session
   require() {
-    if (!Session.getUser()) {
+    const user = this.getUser();
+    if (!user) {
       window.location.href = "login.html";
     }
   },
 
   // Redirect to dashboard if already logged in
   redirectIfLoggedIn() {
-    if (Session.getUser()) {
+    const user = this.getUser();
+    if (user) {
       window.location.href = "dashboard.html";
     }
   },
+  
+  // NEW: Listen to auth state changes (optional, for real-time updates)
+  onAuthChange(callback) {
+    return onAuthStateChanged(auth, (user) => {
+      if (callback) {
+        callback(user);
+      }
+    });
+  }
 };
 
-// Date Helpers 
+// Date Helpers (No changes needed - pure JS)
 const DateUtils = {
   today() {
     return new Date().toISOString().split("T")[0];
@@ -70,7 +102,7 @@ const DateUtils = {
   },
 };
 
-// Toast notification
+// Toast notification (No changes needed - pure UI)
 function showToast(message, type = "success") {
   const existing = document.getElementById("planora-toast");
   if (existing) existing.remove();
@@ -111,3 +143,5 @@ function showToast(message, type = "success") {
     setTimeout(() => toast.remove(), 400);
   }, 3000);
 }
+
+export { Storage, Session, DateUtils, showToast };

@@ -1,9 +1,22 @@
+// Import Firebase
+import { db, auth } from './firebase-config.js';
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 function loadSidebar() {
     const container = document.getElementById('sidebar-container');
-    if (!container) return;
+    if (!container) {
+        console.error("Sidebar container not found");
+        return;
+    }
 
-    // Sidebar HTML is embedded here instead of fetched so it works when
-    // pages are opened directly from the filesystem (file:// blocks fetch)
+    // Sidebar HTML - Fixed version with proper brand link
     container.innerHTML = `
         <aside class="app-sidebar" aria-label="App navigation">
             <a href="index.html" class="app-brand">
@@ -19,7 +32,7 @@ function loadSidebar() {
             </nav>
             <div class="app-sidebar__footer">
                 <a href="index.html" class="app-nav__link app-nav__link--muted">Home</a>
-                <a href="#" class="app-nav__link" onclick="handleLogout(); return false;">
+                <a href="#" class="app-nav__link" id="logout-btn">
                     <img src="images/logout-icon.png" alt="" style="width:16px; height:16px; vertical-align:-2px; margin-right:6px;">
                     Log out
                 </a>
@@ -33,31 +46,74 @@ function loadSidebar() {
         }
     });
 
+    // Attach logout event listener
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+                const { handleLogout } = await import('./auth.js');
+                await handleLogout();
+            } catch (error) {
+                console.error("Logout error:", error);
+                // Fallback logout
+                sessionStorage.clear();
+                localStorage.removeItem('currentUser');
+                window.location.href = "login.html";
+            }
+        });
+    }
+
+    // Call async badge function
     addSidebarBadges();
 }
 
 // Populate the badge and dot placeholders in the sidebar
-
-function addSidebarBadges() {
+async function addSidebarBadges() {
     const user = Session.getUser();
     if (!user) return;
 
-    // Course count badge — show only when the user has at least one course
-    const courses = Storage.get(`courses_${user.id}`) || [];
-    const badge = document.getElementById('courses-badge');
-    if (badge && courses.length > 0) {
-        badge.textContent = courses.length;
-        badge.style.display = '';
-    }
+    // Get current Firebase user for UID
+    const firebaseUser = auth.currentUser;
+    if (!firebaseUser) return;
 
-    // Availability dot — green if days are configured, muted gray if not
-    const availability = Storage.get(`availability_${user.id}`);
-    const isSet = availability && availability.days && availability.days.length > 0;
-    const dot = document.getElementById('availability-dot');
-    if (dot) {
-        dot.className = `app-nav__dot ${isSet ? 'app-nav__dot--set' : 'app-nav__dot--unset'}`;
-        dot.title = isSet ? 'Availability set' : 'Availability not set';
+    try {
+        // Course count badge - load from Firestore
+        const coursesQuery = query(collection(db, "courses"), where("userId", "==", firebaseUser.uid));
+        const coursesSnapshot = await getDocs(coursesQuery);
+        const coursesCount = coursesSnapshot.size;
+        
+        const badge = document.getElementById('courses-badge');
+        if (badge && coursesCount > 0) {
+            badge.textContent = coursesCount;
+            badge.style.display = 'inline-block';
+        }
+
+        // Availability dot — load from Firestore
+        const availabilityRef = doc(db, "availability", firebaseUser.uid);
+        const availabilitySnap = await getDoc(availabilityRef);
+        
+        let isSet = false;
+        if (availabilitySnap.exists()) {
+            const availability = availabilitySnap.data();
+            isSet = availability.days && availability.days.length > 0;
+        }
+        
+        const dot = document.getElementById('availability-dot');
+        if (dot) {
+            dot.className = `app-nav__dot ${isSet ? 'app-nav__dot--set' : 'app-nav__dot--unset'}`;
+            dot.title = isSet ? 'Availability set' : 'Availability not set';
+        }
+    } catch (error) {
+        console.error("Error loading sidebar badges:", error);
     }
 }
 
-loadSidebar();
+// Auto-initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadSidebar);
+} else {
+    loadSidebar();
+}
+
+export { loadSidebar, addSidebarBadges };

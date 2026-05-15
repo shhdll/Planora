@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Planora - Remove Course</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="topbar.css"> <!-- Links your global topbar styles -->
 </head>
 
 <body class="page-app">
@@ -21,11 +22,11 @@
                     <div class="page-header">
                         <h1>Remove course</h1>
                         <p>Are you sure you want to remove this course?</p>
-                        <p><strong id="course-name-display"></strong></p>
+                        <p><strong id="course-name-display">Loading course details...</strong></p>
                     </div>
 
                     <button type="submit"
-                        style="background-color:#c0534a; border-color:#c0534a; width:fit-content; padding:12px 18px; font-size:1rem; margin:5px auto 15px; display:block;">
+                        style="background-color:#c0534a; border-color:#c0534a; width:fit-content; padding:12px 18px; font-size:1rem; margin:5px auto 15px; display:block; color: white; border-radius: 6px; cursor: pointer;">
                         Yes, remove the course
                     </button>
 
@@ -41,17 +42,58 @@
         </div>
     </div>
 
-    <script src="JS/utils.js"></script>
-    <script src="JS/sidebar.js"></script>
-    <script src="JS/topbar.js"></script>
-    <script src="JS/auth.js"></script>
-    <script src="JS/courses.js"></script>
-    <script src="JS/config.js"></script>
-    <script src="JS/AI.js"></script>
-    <script>
-        Session.require();
-        loadRemoveConfirm();
-        document.getElementById("remove-course-form").addEventListener("submit", handleRemoveCourse);
+    <!-- Firebase Module Scripts (Exactly identical to Dashboard and Courses pages) -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+                "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+            }
+        }
+    </script>
+    
+    <script type="module" src="JS/firebase-config.js"></script>
+    <script type="module" src="JS/utils.js"></script>
+    <script type="module" src="JS/sidebar.js"></script>
+    <script type="module" src="JS/topbar.js"></script>
+    <script type="module" src="JS/auth.js"></script>
+    <script type="module" src="JS/courses.js"></script>
+    <script type="module" src="JS/config.js"></script>
+    <script type="module" src="JS/AI.js"></script>
+    
+    <script type="module">
+        import { auth } from './JS/firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { loadRemoveConfirm, handleRemoveCourse } from './JS/courses.js';
+        
+        // Expose auth instance immediately so topbar.js reads it instantly
+        window.firebaseAuth = auth;
+
+        const form = document.getElementById("remove-course-form");
+
+        // Attach form submit handler cleanly 
+        if (form) {
+            form.addEventListener("submit", async (e) => {
+                await handleRemoveCourse(e);
+            });
+        }
+
+        // Initialize page state safely inside the authorized tracking cycle
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                try {
+                    // Load the course data into your visual confirmation text spaces
+                    await loadRemoveConfirm();
+                } catch (error) {
+                    console.error("Failed to fetch confirmation details:", error);
+                    const display = document.getElementById("course-name-display");
+                    if (display) display.textContent = "Error loading course target.";
+                }
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
     </script>
 
 </body>

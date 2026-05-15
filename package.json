@@ -1,0 +1,15 @@
+{
+  "name": "planora",
+  "version": "1.0.0",
+  "description": "![Planora Header](images/planora_header.png)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "firebase": "^12.13.0"
+  }
+}

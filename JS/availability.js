@@ -1,29 +1,75 @@
-// Availability
+// Import Firebase
+import { db, auth } from './firebase-config.js';
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  setDoc,
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// Availability (Now with Firestore)
+
+// Get current user ID from Firebase
+function getCurrentUserId() {
+  const user = auth.currentUser;
+  return user ? user.uid : null;
+}
 
 function getAvailabilityKey() {
   const user = Session.getUser();
   return user ? `availability_${user.id}` : null;
 }
 
-function loadAvailability() {
-  const key = getAvailabilityKey();
-  return key ? Storage.get(key) || { days: [], startTime: "", endTime: "" } : null;
+// Load availability from Firestore
+async function loadAvailability() {
+  const userId = getCurrentUserId();
+  if (!userId) return null;
+  
+  try {
+    const availabilityRef = doc(db, "availability", userId);
+    const availabilitySnap = await getDoc(availabilityRef);
+    
+    if (availabilitySnap.exists()) {
+      return availabilitySnap.data();
+    } else {
+      return { days: [], startTime: "", endTime: "" };
+    }
+  } catch (error) {
+    console.error("Error loading availability:", error);
+    return { days: [], startTime: "", endTime: "" };
+  }
 }
 
-function saveAvailability(data) {
-  const key = getAvailabilityKey();
-  if (key) Storage.set(key, data);
+// Save availability to Firestore
+async function saveAvailability(data) {
+  const userId = getCurrentUserId();
+  if (!userId) return;
+  
+  try {
+    const availabilityRef = doc(db, "availability", userId);
+    await setDoc(availabilityRef, {
+      days: data.days,
+      startTime: data.startTime,
+      endTime: data.endTime,
+      userId: userId,
+      updatedAt: new Date().toISOString()
+    });
+  } catch (error) {
+    console.error("Error saving availability:", error);
+  }
 }
 
 // Populate form with saved values on page load
-
-function initAvailabilityPage() {
+async function initAvailabilityPage() {
   Session.require();
 
-  const saved = loadAvailability();
+  const saved = await loadAvailability();
   if (!saved) return;
 
-  if (saved.days.length) {
+  if (saved.days && saved.days.length) {
     document.querySelectorAll('input[name="days"]').forEach((cb) => {
       cb.checked = saved.days.includes(cb.value);
     });
@@ -34,8 +80,7 @@ function initAvailabilityPage() {
 }
 
 // Handle form submission
-
-function handleAvailabilitySubmit(event) {
+async function handleAvailabilitySubmit(event) {
   event.preventDefault();
 
   const selectedDays = Array.from(document.querySelectorAll('input[name="days"]:checked')).map(
@@ -55,7 +100,7 @@ function handleAvailabilitySubmit(event) {
     return;
   }
 
-  saveAvailability({ days: selectedDays, startTime, endTime });
+  await saveAvailability({ days: selectedDays, startTime, endTime });
   showToast("Availability saved successfully!", "success");
 
   setTimeout(() => {

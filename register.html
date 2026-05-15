@@ -21,10 +21,10 @@
 
             <form id="register-form">
                 <label for="reg-name">Full name</label>
-                <input id="reg-name" class="input-format" type="text" placeholder="Alex Rivera" required>
+                <input id="reg-name" class="input-format" type="text" placeholder="Noura Fahad" required>
 
                 <label for="reg-email">Email</label>
-                <input id="reg-email" class="input-format" type="email" placeholder="you@university.edu" required>
+                <input id="reg-email" class="input-format" type="email" placeholder="you@ksu.edu" required>
 
                 <label for="reg-password">Password</label>
                 <input id="reg-password" class="input-format" type="password" placeholder="At least 4 characters" required>
@@ -46,30 +46,127 @@
         <p>&copy; 2026 Planora. All rights reserved. · <a href="mailto:support@planora.com">support@planora.com</a></p>
     </footer>
 
-    <script src="JS/utils.js"></script>
-    <script src="JS/auth.js"></script>
-    <script>
-        // Check if user is already logged in
-        if (typeof Session !== 'undefined') {
-            Session.redirectIfLoggedIn();
+    <!-- Firebase Module Scripts -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"
+            }
+        }
+    </script>
+    
+    <script type="module">
+        // Import everything we need
+        import { auth } from './JS/firebase-config.js';
+        import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        
+        // Get DOM elements
+        const form = document.getElementById("register-form");
+        const nameInput = document.getElementById("reg-name");
+        const emailInput = document.getElementById("reg-email");
+        const passwordInput = document.getElementById("reg-password");
+        const confirmInput = document.getElementById("reg-confirm");
+        
+        // Helper function for toast notifications (if showToast doesn't exist)
+        function showMessage(message, type) {
+            // Create a simple toast if showToast doesn't exist
+            const toast = document.createElement("div");
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${type === 'error' ? '#ef4444' : '#22c55e'};
+                color: white;
+                padding: 12px 24px;
+                border-radius: 8px;
+                z-index: 10000;
+                font-weight: bold;
+            `;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
         }
         
-        // Attach register handler
-        const form = document.getElementById("register-form");
-        if (form) {
-            form.addEventListener("submit", function(e) {
-                if (typeof handleRegister !== 'undefined') {
-                    handleRegister(e);
-                } else {
-                    console.error("handleRegister function not found. Make sure auth.js is loaded.");
-                    e.preventDefault();
+        // Use window.showToast if available, otherwise use our fallback
+        const toast = (typeof showToast !== 'undefined') ? showToast : showMessage;
+        
+        // Handle form submission
+        async function handleRegister(event) {
+            event.preventDefault();
+            console.log("Register function called!"); // Debug log
+            
+            const name = nameInput.value.trim();
+            const email = emailInput.value.trim().toLowerCase();
+            const password = passwordInput.value;
+            const confirm = confirmInput.value;
+            
+            console.log("Form values:", { name, email, password: "***", confirm: "***" }); // Debug
+            
+            if (!name || !email || !password || !confirm) {
+                toast("Fill all fields", "error");
+                return;
+            }
+            
+            if (password !== confirm) {
+                toast("Passwords do not match", "error");
+                return;
+            }
+            
+            if (password.length < 4) {
+                toast("Password must be at least 4 characters", "error");
+                return;
+            }
+            
+            try {
+                console.log("Creating user in Firebase..."); // Debug
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                console.log("User created:", user); // Debug
+                
+                // Store user data in localStorage (for compatibility)
+                const users = JSON.parse(localStorage.getItem("users") || "[]");
+                users.push({ name, email, password: "FIREBASE_AUTH", uid: user.uid });
+                localStorage.setItem("users", JSON.stringify(users));
+                
+                // Save current user session
+                localStorage.setItem("currentUser", JSON.stringify({ name, email, uid: user.uid }));
+                
+                toast("Account created successfully!", "success");
+                
+                console.log("Redirecting to dashboard..."); // Debug
+                setTimeout(() => {
+                    window.location.href = "dashboard.html";
+                }, 500);
+                
+            } catch (error) {
+                console.error("Registration error:", error);
+                let errorMessage = "Registration failed";
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = "User already exists";
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = "Password is too weak";
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = "Invalid email address";
                 }
-            });
+                toast(errorMessage, "error");
+            }
+        }
+        
+        // Attach event listener
+        if (form) {
+            form.addEventListener("submit", handleRegister);
+            console.log("Form listener attached!"); // Debug
         } else {
-            console.error("Register form not found");
+            console.error("Form not found!");
+        }
+        
+        // Check if user is already logged in
+        if (auth.currentUser) {
+            window.location.href = "dashboard.html";
         }
     </script>
 
 </body>
-
 </html>

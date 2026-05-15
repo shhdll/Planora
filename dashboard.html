@@ -48,25 +48,23 @@
 
                 <h2>Upcoming deadlines</h2>
 
-<div id="dashboard-deadlines-list">
-
-    <div class="deadline">
-
-        No upcoming deadlines yet.
-
-    </div>
-
-</div>
+                <div id="dashboard-deadlines-list">
+                    <div class="deadline">
+                        No upcoming deadlines yet.
+                    </div>
+                </div>
 
                 <h2>Today&rsquo;s study plan</h2>
                 <div class="studyPlan">
                     <div class="table-wrap">
                         <table id="today-plan-table">
-                            <tr>
-                                <th>Time</th>
-                                <th>Course</th>
-                                <th>Status</th>
-                            </tr>
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th>Course</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
                         </table>
                     </div>
                     <p id="no-sessions-msg" style="text-align:center; color:#64748b; padding: 12px;">
@@ -81,18 +79,34 @@
         </div>
     </div>
 
-    <script src="JS/utils.js"></script>
-    <script src="JS/sidebar.js"></script>
-    <script src="JS/topbar.js"></script>
-    <script src="JS/deadlines.js"></script>
-    <script src="JS/reminders.js"></script>
-    <script src="JS/AI.js"></script>
-    <script>
-        if (typeof Session === 'undefined') {
-            window.location.href = "login.html";
+    <!-- Firebase Module Scripts -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+                "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+            }
         }
-
-        const user = Session.getUser();
+    </script>
+    
+    <script type="module" src="JS/firebase-config.js"></script>
+    <script type="module" src="JS/utils.js"></script>
+    <script type="module" src="JS/sidebar.js"></script>
+    <script type="module" src="JS/topbar.js"></script>
+    <script type="module" src="JS/deadlines.js"></script>
+    <script type="module" src="JS/reminders.js"></script>
+    <script type="module" src="JS/AI.js"></script>
+    
+    <script type="module">
+        import { auth } from './JS/firebase-config.js';
+        import { getCurrentUser } from './JS/auth.js';
+        import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+        import { db } from './JS/firebase-config.js';
+        import { Deadline } from './JS/deadlines.js';
+        
+        // Check if user is logged in via Firebase
+        const user = getCurrentUser();
         if (!user) {
             showToast("Please log in to continue", "info");
             setTimeout(() => { window.location.href = "login.html"; }, 500);
@@ -101,10 +115,11 @@
 
         const greetingElement = document.getElementById("dashboard-greeting");
         if (greetingElement) {
-            greetingElement.innerHTML = `Welcome, ${escapeHtml(user.name)}! 👋`;
+            // Get user name from Session or use email
+            const sessionUser = Session.getUser();
+            const userName = sessionUser?.name || user.email?.split('@')[0] || 'User';
+            greetingElement.innerHTML = `Welcome, ${escapeHtml(userName)}! 👋`;
         }
-
-        function userKey(key) { return `${user.email}_${key}`; }
 
         function escapeHtml(str) {
             if (!str) return '';
@@ -116,86 +131,60 @@
                 .replace(/'/g, '&#39;');
         }
 
-        function loadDashboardData() {
+        async function loadDashboardData() {
             try {
-                const courses = Storage.get(userKey("courses")) || [];
+                // Load courses from Firestore
+                const coursesQuery = query(collection(db, "courses"), where("userId", "==", user.uid));
+                const coursesSnapshot = await getDocs(coursesQuery);
+                const courses = [];
+                coursesSnapshot.forEach((doc) => {
+                    courses.push({ id: doc.id, ...doc.data() });
+                });
+                
                 const statCourses = document.getElementById("stat-courses");
                 if (statCourses) statCourses.textContent = courses.length;
 
+                // Load deadlines from Firestore
+                const allDeadlines = await Deadline.getAll();
+                const statDeadlines = document.getElementById("stat-deadlines");
+                if (statDeadlines) {
+                    statDeadlines.textContent = allDeadlines.length;
+                }
+
+                const deadlineContainer = document.getElementById("dashboard-deadlines-list");
+                if (deadlineContainer) {
+                    const upcoming = allDeadlines
+                        .filter(d => d.dueDate && !d.completed)
+                        .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+
+                    if (upcoming.length > 0) {
+                        deadlineContainer.innerHTML = "";
+                        upcoming.slice(0, 3).forEach(d => {
+                            const days = DateUtils.daysUntil(d.dueDate);
+                            const div = document.createElement("div");
+                            div.className = "deadline";
+                            div.innerHTML = `
+                                <span style="${days <= 2 ? "color:#ef4444;font-weight:bold;" : ""}">
+                                    ${escapeHtml(d.title)} — ${new Date(d.dueDate).toLocaleDateString()}
+                                </span>
+                                <span style="float:right; color:#64748b; font-size:0.85rem;">
+                                    ${days === 0 ? "Today!" : days === 1 ? "Tomorrow" : `In ${days} days`}
+                                </span>
+                            `;
+                            deadlineContainer.appendChild(div);
+                        });
+                    } else {
+                        deadlineContainer.innerHTML = `
+                            <div class="deadline">
+                                No upcoming deadlines yet.
+                            </div>
+                        `;
+                    }
+                }
                 
-                
-
-const allDeadlines = Deadline.getAll();
-
-const statDeadlines =
-    document.getElementById("stat-deadlines");
-
-if (statDeadlines) {
-    statDeadlines.textContent = allDeadlines.length;
-}
-
-const deadlineContainer =
-    document.getElementById("dashboard-deadlines-list");
-
-if (deadlineContainer) {
-
-    const upcoming = allDeadlines
-        .filter(d => d.dueDate)
-        .sort((a, b) =>
-            new Date(a.dueDate) - new Date(b.dueDate)
-        );
-
-    if (upcoming.length > 0) {
-
-        deadlineContainer.innerHTML = "";
-
-        upcoming.slice(0, 3).forEach(d => {
-
-            const days =
-                DateUtils.daysUntil(d.dueDate);
-
-            const div =
-                document.createElement("div");
-
-            div.className = "deadline";
-
-            div.innerHTML = `
-                <span style="
-                    ${days <= 2
-                        ? "color:#ef4444;font-weight:bold;"
-                        : ""}
-                ">
-                    ${escapeHtml(d.title)}
-                    —
-                    ${new Date(d.dueDate).toLocaleDateString()}
-                </span>
-
-                <span style="
-                    float:right;
-                    color:#64748b;
-                    font-size:0.85rem;
-                ">
-                    ${days === 0
-                        ? "Today!"
-                        : days === 1
-                        ? "Tomorrow"
-                        : `In ${days} days`}
-                </span>
-            `;
-
-            deadlineContainer.appendChild(div);
-        });
-
-    } else {
-
-        deadlineContainer.innerHTML = `
-            <div class="deadline">
-                No upcoming deadlines yet.
-            </div>
-        `;
-    }
-}
-                const studyPlan = Storage.get(userKey("studyPlan")) || [];
+                // Load study plan (still using localStorage for now)
+                const userEmail = user.email;
+                const studyPlan = Storage.get(`${userEmail}_studyPlan`) || [];
                 const todayStr = DateUtils.today();
                 const todaySessions = studyPlan.filter(s => s.date === todayStr);
 
@@ -215,7 +204,8 @@ if (deadlineContainer) {
                             row.innerHTML = `
                                 <td><strong>${escapeHtml(s.startTime)} &ndash; ${escapeHtml(s.endTime)}</strong></td>
                                 <td>${escapeHtml(s.course)}</td>
-                                <td style="color:${statusColor}; font-weight:600; text-transform:capitalize;">${escapeHtml(s.status || "pending")}</td>`;
+                                <td style="color:${statusColor}; font-weight:600; text-transform:capitalize;">${escapeHtml(s.status || "pending")}</td>
+                            `;
                         });
                     } else if (noMsg) {
                         noMsg.style.display = "block";
