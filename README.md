@@ -8,33 +8,32 @@
 
 ## Project Overview
 
-Planora is a web application designed to help students plan, organize, and track their study activities. The system generates personalized study schedules, monitors study progress, and adapts plans using rule-based logic.
+Planora is a web application that helps students plan, organize, and track their study activities. It generates personalized study schedules, monitors progress, and adapts plans using rule-based logic.
 
 ---
 
 ## Features
 
-- Create an account and securely log in/out
-- Add, edit, and remove courses
-- Enter assignment deadlines and exam dates
-- Define weekly availability for study sessions
-- Automatically generate weekly study plans
-- Track completed or missed study sessions
-- View study statistics and progress trends
-- Receive reminders for upcoming sessions and deadlines
+- Create an account and securely log in/out  
+- Add, edit, and remove courses  
+- Enter assignment deadlines and exam dates  
+- Define weekly availability for study sessions  
+- Automatically generate weekly study plans  
+- Track completed or missed study sessions  
+- View statistics and progress trends  
+- Receive reminders for upcoming sessions and deadlines  
 
 ---
 
 ## Prerequisites
 
-Before running this project, make sure you have the following installed:
+Before running this project, install the following:
 
 | Requirement | Version | Download |
 |---|---|---|
-| Node.js | v14 or higher | https://nodejs.org/ |
+| Node.js | v14+ | https://nodejs.org/ |
 | npm | Included with Node.js | - |
-| Git | Latest version | https://git-scm.com/ |
-| MongoDB Atlas Account | Free tier supported | https://www.mongodb.com/atlas |
+| Git | Latest | https://git-scm.com/ |
 
 ---
 
@@ -55,55 +54,23 @@ cd Planora/backend
 npm install
 ```
 
-This installs the required packages:
-
-- express
-- mongoose
-- bcryptjs
-- jsonwebtoken
-- cors
-- dotenv
-- nodemon
-
 ---
 
-### 3. Create the Environment File
+### 3. Environment Setup
 
-Create a `.env` file inside the `backend` folder.
-
-#### Windows (PowerShell)
-
-```powershell
-New-Item .env
-```
-
-#### macOS / Linux
+Create a `.env` file inside the `backend` folder:
 
 ```bash
 touch .env
 ```
 
----
-
-### 4. Add Environment Variables
-
-Open the `.env` file and add the following:
+Add the following variables:
 
 ```env
 PORT=5000
-MONGO_URI=mongodb+srv://planoraDB:%26123456@planora.w12us6l.mongodb.net/planora?retryWrites=true&w=majority
-JWT_SECRET=planora_secret_key_2026
+MONGO_URI='..'
+JWT_SECRET='..'
 ```
-
----
-
-## Environment Variables
-
-| Variable | Description | Example |
-|---|---|---|
-| PORT | Server port number | 5000 |
-| MONGO_URI | MongoDB Atlas connection string | mongodb+srv://... |
-| JWT_SECRET | Secret key used for JWT authentication | planora_secret_key_2026 |
 
 ---
 
@@ -117,28 +84,27 @@ npm run dev
 
 ### Expected Output
 
-```text
-🚀 Server running on http://localhost:5000
-✅ MongoDB Atlas connected successfully
-[nodemon] watching path(s): *.*
+```
+Server running on http://localhost:5000
+MongoDB connected successfully
 ```
 
 ---
 
 ## Project Structure
 
-```text
+```
 Planora/
 │
 ├── backend/
 │   ├── models/
 │   ├── routes/
-│   ├── middleware/
 │   ├── controllers/
+│   ├── middleware/
 │   ├── config/
-│   ├── .env
+│   ├── server.js
 │   ├── package.json
-│   └── server.js
+│   └── .env (not committed)
 │
 ├── frontend/
 │
@@ -166,3 +132,10 @@ Planora/
 - JWT (JSON Web Tokens)
 - bcryptjs
 
+---
+
+## Notes
+
+- Users interact only through the application interface (register/login system)
+- MongoDB is fully handled by the backend and is not accessible to users
+- No database setup is required for running the project
