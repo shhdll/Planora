@@ -47,9 +47,16 @@
                 </div>
 
                 <h2>Upcoming deadlines</h2>
-                <div id="deadlines-list">
-                    <div class="deadline">No upcoming deadlines yet. Add some on the Deadlines page.</div>
-                </div>
+
+<div id="dashboard-deadlines-list">
+
+    <div class="deadline">
+
+        No upcoming deadlines yet.
+
+    </div>
+
+</div>
 
                 <h2>Today&rsquo;s study plan</h2>
                 <div class="studyPlan">
@@ -78,7 +85,7 @@
     <script src="JS/sidebar.js"></script>
     <script src="JS/topbar.js"></script>
     <script src="JS/deadlines.js"></script>
-    <script src="JS/reminder.js"></script>
+    <script src="JS/reminders.js"></script>
     <script src="JS/AI.js"></script>
     <script>
         if (typeof Session === 'undefined') {
@@ -115,35 +122,79 @@
                 const statCourses = document.getElementById("stat-courses");
                 if (statCourses) statCourses.textContent = courses.length;
 
-                const allDeadlines = Deadline.getAll();
-                const upcoming = allDeadlines
-                    .filter(d => d.dueDate && DateUtils.daysUntil(d.dueDate) >= 0)
-                    .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+                
+                
 
-                const statDeadlines = document.getElementById("stat-deadlines");
-                if (statDeadlines) statDeadlines.textContent = upcoming.length;
+const allDeadlines = Deadline.getAll();
 
-                const deadlineContainer = document.getElementById("deadlines-list");
-                if (deadlineContainer) {
-                    if (upcoming.length > 0) {
-                        deadlineContainer.innerHTML = "";
-                        upcoming.slice(0, 5).forEach(d => {
-                            const days = DateUtils.daysUntil(d.dueDate);
-                            const urgency = days <= 2 ? "color:#ef4444; font-weight:bold;" : "";
-                            const div = document.createElement("div");
-                            div.className = "deadline";
-                            div.innerHTML = `
-                                <span style="${urgency}">${escapeHtml(d.title)} &mdash; ${DateUtils.formatDisplay(d.dueDate)}</span>
-                                <span style="float:right; color:#64748b; font-size:0.85rem;">
-                                    ${days === 0 ? "Today!" : days === 1 ? "Tomorrow" : `In ${days} days`}
-                                </span>`;
-                            deadlineContainer.appendChild(div);
-                        });
-                    } else {
-                        deadlineContainer.innerHTML = '<div class="deadline">No upcoming deadlines yet.</div>';
-                    }
-                }
+const statDeadlines =
+    document.getElementById("stat-deadlines");
 
+if (statDeadlines) {
+    statDeadlines.textContent = allDeadlines.length;
+}
+
+const deadlineContainer =
+    document.getElementById("dashboard-deadlines-list");
+
+if (deadlineContainer) {
+
+    const upcoming = allDeadlines
+        .filter(d => d.dueDate)
+        .sort((a, b) =>
+            new Date(a.dueDate) - new Date(b.dueDate)
+        );
+
+    if (upcoming.length > 0) {
+
+        deadlineContainer.innerHTML = "";
+
+        upcoming.slice(0, 3).forEach(d => {
+
+            const days =
+                DateUtils.daysUntil(d.dueDate);
+
+            const div =
+                document.createElement("div");
+
+            div.className = "deadline";
+
+            div.innerHTML = `
+                <span style="
+                    ${days <= 2
+                        ? "color:#ef4444;font-weight:bold;"
+                        : ""}
+                ">
+                    ${escapeHtml(d.title)}
+                    —
+                    ${new Date(d.dueDate).toLocaleDateString()}
+                </span>
+
+                <span style="
+                    float:right;
+                    color:#64748b;
+                    font-size:0.85rem;
+                ">
+                    ${days === 0
+                        ? "Today!"
+                        : days === 1
+                        ? "Tomorrow"
+                        : `In ${days} days`}
+                </span>
+            `;
+
+            deadlineContainer.appendChild(div);
+        });
+
+    } else {
+
+        deadlineContainer.innerHTML = `
+            <div class="deadline">
+                No upcoming deadlines yet.
+            </div>
+        `;
+    }
+}
                 const studyPlan = Storage.get(userKey("studyPlan")) || [];
                 const todayStr = DateUtils.today();
                 const todaySessions = studyPlan.filter(s => s.date === todayStr);

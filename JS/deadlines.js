@@ -119,9 +119,9 @@ class Deadline {
             </div>
 
             <p><strong>Course:</strong> ${deadline.course}</p>
-            <p><strong>Due:</strong> ${DateUtils.formatDisplay(
-              deadline.dueDate
-            )}</p>
+            <p><strong>Due:</strong> ${
+    new Date(deadline.dueDate).toLocaleString()
+}</p>
 
             <p>${deadline.description || "No description provided."}</p>
 
@@ -142,20 +142,36 @@ class Deadline {
 
   // Create Deadline object from html form
   static fromForm() {
-    // gets user input from form field
-    const title = document.getElementById("deadline-title").value; 
-    const course = document.getElementById("deadline-course").value;
-    
-    const date = document.getElementById("deadline-date").value;
-const time = document.getElementById("deadline-time").value || "23:59";
 
-const dueDate = `${date}T${time}`;
-    const priority = document.getElementById("deadline-priority").value;
-    const description = document.getElementById("deadline-description").value;
+  const title =
+    document.getElementById("deadline-title").value;
 
-    return new Deadline(title,course,dueDate,priority,description); // object from form data
-  }
-}
+  const course =
+    document.getElementById("deadline-course").value;
+
+  const date =
+    document.getElementById("deadline-date").value;
+
+  const time =
+    document.getElementById("deadline-time").value;
+
+  const dueDate =
+    `${date}T${time}`;
+
+  const priority =
+    document.getElementById("deadline-priority").value;
+
+  const description =
+    document.getElementById("deadline-description").value;
+
+  return new Deadline(
+    title,
+    course,
+    dueDate,
+    priority,
+    description
+  );
+}}
 
 // Initialize page
 function initDeadlinesPage() {

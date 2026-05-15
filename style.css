@@ -1198,3 +1198,76 @@ footer a:hover {
     color: white;
     text-decoration: underline;
 }
+.deadline-card{
+    background:#fff;
+    border-radius:16px;
+    padding:20px;
+    margin-top:20px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.08);
+    border-left:6px solid #3b82f6;
+}
+
+.deadline-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.deadline-header h3{
+    margin:0;
+    font-size:1.3rem;
+    color:#1e293b;
+}
+
+.priority{
+    padding:6px 12px;
+    border-radius:999px;
+    font-size:0.8rem;
+    font-weight:bold;
+    color:white;
+}
+
+.priority.high{
+    background:#ef4444;
+}
+
+.priority.medium{
+    background:#f59e0b;
+}
+
+.priority.low{
+    background:#22c55e;
+}
+
+.deadline-card p{
+    margin:10px 0;
+    color:#475569;
+}
+
+.deadline-actions{
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+}
+
+.deadline-actions button{
+    flex:1;
+    border:none;
+    padding:12px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:bold;
+    color:white;
+    background:#3b82f6;
+    transition:0.2s;
+}
+
+.deadline-actions button:hover{
+    opacity:0.9;
+}
+
+.deadline-card.completed{
+    opacity:0.7;
+    border-left-color:#22c55e;
+}
