@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <title>Planora - Availability</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Added: load shared utils (Storage, Session, showToast) and availability logic -->
+    <script src="JS/utils.js" defer></script>
+    <script src="JS/availability.js" defer></script>
 </head>
 
 <body>
@@ -32,7 +35,8 @@
         <p>Let Planora know when you are available to study, so we can help you create a better study plan.</p>
     </div>
 
-    <form onsubmit="alert('Availability saved successfully!'); window.location.href='dashboard.html'; return false;">
+    <!-- Changed: replaced inline onsubmit alert with a proper JS handler; added id for JS targeting -->
+    <form id="availability-form">
         <label>Select Available Days: </label><br><br>
         <input type="checkbox" name="days" value="sun">Sunday  
         <input type="checkbox" name="days" value="mon">Monday  
@@ -45,12 +49,14 @@
         <br><br><br>
 
         <label>Start Time</label><br>
-        <input class="input-format" type="time" required>
+        <!-- Added: id="start-time" so JS can read/populate the value -->
+        <input id="start-time" class="input-format" type="time" required>
 
         <br><br>
 
         <label>End Time</label><br>
-        <input class="input-format" type="time" required>
+        <!-- Added: id="end-time" so JS can read/populate the value -->
+        <input id="end-time" class="input-format" type="time" required>
 
         <br><br>
 
