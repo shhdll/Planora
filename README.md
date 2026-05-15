@@ -27,9 +27,9 @@ Planora is a web application designed to help students organize and manage their
 
 ## Live Demo
 
-```txt
+
 https://planora-f2a2b.web.app
-```
+
 
 No installation is required to use the hosted version.
 
