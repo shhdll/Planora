@@ -104,7 +104,6 @@ Planora/
 │   ├── config/
 │   ├── server.js
 │   ├── package.json
-│   └── .env (not committed)
 │
 ├── frontend/
 │
@@ -132,10 +131,4 @@ Planora/
 - JWT (JSON Web Tokens)
 - bcryptjs
 
----
 
-## Notes
-
-- Users interact only through the application interface (register/login system)
-- MongoDB is fully handled by the backend and is not accessible to users
-- No database setup is required for running the project
