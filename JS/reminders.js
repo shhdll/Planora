@@ -5,44 +5,40 @@ class Reminder {
   // Check upcoming deadlines
   static checkDeadlines() {
 
-    // get all deadlines
     const deadlines = Deadline.getAll();
 
-    // current date/time
     const now = new Date();
 
     deadlines.forEach((deadline) => {
 
-      // ignore completed deadlines
-      if (deadline.completed) return;
+        if (deadline.completed) return;
 
-      // deadline date
-      const dueDate = new Date(deadline.dueDate);
+        if (!deadline.dueDate) return;
 
-      // difference in milliseconds
-      const diff =
-        dueDate - now;
+        const dueDate =
+            new Date(deadline.dueDate);
 
-      // convert to hours
-      const hoursLeft =
-        diff / (1000 * 60 * 60);
+        if (isNaN(dueDate.getTime())) return;
 
-      // if deadline is within 24 hours
-      if (hoursLeft <= 24 && hoursLeft > 0) {
+        const diff =
+            dueDate.getTime() - now.getTime();
 
-        // toast message
-        showToast(
-          `Reminder: ${deadline.title} is due soon!`,
-          "warning"
-        );
+        const hoursLeft =
+            diff / (1000 * 60 * 60);
 
-        // browser notification
-        Reminder.sendBrowserNotification(
-          `${deadline.title} is due soon!`
-        );
-      }
+        if (hoursLeft <= 24 && hoursLeft > 0) {
+
+            showToast(
+                `Reminder: ${deadline.title} is due soon!`,
+                "warning"
+            );
+
+            Reminder.sendBrowserNotification(
+                `${deadline.title} is due soon!`
+            );
+        }
     });
-  }
+}
 
   // Browser notification
   static sendBrowserNotification(message) {
