@@ -17,7 +17,7 @@ function getCurrentUserId() {
   return user ? user.uid : null;
 }
 
-// Load all saved slots
+// Slots are stored per-day: [{day, startTime, endTime}, ...]
 async function loadSlots() {
 
   const userId = getCurrentUserId();
@@ -33,20 +33,24 @@ async function loadSlots() {
 
     const data = snap.data();
 
-    // Support old single-slot format
-    if (Array.isArray(data.slots)) {
-      return data.slots;
+    if (!Array.isArray(data.slots) || data.slots.length === 0) return [];
+
+    // Migrate old multi-day format {days: [], startTime, endTime}
+    if (Array.isArray(data.slots[0].days)) {
+      const perDay = [];
+      data.slots.forEach((slot) => {
+        slot.days.forEach((day) => {
+          perDay.push({
+            day,
+            startTime: slot.startTime,
+            endTime: slot.endTime
+          });
+        });
+      });
+      return perDay;
     }
 
-    if (data.days && data.days.length) {
-      return [{
-        days: data.days,
-        startTime: data.startTime,
-        endTime: data.endTime
-      }];
-    }
-
-    return [];
+    return data.slots;
 
   } catch (error) {
 
@@ -55,7 +59,6 @@ async function loadSlots() {
   }
 }
 
-// Save all slots
 async function saveSlots(slots) {
 
   const userId = getCurrentUserId();
@@ -85,6 +88,33 @@ async function saveSlots(slots) {
   }
 }
 
+// Merges adjacent or overlapping intervals for a single day
+function mergeIntervals(intervals) {
+
+  if (intervals.length <= 1) return intervals;
+
+  intervals.sort(
+    (a, b) => a.startTime.localeCompare(b.startTime)
+  );
+
+  const merged = [{ ...intervals[0] }];
+
+  for (let i = 1; i < intervals.length; i++) {
+
+    const last = merged[merged.length - 1];
+    const curr = intervals[i];
+
+    if (curr.startTime <= last.endTime) {
+      // Adjacent or overlapping — extend end if needed
+      if (curr.endTime > last.endTime) last.endTime = curr.endTime;
+    } else {
+      merged.push({ ...curr });
+    }
+  }
+
+  return merged;
+}
+
 const DAY_LABELS = {
   sun: "Sunday",
   mon: "Monday",
@@ -95,6 +125,10 @@ const DAY_LABELS = {
   sat: "Saturday"
 };
 
+const DAY_ORDER = [
+  "sun", "mon", "tue", "wed", "thu", "fri", "sat"
+];
+
 function formatTime(t) {
   if (!t) return "";
   const [h, m] = t.split(":");
@@ -103,10 +137,6 @@ function formatTime(t) {
   const h12 = hour % 12 || 12;
   return `${h12}:${m} ${ampm}`;
 }
-
-const DAY_ORDER = [
-  "sun", "mon", "tue", "wed", "thu", "fri", "sat"
-];
 
 function renderSchedule(slots) {
 
@@ -122,23 +152,19 @@ function renderSchedule(slots) {
     return;
   }
 
-  // Group time ranges by day
+  // Group by day
   const byDay = {};
   slots.forEach((slot) => {
-    slot.days.forEach((day) => {
-      if (!byDay[day]) byDay[day] = [];
-      byDay[day].push({
-        startTime: slot.startTime,
-        endTime: slot.endTime
-      });
+    if (!byDay[slot.day]) byDay[slot.day] = [];
+    byDay[slot.day].push({
+      startTime: slot.startTime,
+      endTime: slot.endTime
     });
   });
 
   section.style.display = "";
 
-  document.getElementById(
-    "avail-slots"
-  ).innerHTML =
+  document.getElementById("avail-slots").innerHTML =
     DAY_ORDER
       .filter((day) => byDay[day])
       .map((day) => `
@@ -206,17 +232,34 @@ async function handleAvailabilitySubmit(event) {
     return;
   }
 
-  slots = [...slots, { days: selectedDays, startTime, endTime }];
+  // For each selected day: pull existing intervals, add new one, merge, put back
+  let updated = [...slots];
+
+  selectedDays.forEach((day) => {
+
+    const existing = updated
+      .filter((s) => s.day === day)
+      .map((s) => ({ startTime: s.startTime, endTime: s.endTime }));
+
+    updated = updated.filter((s) => s.day !== day);
+
+    const merged = mergeIntervals([
+      ...existing,
+      { startTime, endTime }
+    ]);
+
+    merged.forEach((interval) => {
+      updated.push({ day, ...interval });
+    });
+  });
+
+  slots = updated;
 
   const success = await saveSlots(slots);
 
   if (success) {
 
-    showToast(
-      "Availability added!",
-      "success"
-    );
-
+    showToast("Availability saved!", "success");
     renderSchedule(slots);
     resetForm();
   }
