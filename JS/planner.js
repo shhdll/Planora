@@ -267,36 +267,24 @@ class StudyPlanner {
   }
 
   // =========================
-  // ADD HOURS
+  // TIME HELPERS
   // =========================
 
-  static addHours(
-    time,
-    hoursToAdd
-  ) {
+  static toMinutes(time) {
+    const [h, m] = time.split(":").map(Number);
+    return h * 60 + m;
+  }
 
-    let [hours, minutes] =
+  static fromMinutes(mins) {
+    const h = Math.floor(mins / 60);
+    const m = mins % 60;
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  }
 
-      time
-      .split(":")
-      .map(Number);
-
-    hours += hoursToAdd;
-
-    if (hours >= 24) {
-
-      hours -= 24;
-    }
-
-    return `
-
-      ${String(hours).padStart(2, '0')}
-
-      :
-
-      ${String(minutes).padStart(2, '0')}
-
-    `.replace(/\s/g, "");
+  // Snap to nearest :00 or :30 that is >= the given minute value
+  static snapToHalf(mins) {
+    const remainder = mins % 30;
+    return remainder === 0 ? mins : mins + (30 - remainder);
   }
 
   // =========================
@@ -427,14 +415,11 @@ class StudyPlanner {
 
       for (const slot of daySlots) {
 
-        let currentHour =
-          parseInt(slot.startTime.split(":")[0]);
-
-        const endHour =
-          parseInt(slot.endTime.split(":")[0]);
+        let current = this.snapToHalf(this.toMinutes(slot.startTime));
+        const slotEnd = this.toMinutes(slot.endTime);
 
         while (
-          currentHour + 2 <= endHour &&
+          current + 120 <= slotEnd &&
           deadlineIndex < deadlines.length
         ) {
 
@@ -446,15 +431,15 @@ class StudyPlanner {
             dueDate: deadline.dueDate,
             studyDate: date.toISOString().split("T")[0],
             day: dayCode,
-            startTime: `${String(currentHour).padStart(2, "0")}:00`,
-            endTime: `${String(currentHour + 2).padStart(2, "0")}:00`,
+            startTime: this.fromMinutes(current),
+            endTime: this.fromMinutes(current + 120),
             priority: deadline.priority,
             status: "pending",
             userId,
             createdAt: new Date().toISOString()
           });
 
-          currentHour += 2;
+          current += 120;
           deadlineIndex++;
         }
       }
@@ -640,13 +625,12 @@ class StudyPlanner {
 
       for (const slot of daySlots) {
 
-        let hour = parseInt(slot.startTime.split(":")[0]);
-        const endHour = parseInt(slot.endTime.split(":")[0]);
+        let current = this.snapToHalf(this.toMinutes(slot.startTime));
+        const slotEnd = this.toMinutes(slot.endTime);
 
-        while (hour + 2 <= endHour) {
+        while (current + 120 <= slotEnd) {
 
-          const startTime =
-            `${String(hour).padStart(2, "0")}:00`;
+          const startTime = this.fromMinutes(current);
 
           if (!taken.includes(`${dateStr}|${startTime}`)) {
 
@@ -657,7 +641,7 @@ class StudyPlanner {
               studyDate: dateStr,
               day: dayCode,
               startTime,
-              endTime: `${String(hour + 2).padStart(2, "00")}:00`,
+              endTime: this.fromMinutes(current + 120),
               priority: missed.priority,
               status: "pending",
               rescheduled: true,
@@ -668,7 +652,7 @@ class StudyPlanner {
             return true;
           }
 
-          hour += 2;
+          current += 120;
         }
       }
     }

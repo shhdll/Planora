@@ -219,18 +219,30 @@ function renderWeeklyCompletion(sessions) {
 }
 
 // ======================
-// 4. HOURS BY DAY
+// 4. THIS WEEK ACCOMPLISHED
 // ======================
 
 function renderHoursByDay(sessions) {
 
     destroyChart('_chartHoursByDay');
 
-    const DAY_CODES = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+    const DAY_CODES  = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
     const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const hours = [0, 0, 0, 0, 0, 0, 0];
 
+    const today = new Date();
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - today.getDay());
+    weekStart.setHours(0, 0, 0, 0);
+
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    weekEnd.setHours(23, 59, 59, 999);
+
     sessions.forEach((s) => {
+        if (s.status !== 'completed') return;
+        const d = new Date(s.studyDate);
+        if (d < weekStart || d > weekEnd) return;
         const idx = DAY_CODES.indexOf(s.day);
         if (idx !== -1) hours[idx] += sessionHours(s);
     });
@@ -242,7 +254,7 @@ function renderHoursByDay(sessions) {
             data: {
                 labels: DAY_LABELS,
                 datasets: [{
-                    label: 'Study hours',
+                    label: 'Hours completed',
                     data: hours,
                     backgroundColor: '#c4b5fd',
                     borderRadius: 8
@@ -253,7 +265,7 @@ function renderHoursByDay(sessions) {
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    y: { beginAtZero: true, title: { display: true, text: 'Hours' } }
+                    y: { beginAtZero: true, ticks: { stepSize: 1 }, title: { display: true, text: 'Hours' } }
                 }
             }
         }
