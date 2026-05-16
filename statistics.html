@@ -1,137 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
     <title>Planora - Statistics</title>
-    <link rel="stylesheet" href="style.css">
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
+
 <body class="page-app">
+
     <div class="app-shell">
+
         <div id="sidebar-container"></div>
+
         <div class="app-content-wrap">
+
             <div id="topbar-container"></div>
+
             <main class="app-main">
+
                 <div class="page-header">
+
                     <h1>Your study statistics</h1>
-                    <p>Track your study progress and stay motivated.</p>
+
+                    <p>
+                        Track your study progress
+                        and stay motivated.
+                    </p>
+
                 </div>
 
+
+                <!-- ====================== -->
+                <!-- STUDY OVERVIEW -->
+                <!-- ====================== -->
+
                 <h2>Study overview</h2>
+
                 <table>
+
                     <thead>
-                        <tr><th>Statistic</th><th>Value</th></tr>
+
+                        <tr>
+
+                            <th>Statistic</th>
+
+                            <th>Value</th>
+
+                        </tr>
+
                     </thead>
+
                     <tbody>
-                        <tr><td class="bold">Total courses</td><td id="stat-total-courses">3</td></tr>
-                        <tr><td class="bold">Total study sessions</td><td id="stat-total-sessions">38 hours</td></tr>
-                        <tr><td class="bold">Study hours this week</td><td id="stat-weekly-hours">10 hours</td></tr>
-                        <tr><td class="bold">Completed sessions</td><td id="stat-completed">2</td></tr>
+
+                        <tr>
+
+                            <td class="bold">
+                                Total courses
+                            </td>
+
+                            <td id="stat-total-courses">
+                                0
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td class="bold">
+                                Total study sessions
+                            </td>
+
+                            <td id="stat-total-sessions">
+                                0
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td class="bold">
+                                Completed sessions
+                            </td>
+
+                            <td id="stat-completed">
+                                0
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td class="bold">
+                                Pending sessions
+                            </td>
+
+                            <td id="stat-pending">
+                                0
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td class="bold">
+                                Completion rate
+                            </td>
+
+                            <td id="stat-rate">
+                                0%
+                            </td>
+
+                        </tr>
+
                     </tbody>
+
                 </table>
 
-                <h2>Progress trends</h2>
-                <table>
-                    <thead>
-                        <tr><th>Category</th><th>Subject</th><th>Activity</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="bold">Most studied</td>
-                            <td id="most-studied">Web Applications Development (SWE381)</td>
-                            <td class="positive" id="most-studied-change">+2h vs last week</td>
-                        </tr>
-                        <tr>
-                            <td class="bold">Least studied</td>
-                            <td id="least-studied">Database Systems (CS340)</td>
-                            <td class="negative" id="least-studied-change">-1h vs last week</td>
-                        </tr>
-                        <tr>
-                            <td class="bold">Weekly goal</td>
-                            <td id="weekly-goal">85% of target reached</td>
-                            <td id="weekly-goal-status" class="positive">On track</td>
-                        </tr>
-                    </tbody>
-                </table>
 
-                <p style="margin-top: 24px;">Great job! Keep following your study plan to stay on track.</p>
+                <!-- ====================== -->
+                <!-- CHART -->
+                <!-- ====================== -->
+
+                <h2>Progress overview</h2>
+
+                <div
+                    style="
+                        background:white;
+                        padding:25px;
+                        border-radius:18px;
+                        margin-top:20px;
+                        box-shadow:0 4px 14px rgba(0,0,0,0.08);
+                    "
+                >
+
+                    <canvas id="statsChart"></canvas>
+
+                </div>
+
+
+                <p style="margin-top:24px;">
+
+                    Great job! Keep following
+                    your study plan to stay on track.
+
+                </p>
+
             </main>
 
+
             <footer>
-                <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
+
+                <p>
+
+                    &copy; 2026 Planora.
+                    All Rights Reserved.
+                    |
+                    Contact:
+
+                    <a href="mailto:support@planora.com">
+
+                        support@planora.com
+
+                    </a>
+
+                </p>
+
             </footer>
+
         </div>
+
     </div>
 
-    <!-- Firebase Module Scripts -->
+
+    <!-- ====================== -->
+    <!-- FIREBASE -->
+    <!-- ====================== -->
+
     <script type="importmap">
+
         {
             "imports": {
-                "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
-                "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
-                "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+
+                "firebase/app":
+                "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+
+                "firebase/auth":
+                "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+
+                "firebase/firestore":
+                "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
             }
         }
+
     </script>
-    
-    <script type="module" src="JS/firebase-config.js"></script>
-    <script type="module" src="JS/utils.js"></script>
-    <script type="module" src="js/sidebar.js"></script>
-    <script type="module" src="JS/topbar.js"></script>
-    <script type="module" src="JS/auth.js"></script>
-    <script type="module" src="JS/config.js"></script>
-    <script type="module" src="JS/AI.js"></script>
-    <script type="module" src="JS/tracker.js"></script>
-    
-    <script type="module">
-        import { Session } from './JS/utils.js';
-        import { db, auth } from './JS/firebase-config.js';
-        import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-        import { Deadline } from './JS/deadlines.js';
-        
-        // Check if user is logged in
-        Session.require();
-        
-        // Load real statistics from Firestore
-        async function loadStatistics() {
-            try {
-                const user = auth.currentUser;
-                if (!user) return;
-                
-                // Get courses count
-                const coursesQuery = query(collection(db, "courses"), where("userId", "==", user.uid));
-                const coursesSnapshot = await getDocs(coursesQuery);
-                const totalCourses = coursesSnapshot.size;
-                document.getElementById("stat-total-courses").textContent = totalCourses || 0;
-                
-                // Get deadlines count (as a proxy for study sessions)
-                const deadlines = await Deadline.getAll();
-                const totalDeadlines = deadlines.length;
-                document.getElementById("stat-total-sessions").textContent = `${totalDeadlines * 2} hours`; // Example calculation
-                
-                // Update other statistics (these are currently placeholder examples)
-                // You can enhance this with real study session data later
-                
-                // For now, keep placeholder data for remaining stats
-                // But mark them as coming from live data
-                if (totalCourses === 0) {
-                    document.getElementById("stat-total-courses").textContent = "0";
-                    document.getElementById("most-studied").textContent = "Add courses to see statistics";
-                    document.getElementById("least-studied").textContent = "Add courses to see statistics";
-                    document.getElementById("weekly-goal").textContent = "Add courses and deadlines";
-                }
-                
-            } catch (error) {
-                console.error("Error loading statistics:", error);
-            }
-        }
-        
-        // Load statistics when page is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', loadStatistics);
-        } else {
-            loadStatistics();
-        }
+
+
+    <!-- ====================== -->
+    <!-- MODULES -->
+    <!-- ====================== -->
+
+    <script
+        type="module"
+        src="JS/firebase-config.js">
     </script>
+
+    <script
+        type="module"
+        src="JS/utils.js">
+    </script>
+
+    <script
+        type="module"
+        src="JS/sidebar.js">
+    </script>
+
+    <script
+        type="module"
+        src="JS/topbar.js">
+    </script>
+
+    <script
+        type="module"
+        src="JS/auth.js">
+    </script>
+
+    <script
+        type="module"
+        src="JS/tracker.js">
+    </script>
+
+    <script
+        type="module"
+        src="JS/stats.js">
+    </script>
+
 </body>
+
 </html>

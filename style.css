@@ -1627,6 +1627,33 @@ footer a:hover {
     transform: scale(1.04);
 }
 
+/* Study plan loading */
+.plan-loading {
+    text-align: center;
+    padding: 32px;
+    color: #94a3b8;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.plan-spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #e2e8f0;
+    border-top-color: #6366f1;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 /* Availability Day Toggles */
 .avail-days-grid {
     display: flex;

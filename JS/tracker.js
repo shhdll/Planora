@@ -1,131 +1,293 @@
 // JS/tracker.js
-//// doonntttt truustttt ittttttt 
-// Tracker class for study sessions
+
+import { db, auth } from './firebase-config.js';
+
+import {
+  collection,
+  query,
+  where,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 class Tracker {
-    constructor() {
-        this.sessions = JSON.parse(localStorage.getItem("studySessions")) || [];
+
+  // =========================
+  // GET USER ID
+  // =========================
+
+  static getUserId() {
+
+    const user = auth.currentUser;
+
+    return user ? user.uid : null;
+  }
+
+  // =========================
+  // TOTAL COURSES
+  // =========================
+
+  static async getTotalCourses() {
+
+    const userId = this.getUserId();
+
+    if (!userId) return 0;
+
+    const q = query(
+
+      collection(db, "courses"),
+
+      where("userId", "==", userId)
+    );
+
+    const snapshot =
+      await getDocs(q);
+
+    return snapshot.size;
+  }
+
+  // =========================
+  // GET ALL DEADLINES
+  // =========================
+
+  static async getDeadlines() {
+
+    const userId =
+      this.getUserId();
+
+    if (!userId) return [];
+
+    const q = query(
+
+      collection(db, "deadlines"),
+
+      where("userId", "==", userId)
+    );
+
+    const snapshot =
+      await getDocs(q);
+
+    const deadlines = [];
+
+    snapshot.forEach((docItem) => {
+
+      deadlines.push({
+
+        id: docItem.id,
+
+        ...docItem.data()
+      });
+    });
+
+    return deadlines;
+  }
+
+  // =========================
+  // TOTAL DEADLINES
+  // =========================
+
+  static async getTotalStudySessions() {
+
+    const deadlines =
+      await this.getDeadlines();
+
+    return deadlines.length;
+  }
+
+  // =========================
+  // COMPLETED DEADLINES
+  // =========================
+
+  static async getCompletedSessions() {
+
+    const deadlines =
+      await this.getDeadlines();
+
+    return deadlines.filter(
+
+      d => d.completed === true
+
+    ).length;
+  }
+
+  // =========================
+  // PENDING DEADLINES
+  // =========================
+
+  static async getPendingSessions() {
+
+    const deadlines =
+      await this.getDeadlines();
+
+    return deadlines.filter(
+
+      d => !d.completed
+
+    ).length;
+  }
+
+  // =========================
+  // MISSED DEADLINES
+  // =========================
+
+  static async getMissedSessions() {
+
+    const deadlines =
+      await this.getDeadlines();
+
+    const now =
+      new Date();
+
+    return deadlines.filter((d) => {
+
+      if (d.completed) {
+
+        return false;
+      }
+
+      return new Date(d.dueDate) < now;
+
+    }).length;
+  }
+
+  // =========================
+  // MOST / LEAST STUDIED
+  // =========================
+
+  static async getProgressTrends() {
+
+    const deadlines =
+      await this.getDeadlines();
+
+    if (!deadlines.length) {
+
+      return {
+
+        mostStudied: "No data",
+
+        leastStudied: "No data"
+      };
     }
 
-    saveSessions() {
-        localStorage.setItem("studySessions", JSON.stringify(this.sessions));
+    const courseStats = {};
+
+    deadlines.forEach((deadline) => {
+
+      const course =
+        deadline.course || "Unknown";
+
+      if (!courseStats[course]) {
+
+        courseStats[course] = {
+
+          completed: 0
+        };
+      }
+
+      if (deadline.completed) {
+
+        courseStats[course].completed += 1;
+      }
+    });
+
+    const entries =
+      Object.entries(courseStats);
+
+    entries.sort(
+
+      (a, b) =>
+
+        b[1].completed -
+        a[1].completed
+    );
+
+    return {
+
+      mostStudied:
+        entries[0][0],
+
+      leastStudied:
+        entries[
+          entries.length - 1
+        ][0]
+    };
+  }
+
+  // =========================
+  // COMPLETION RATE
+  // =========================
+
+  static async getCompletionRate() {
+
+    const total =
+      await this.getTotalStudySessions();
+
+    const completed =
+      await this.getCompletedSessions();
+
+    if (total === 0) {
+
+      return 0;
     }
 
-    markSession(sessionId, status) {
-        const existing = this.sessions.find(s => s.id === sessionId);
+    return Math.round(
 
-        if (existing) {
-            existing.status = status;
-        } else {
-            this.sessions.push({
-                id: sessionId,
-                status: status,
-                date: new Date().toISOString()
-            });
-        }
+      (
+        completed / total
+      ) * 100
+    );
+  }
 
-        this.saveSessions();
-        this.updateStatistics();
-    }
+  // =========================
+  // GET ALL STATISTICS
+  // =========================
 
-    getCompletedSessions() {
-        return this.sessions.filter(s => s.status === "completed").length;
-    }
+  static async getStatistics() {
 
-    getMissedSessions() {
-        return this.sessions.filter(s => s.status === "missed").length;
-    }
+    const totalCourses =
+      await this.getTotalCourses();
 
-    getTotalSessions() {
-        return this.sessions.length;
-    }
+    const totalSessions =
+      await this.getTotalStudySessions();
 
-    updateStatistics() {
-        const completed = this.getCompletedSessions();
-        const missed = this.getMissedSessions();
-        const total = this.getTotalSessions();
+    const completedSessions =
+      await this.getCompletedSessions();
 
-        const completedElement = document.getElementById("stat-completed");
-        const totalSessionsElement = document.getElementById("stat-total-sessions");
-        const weeklyHoursElement = document.getElementById("stat-weekly-hours");
-        const weeklyGoalElement = document.getElementById("weekly-goal");
-        const weeklyGoalStatusElement = document.getElementById("weekly-goal-status");
+    const pendingSessions =
+      await this.getPendingSessions();
 
-        if (completedElement) {
-            completedElement.textContent = completed;
-        }
+    const missedSessions =
+      await this.getMissedSessions();
 
-        if (totalSessionsElement) {
-            totalSessionsElement.textContent = `${total * 1.5} hours`;
-        }
+    const completionRate =
+      await this.getCompletionRate();
 
-        if (weeklyHoursElement) {
-            weeklyHoursElement.textContent = `${completed * 1.5} hours`;
-        }
+    const trends =
+      await this.getProgressTrends();
 
-        if (weeklyGoalElement) {
-            if (total === 0) {
-                weeklyGoalElement.textContent = "No sessions tracked yet";
-            } else {
-                const percent = Math.round((completed / total) * 100);
-                weeklyGoalElement.textContent = `${percent}% of sessions completed`;
-            }
-        }
+    return {
 
-        if (weeklyGoalStatusElement) {
-            if (total === 0) {
-                weeklyGoalStatusElement.textContent = "No data";
-                weeklyGoalStatusElement.className = "";
-            } else if (completed >= missed) {
-                weeklyGoalStatusElement.textContent = "On track";
-                weeklyGoalStatusElement.className = "positive";
-            } else {
-                weeklyGoalStatusElement.textContent = "Needs improvement";
-                weeklyGoalStatusElement.className = "negative";
-            }
-        }
-    }
+      totalCourses,
 
-    attachStudyPlanListeners() {
-        const radios = document.querySelectorAll("input[type='radio']");
+      totalSessions,
 
-        radios.forEach((radio) => {
-            radio.addEventListener("change", (event) => {
-                const sessionId = event.target.name;
-                const status = event.target.value;
+      completedSessions,
 
-                this.markSession(sessionId, status);
-            });
-        });
-    }
+      pendingSessions,
 
-    loadSavedChoices() {
-        this.sessions.forEach((session) => {
-            const radio = document.querySelector(
-                `input[name="${session.id}"][value="${session.status}"]`
-            );
+      missedSessions,
 
-            if (radio) {
-                radio.checked = true;
-            }
-        });
-    }
+      completionRate,
 
-    init() {
-        this.attachStudyPlanListeners();
-        this.loadSavedChoices();
-        this.updateStatistics();
-    }
+      mostStudied:
+        trends.mostStudied,
+
+      leastStudied:
+        trends.leastStudied
+    };
+  }
 }
 
-// Create object from Tracker
-const tracker = new Tracker();
+window.Tracker =
+  Tracker;
 
-// Run tracker when page loads
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => tracker.init());
-} else {
-    tracker.init();
-}
-
-// Export if another file needs it
 export { Tracker };

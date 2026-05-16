@@ -6,80 +6,186 @@
     <title>Planora - Study Plan</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body class="page-app">
+
     <div class="app-shell">
+
         <div id="sidebar-container"></div>
+
         <div class="app-content-wrap">
+
             <div id="topbar-container"></div>
+
             <main class="app-main">
+
                 <div class="page-header">
+
                     <h1>Your study plan</h1>
-                    <p>Your study plan will appear here after you add your courses, deadlines, and availability.</p>
+
+                    <p>
+                        Your study plan will appear here
+                        after you add your courses,
+                        deadlines, and availability.
+                    </p>
+
                 </div>
 
-                <h2>Example study plan</h2>
+                <h2>Weekly study plan</h2>
+
                 <button id="generate-plan-btn">
-    Generate Weekly Study Plan
-</button>
+
+                    Generate Weekly Study Plan
+
+                </button>
+
                 <table>
+
                     <thead>
-                        <tr>
-                            <th>Day</th>
-                            <th>Session</th>
-                            <th>Study time</th>
-                            <th>Action</th>
-                        </tr>
+
+                       <thead>
+
+    <tr>
+
+        <th>Date</th>
+
+        <th>Day</th>
+
+        <th>Session</th>
+
+        <th>Study time</th>
+
+        <th>Status</th>
+
+        <th>Action</th>
+
+    </tr>
+
+</thead>
+
                     </thead>
-                   <tbody id="study-plan-body">
-</tbody>
+
+                    <tbody id="study-plan-body">
+
+                    </tbody>
+
                 </table>
+
             </main>
 
             <footer>
-                <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
+
+                <p>
+                    &copy; 2026 Planora.
+                    All Rights Reserved.
+                    |
+                    Contact:
+                    <a href="mailto:support@planora.com">
+                        support@planora.com
+                    </a>
+                </p>
+
             </footer>
+
         </div>
+
     </div>
 
     <!-- Firebase Module Scripts -->
+
     <script type="importmap">
+
         {
             "imports": {
-                "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
-                "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
-                "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+
+                "firebase/app":
+                "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+
+                "firebase/auth":
+                "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+
+                "firebase/firestore":
+                "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
             }
         }
+
     </script>
-    
-    <script type="module" src="JS/firebase-config.js"></script>
-    <script type="module" src="JS/utils.js"></script>
-    <script type="module" src="js/sidebar.js"></script>
-    <script type="module" src="JS/topbar.js"></script>
-    <script type="module" src="JS/auth.js"></script>
-    <script type="module" src="JS/config.js"></script>
-    <script type="module" src="JS/AI.js"></script>
-    <script type="module" src="JS/planner.js"></script>
-    <script type="module" src="JS/tracker.js"></script>
-    
+
+    <script
+        type="module"
+        src="JS/firebase-config.js">
+    </script>
+
+    <script
+        type="module"
+        src="JS/utils.js">
+    </script>
+
+    <script
+        type="module"
+        src="JS/sidebar.js">
+    </script>
+
+    <script
+        type="module"
+        src="JS/topbar.js">
+    </script>
+
+    <script
+        type="module"
+        src="JS/auth.js">
+    </script>
+
+    <script
+        type="module"
+        src="JS/config.js">
+    </script>
+
+    <script
+        type="module"
+        src="JS/AI.js">
+    </script>
+
+    <script
+        type="module"
+        src="JS/planner.js">
+    </script>
+
     <script type="module">
 
-import { Session } from './JS/utils.js';
-import { StudyPlanner } from './JS/planner.js';
+        import { Session }
+        from './JS/utils.js';
 
-Session.require();
+        import { StudyPlanner }
+        from './JS/planner.js';
 
-await StudyPlanner.renderStudyPlan();
+        import { auth }
+        from './JS/firebase-config.js';
 
-const btn = document.getElementById("generate-plan-btn");
+        Session.require();
 
-if (btn) {
+        auth.onAuthStateChanged(async (user) => {
 
-    btn.addEventListener("click", async () => {
-        await StudyPlanner.generateWeeklyPlan();
-    });
-}
+            if (!user) return;
 
-</script>
+            await StudyPlanner.renderStudyPlan();
+
+            const btn =
+                document.getElementById(
+                    "generate-plan-btn"
+                );
+
+            if (btn) {
+                btn.addEventListener(
+                    "click",
+                    async () => {
+                        await StudyPlanner.generateWeeklyPlan();
+                    }
+                );
+            }
+        });
+
+    </script>
+
 </body>
-</html>
+</html> 

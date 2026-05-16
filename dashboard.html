@@ -2,227 +2,285 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
     <title>Planora - Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
 
 <body class="page-app">
 
     <div class="app-shell">
+
         <div id="sidebar-container"></div>
 
         <div class="app-content-wrap">
+
             <div id="topbar-container"></div>
 
             <main class="app-main">
+
                 <div class="page-header">
-                    <h1 id="dashboard-greeting">Welcome!</h1>
-                    <p>Your study dashboard at a glance</p>
+
+                    <h1 id="dashboard-greeting">
+                        Welcome!
+                    </h1>
+
+                    <p>
+                        Your study dashboard at a glance
+                    </p>
+
                 </div>
+
+
+                <!-- OVERVIEW -->
 
                 <div class="overview">
+
                     <div class="card">
-                        <h3>Total courses</h3>
-                        <p id="stat-courses">0</p>
+
+                        <h3>
+                            Total courses
+                        </h3>
+
+                        <p id="stat-courses">
+                            0
+                        </p>
+
                     </div>
+
+
                     <div class="card">
-                        <h3>Upcoming deadlines</h3>
-                        <p id="stat-deadlines">0</p>
+
+                        <h3>
+                            Upcoming deadlines
+                        </h3>
+
+                        <p id="stat-deadlines">
+                            0
+                        </p>
+
                     </div>
+
+
                     <div class="card">
-                        <h3>Sessions today</h3>
-                        <p id="stat-sessions">0</p>
+
+                        <h3>
+                            Sessions today
+                        </h3>
+
+                        <p id="stat-sessions">
+                            0
+                        </p>
+
                     </div>
+
                 </div>
 
-                <h2>Quick actions</h2>
+
+                <!-- QUICK ACTIONS -->
+
+                <h2>
+                    Quick actions
+                </h2>
+
                 <div class="buttons">
-                    <a href="courses.html">My courses</a>
-                    <a href="deadlines.html">Deadlines</a>
-                    <a href="availability.html">Availability</a>
-                    <a href="study-plan.html">Study plan</a>
-                    <a href="statistics.html">Statistics</a>
+
+                    <a href="courses.html">
+                        My courses
+                    </a>
+
+                    <a href="deadlines.html">
+                        Deadlines
+                    </a>
+
+                    <a href="availability.html">
+                        Availability
+                    </a>
+
+                    <a href="study-plan.html">
+                        Study plan
+                    </a>
+
+                    <a href="statistics.html">
+                        Statistics
+                    </a>
+
                 </div>
 
-                <h2>Upcoming deadlines</h2>
+
+                <!-- UPCOMING DEADLINES -->
+
+                <h2>
+                    Upcoming deadlines
+                </h2>
 
                 <div id="dashboard-deadlines-list">
+
                     <div class="deadline">
+
                         No upcoming deadlines yet.
+
                     </div>
+
                 </div>
 
-                <h2>Today&rsquo;s study plan</h2>
+
+                <!-- TODAY PLAN -->
+
+                <h2>
+                    Today’s study plan
+                </h2>
+
                 <div class="studyPlan">
+
                     <div class="table-wrap">
+
                         <table id="today-plan-table">
+
                             <thead>
+
                                 <tr>
-                                    <th>Time</th>
-                                    <th>Course</th>
-                                    <th>Status</th>
+
+                                    <th>
+                                        Time
+                                    </th>
+
+                                    <th>
+                                        Course
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
                                 </tr>
+
                             </thead>
+
                         </table>
+
                     </div>
-                    <p id="no-sessions-msg" style="text-align:center; color:#64748b; padding: 12px;">
-                        No study sessions today. Generate a study plan first.
+
+
+                    <p
+                        id="no-sessions-msg"
+
+                        style="
+                            text-align:center;
+                            color:#64748b;
+                            padding:12px;
+                        "
+                    >
+
+                        No study sessions today.
+                        Generate a study plan first.
+
                     </p>
+
                 </div>
+
             </main>
 
+
             <footer>
-                <p>&copy; 2026 Planora. All rights reserved. · <a href="mailto:support@planora.com">support@planora.com</a></p>
+
+                <p>
+
+                    &copy; 2026 Planora.
+                    All rights reserved.
+
+                    ·
+
+                    <a href="mailto:support@planora.com">
+
+                        support@planora.com
+
+                    </a>
+
+                </p>
+
             </footer>
+
         </div>
+
     </div>
 
-    <!-- Firebase Module Scripts -->
+
+    <!-- FIREBASE -->
+
     <script type="importmap">
+
         {
             "imports": {
-                "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
-                "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
-                "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+
+                "firebase/app":
+                "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+
+                "firebase/auth":
+                "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+
+                "firebase/firestore":
+                "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
             }
         }
+
     </script>
-    
-    <script type="module" src="JS/firebase-config.js"></script>
-    <script type="module" src="JS/utils.js"></script>
-    <script type="module" src="js/sidebar.js"></script>
-    <script type="module" src="JS/topbar.js"></script>
-    <script type="module" src="JS/deadlines.js"></script>
-    <script type="module" src="JS/reminders.js"></script>
-    <script type="module" src="JS/AI.js"></script>
-    
-    <script type="module">
-        import { auth } from './JS/firebase-config.js';
-        import { getCurrentUser } from './JS/auth.js';
-        import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-        import { db } from './JS/firebase-config.js';
-        import { Deadline } from './JS/deadlines.js';
-        
-        // Check if user is logged in via Firebase
-        const user = getCurrentUser();
-        if (!user) {
-            showToast("Please log in to continue", "info");
-            setTimeout(() => { window.location.href = "login.html"; }, 500);
-            throw new Error("User not logged in");
-        }
 
-        const greetingElement = document.getElementById("dashboard-greeting");
-        if (greetingElement) {
-            // Get user name from Session or use email
-            const sessionUser = Session.getUser();
-            const userName = sessionUser?.name || user.email?.split('@')[0] || 'User';
-            greetingElement.innerHTML = `Welcome, ${escapeHtml(userName)}! 👋`;
-        }
 
-        function escapeHtml(str) {
-            if (!str) return '';
-            return str
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;');
-        }
+    <!-- MODULES -->
 
-        async function loadDashboardData() {
-            try {
-                // Load courses from Firestore
-                const coursesQuery = query(collection(db, "courses"), where("userId", "==", user.uid));
-                const coursesSnapshot = await getDocs(coursesQuery);
-                const courses = [];
-                coursesSnapshot.forEach((doc) => {
-                    courses.push({ id: doc.id, ...doc.data() });
-                });
-                
-                const statCourses = document.getElementById("stat-courses");
-                if (statCourses) statCourses.textContent = courses.length;
+    <script
+        type="module"
+        src="JS/firebase-config.js">
+    </script>
 
-                // Load deadlines from Firestore
-                const allDeadlines = await Deadline.getAll();
-                const statDeadlines = document.getElementById("stat-deadlines");
-                if (statDeadlines) {
-                    statDeadlines.textContent = allDeadlines.length;
-                }
+    <script
+        type="module"
+        src="JS/utils.js">
+    </script>
 
-                const deadlineContainer = document.getElementById("dashboard-deadlines-list");
-                if (deadlineContainer) {
-                    const upcoming = allDeadlines
-                        .filter(d => d.dueDate && !d.completed)
-                        .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+    <script
+        type="module"
+        src="JS/sidebar.js">
+    </script>
 
-                    if (upcoming.length > 0) {
-                        deadlineContainer.innerHTML = "";
-                        upcoming.slice(0, 3).forEach(d => {
-                            const days = DateUtils.daysUntil(d.dueDate);
-                            const div = document.createElement("div");
-                            div.className = "deadline";
-                            div.innerHTML = `
-                                <span style="${days <= 2 ? "color:#ef4444;font-weight:bold;" : ""}">
-                                    ${escapeHtml(d.title)} — ${new Date(d.dueDate).toLocaleDateString()}
-                                </span>
-                                <span style="float:right; color:#64748b; font-size:0.85rem;">
-                                    ${days === 0 ? "Today!" : days === 1 ? "Tomorrow" : `In ${days} days`}
-                                </span>
-                            `;
-                            deadlineContainer.appendChild(div);
-                        });
-                    } else {
-                        deadlineContainer.innerHTML = `
-                            <div class="deadline">
-                                No upcoming deadlines yet.
-                            </div>
-                        `;
-                    }
-                }
-                
-                // Load study plan (still using localStorage for now)
-                const userEmail = user.email;
-                const studyPlan = Storage.get(`${userEmail}_studyPlan`) || [];
-                const todayStr = DateUtils.today();
-                const todaySessions = studyPlan.filter(s => s.date === todayStr);
+    <script
+        type="module"
+        src="JS/topbar.js">
+    </script>
 
-                const statSessions = document.getElementById("stat-sessions");
-                if (statSessions) statSessions.textContent = todaySessions.length;
+    <script
+        type="module"
+        src="JS/deadlines.js">
+    </script>
 
-                const table = document.getElementById("today-plan-table");
-                const noMsg = document.getElementById("no-sessions-msg");
+    <script
+        type="module"
+        src="JS/reminders.js">
+    </script>
 
-                if (table) {
-                    while (table.rows.length > 1) table.deleteRow(1);
-                    if (todaySessions.length > 0 && noMsg) {
-                        noMsg.style.display = "none";
-                        todaySessions.forEach(s => {
-                            const row = table.insertRow();
-                            const statusColor = s.status === "completed" ? "#22c55e" : s.status === "missed" ? "#ef4444" : "#64748b";
-                            row.innerHTML = `
-                                <td><strong>${escapeHtml(s.startTime)} &ndash; ${escapeHtml(s.endTime)}</strong></td>
-                                <td>${escapeHtml(s.course)}</td>
-                                <td style="color:${statusColor}; font-weight:600; text-transform:capitalize;">${escapeHtml(s.status || "pending")}</td>
-                            `;
-                        });
-                    } else if (noMsg) {
-                        noMsg.style.display = "block";
-                    }
-                }
-            } catch (error) {
-                console.error("Error loading dashboard data:", error);
-                showToast("Error loading dashboard data", "error");
-            }
-        }
+    <script
+        type="module"
+        src="JS/AI.js">
+    </script>
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', loadDashboardData);
-        } else {
-            loadDashboardData();
-        }
+    <script
+        type="module"
+        src="JS/dashboard.js">
     </script>
 
 </body>
+
 </html>
