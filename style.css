@@ -2364,3 +2364,37 @@ footer a:hover {
     font-size: 1.2rem;
     margin-right: auto;
 }
+/* Add to your existing CSS for better mobile experience */
+
+/* Ensure the close button works well */
+.mobile-close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #64748b;
+    padding: 8px;
+    transition: color 0.2s;
+}
+
+.mobile-close-btn:hover {
+    color: #4A90E2;
+}
+
+/* Prevent body scroll when menu is open on mobile */
+body.menu-open {
+    overflow: hidden;
+}
+
+/* Ensure sidebar links are clickable on mobile */
+@media (max-width: 768px) {
+    .app-nav__link {
+        font-size: 16px;
+        padding: 14px 16px !important;
+    }
+    
+    /* Add a subtle animation for the menu button */
+    .mobile-menu-btn:active {
+        transform: scale(0.95);
+    }
+}
