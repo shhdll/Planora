@@ -598,28 +598,114 @@ class StudyPlanner {
   }
 
   // =========================
+  // RESCHEDULE
+  // =========================
+
+  static async reschedule(missed) {
+
+    const availSlots =
+      await this.getAvailabilitySlots();
+
+    if (!availSlots.length) return false;
+
+    const allPlans = await this.getPlans();
+
+    // Collect already-occupied pending slots to avoid overlap
+    const taken = allPlans
+      .filter((p) => p.status === "pending")
+      .map((p) => `${p.studyDate}|${p.startTime}`);
+
+    const DAY_CODES =
+      ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+
+    const slotsByDay = {};
+    availSlots.forEach((s) => {
+      if (!slotsByDay[s.day]) slotsByDay[s.day] = [];
+      slotsByDay[s.day].push(s);
+    });
+
+    // Search the next 7 days for a free 2-hour window
+    const start = new Date();
+    start.setDate(start.getDate() + 1);
+    start.setHours(0, 0, 0, 0);
+
+    for (let i = 0; i < 7; i++) {
+
+      const date = new Date(start);
+      date.setDate(start.getDate() + i);
+
+      const dayCode = DAY_CODES[date.getDay()];
+      const dateStr = date.toISOString().split("T")[0];
+      const daySlots = slotsByDay[dayCode] || [];
+
+      for (const slot of daySlots) {
+
+        let hour = parseInt(slot.startTime.split(":")[0]);
+        const endHour = parseInt(slot.endTime.split(":")[0]);
+
+        while (hour + 2 <= endHour) {
+
+          const startTime =
+            `${String(hour).padStart(2, "0")}:00`;
+
+          if (!taken.includes(`${dateStr}|${startTime}`)) {
+
+            await addDoc(this.collectionRef, {
+              title: missed.title,
+              course: missed.course,
+              dueDate: missed.dueDate,
+              studyDate: dateStr,
+              day: dayCode,
+              startTime,
+              endTime: `${String(hour + 2).padStart(2, "00")}:00`,
+              priority: missed.priority,
+              status: "pending",
+              rescheduled: true,
+              userId: this.getUserId(),
+              createdAt: new Date().toISOString()
+            });
+
+            return true;
+          }
+
+          hour += 2;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  // =========================
   // MISSED
   // =========================
 
   static async markMissed(id) {
 
-    const ref =
+    const allPlans = await this.getPlans();
+    const missed = allPlans.find((p) => p.id === id);
 
-      doc(
-        db,
-        "studyPlans",
-        id
+    await updateDoc(
+      doc(db, "studyPlans", id),
+      { status: "missed" }
+    );
+
+    if (missed) {
+
+      const rescheduled =
+        await this.reschedule(missed);
+
+      showToast(
+        rescheduled
+          ? "Session missed — rescheduled to the next available slot."
+          : "Session missed. No free slot found in the next 7 days.",
+        "info"
       );
 
-    await updateDoc(ref, {
+    } else {
 
-      status: "missed"
-    });
-
-    showToast(
-      "Session marked as missed.",
-      "info"
-    );
+      showToast("Session marked as missed.", "info");
+    }
 
     await this.renderStudyPlan();
   }

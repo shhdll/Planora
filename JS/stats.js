@@ -65,6 +65,12 @@ async function loadStatistics() {
 
 
     document.getElementById(
+        "stat-missed"
+    ).textContent =
+        stats.missedSessions;
+
+
+    document.getElementById(
         "stat-rate"
     ).textContent =
         stats.completionRate + "%";
@@ -97,10 +103,9 @@ async function loadStatistics() {
 
                 labels: [
 
-                    'Courses',
-                    'Deadlines',
                     'Completed',
-                    'Pending'
+                    'Pending',
+                    'Missed'
 
                 ],
 
@@ -109,26 +114,23 @@ async function loadStatistics() {
                     {
 
                         label:
-                            'Statistics',
+                            'Sessions',
 
                         data: [
 
-                            stats.totalCourses,
-
-                            stats.totalSessions,
-
                             stats.completedSessions,
 
-                            stats.pendingSessions
+                            stats.pendingSessions,
+
+                            stats.missedSessions
 
                         ],
 
                         backgroundColor: [
 
-                            '#3b82f6',
-                            '#f59e0b',
                             '#22c55e',
-                            '#64748b'
+                            '#3b82f6',
+                            '#ef4444'
 
                         ],
 

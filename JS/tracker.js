@@ -46,107 +46,67 @@ class Tracker {
   }
 
   // =========================
-  // GET ALL DEADLINES
+  // GET STUDY PLAN SESSIONS
   // =========================
 
-  static async getDeadlines() {
+  static async getStudySessions() {
 
-    const userId =
-      this.getUserId();
-
+    const userId = this.getUserId();
     if (!userId) return [];
 
     const q = query(
-
-      collection(db, "deadlines"),
-
+      collection(db, "studyPlans"),
       where("userId", "==", userId)
     );
 
-    const snapshot =
-      await getDocs(q);
-
-    const deadlines = [];
+    const snapshot = await getDocs(q);
+    const sessions = [];
 
     snapshot.forEach((docItem) => {
-
-      deadlines.push({
-
-        id: docItem.id,
-
-        ...docItem.data()
-      });
+      sessions.push({ id: docItem.id, ...docItem.data() });
     });
 
-    return deadlines;
+    return sessions;
   }
 
   // =========================
-  // TOTAL DEADLINES
+  // TOTAL SESSIONS
   // =========================
 
   static async getTotalStudySessions() {
 
-    const deadlines =
-      await this.getDeadlines();
-
-    return deadlines.length;
+    const sessions = await this.getStudySessions();
+    return sessions.length;
   }
 
   // =========================
-  // COMPLETED DEADLINES
+  // COMPLETED SESSIONS
   // =========================
 
   static async getCompletedSessions() {
 
-    const deadlines =
-      await this.getDeadlines();
-
-    return deadlines.filter(
-
-      d => d.completed === true
-
-    ).length;
+    const sessions = await this.getStudySessions();
+    return sessions.filter((s) => s.status === "completed").length;
   }
 
   // =========================
-  // PENDING DEADLINES
+  // PENDING SESSIONS
   // =========================
 
   static async getPendingSessions() {
 
-    const deadlines =
-      await this.getDeadlines();
-
-    return deadlines.filter(
-
-      d => !d.completed
-
-    ).length;
+    const sessions = await this.getStudySessions();
+    return sessions.filter((s) => s.status === "pending").length;
   }
 
   // =========================
-  // MISSED DEADLINES
+  // MISSED SESSIONS
   // =========================
 
   static async getMissedSessions() {
 
-    const deadlines =
-      await this.getDeadlines();
-
-    const now =
-      new Date();
-
-    return deadlines.filter((d) => {
-
-      if (d.completed) {
-
-        return false;
-      }
-
-      return new Date(d.dueDate) < now;
-
-    }).length;
+    const sessions = await this.getStudySessions();
+    return sessions.filter((s) => s.status === "missed").length;
   }
 
   // =========================
@@ -155,60 +115,25 @@ class Tracker {
 
   static async getProgressTrends() {
 
-    const deadlines =
-      await this.getDeadlines();
+    const sessions = await this.getStudySessions();
+    const completed = sessions.filter((s) => s.status === "completed");
 
-    if (!deadlines.length) {
-
-      return {
-
-        mostStudied: "No data",
-
-        leastStudied: "No data"
-      };
+    if (!completed.length) {
+      return { mostStudied: "No data", leastStudied: "No data" };
     }
 
     const courseStats = {};
 
-    deadlines.forEach((deadline) => {
-
-      const course =
-        deadline.course || "Unknown";
-
-      if (!courseStats[course]) {
-
-        courseStats[course] = {
-
-          completed: 0
-        };
-      }
-
-      if (deadline.completed) {
-
-        courseStats[course].completed += 1;
-      }
+    completed.forEach((s) => {
+      const course = s.course || "Unknown";
+      courseStats[course] = (courseStats[course] || 0) + 1;
     });
 
-    const entries =
-      Object.entries(courseStats);
-
-    entries.sort(
-
-      (a, b) =>
-
-        b[1].completed -
-        a[1].completed
-    );
+    const entries = Object.entries(courseStats).sort((a, b) => b[1] - a[1]);
 
     return {
-
-      mostStudied:
-        entries[0][0],
-
-      leastStudied:
-        entries[
-          entries.length - 1
-        ][0]
+      mostStudied: entries[0][0],
+      leastStudied: entries[entries.length - 1][0]
     };
   }
 
@@ -218,23 +143,16 @@ class Tracker {
 
   static async getCompletionRate() {
 
-    const total =
-      await this.getTotalStudySessions();
-
-    const completed =
-      await this.getCompletedSessions();
-
-    if (total === 0) {
-
-      return 0;
-    }
-
-    return Math.round(
-
-      (
-        completed / total
-      ) * 100
+    const sessions = await this.getStudySessions();
+    const decided = sessions.filter(
+      (s) => s.status === "completed" || s.status === "missed"
     );
+
+    if (!decided.length) return 0;
+
+    const completed = decided.filter((s) => s.status === "completed").length;
+
+    return Math.round((completed / decided.length) * 100);
   }
 
   // =========================
