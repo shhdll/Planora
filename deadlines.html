@@ -17,31 +17,48 @@
                     <p>Track your assignments and exams to stay organized.</p>
                 </div>
 
-                <form id="deadline-form">
-                    <label>Course</label>
+                <div class="form-card">
+                    <form id="deadline-form">
+                        <div class="form-divider">
+                            <div class="form-group">
+                                <label for="deadline-course">Course</label>
+                                <input id="deadline-course" class="input-format" type="text" placeholder="SWE381" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="deadline-title">Title</label>
+                                <input id="deadline-title" class="input-format" type="text" placeholder="Midterm Exam" required>
+                            </div>
+                        </div>
 
-<input
-    id="deadline-course"
-    class="input-format"
-    type="text"
-    placeholder="SWE381"
-    required
->
-                    <label>Title</label>
-                    <input id="deadline-title" class="input-format" type="text" placeholder="Midterm Exam" required>
-                    <label>Deadline date</label>
-                    <input id="deadline-date" class="input-format" type="date" required>
-                    <label>Deadline time</label>
-                    <input id="deadline-time" class="input-format" type="time"> 
-                    <label>Priority</label>
-                    <select id="deadline-priority" class="input-format">
-                        <option value="High">High</option>
-                        <option value="Medium" selected>Medium</option>
-                        <option value="Low">Low</option>
-                    </select>
-                    <input id="deadline-description" type="hidden" value="">
-                    <button type="submit">Add deadline</button>
-                </form>
+                        <div class="form-divider">
+                            <div class="form-group">
+                                <label for="deadline-date">Date</label>
+                                <input id="deadline-date" class="input-format" type="date" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="deadline-time">Time</label>
+                                <input id="deadline-time" class="input-format" type="time">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="deadline-priority">Priority</label>
+                            <select id="deadline-priority" class="input-format">
+                                <option value="High">High</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+
+                        <input id="deadline-description" type="hidden" value="">
+
+                        <div class="form-actions">
+                            <a href="dashboard.html" class="btn-back">← Back</a>
+                            <button type="submit" class="btn-submit">Add deadline</button>
+                        </div>
+                    </form>
+                </div>
+
                 <h2>Your deadlines</h2>
                 <div id="deadlines-list"></div>
             </main>
