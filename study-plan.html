@@ -18,6 +18,9 @@
                 </div>
 
                 <h2>Example study plan</h2>
+                <button id="generate-plan-btn">
+    Generate Weekly Study Plan
+</button>
                 <table>
                     <thead>
                         <tr>
@@ -27,35 +30,8 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>Sunday</td>
-                            <td>Web Applications Development</td>
-                            <td>6:00 PM - 7:30 PM</td>
-                            <td>
-                                <input type="radio" name="status1" value="completed"> Complete
-                                <input type="radio" name="status1" value="missed"> Missed
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Monday</td>
-                            <td>Database Systems</td>
-                            <td>5:00 PM - 6:30 PM</td>
-                            <td>
-                                <input type="radio" name="status2" value="completed"> Complete
-                                <input type="radio" name="status2" value="missed"> Missed
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Tuesday</td>
-                            <td>Operating Systems</td>
-                            <td>7:00 PM - 8:30 PM</td>
-                            <td>
-                                <input type="radio" name="status3" value="completed"> Complete
-                                <input type="radio" name="status3" value="missed"> Missed
-                            </td>
-                        </tr>
-                    </tbody>
+                   <tbody id="study-plan-body">
+</tbody>
                 </table>
             </main>
 
@@ -78,20 +54,31 @@
     
     <script type="module" src="JS/firebase-config.js"></script>
     <script type="module" src="JS/utils.js"></script>
-    <script type="module" src="JS/sidebar.js"></script>
+    <script type="module" src="js/sidebar.js"></script>
     <script type="module" src="JS/topbar.js"></script>
     <script type="module" src="JS/auth.js"></script>
     <script type="module" src="JS/config.js"></script>
     <script type="module" src="JS/AI.js"></script>
+    <script type="module" src="JS/planner.js"></script>
     
     <script type="module">
-        import { Session } from './JS/utils.js';
-        
-        // Check if user is logged in
-        Session.require();
-        
-        // Note: Study plan functionality can be enhanced later
-        // This is currently a static example/placeholder
-    </script>
+
+import { Session } from './JS/utils.js';
+import { StudyPlanner } from './JS/planner.js';
+
+Session.require();
+
+await StudyPlanner.renderStudyPlan();
+
+const btn = document.getElementById("generate-plan-btn");
+
+if (btn) {
+
+    btn.addEventListener("click", async () => {
+        await StudyPlanner.generateWeeklyPlan();
+    });
+}
+
+</script>
 </body>
 </html>

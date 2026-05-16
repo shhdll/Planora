@@ -18,12 +18,15 @@
                 </div>
 
                 <form id="deadline-form">
-                    <label>Deadline type</label>
-                    <select id="deadline-course" class="input-format" required>
-                        <option value="">Select type</option>
-                        <option value="exam">Exam</option>
-                        <option value="assignment">Assignment</option>
-                    </select>
+                    <label>Course</label>
+
+<input
+    id="deadline-course"
+    class="input-format"
+    type="text"
+    placeholder="SWE381"
+    required
+>
                     <label>Title</label>
                     <input id="deadline-title" class="input-format" type="text" placeholder="Midterm Exam" required>
                     <label>Deadline date</label>
@@ -62,7 +65,7 @@
     
     <script type="module" src="JS/firebase-config.js"></script>
     <script type="module" src="JS/utils.js"></script>
-    <script type="module" src="JS/sidebar.js"></script>
+    <script type="module" src="js/sidebar.js"></script>
     <script type="module" src="JS/topbar.js"></script>
     <script type="module" src="JS/auth.js"></script>
     <script type="module" src="JS/config.js"></script>

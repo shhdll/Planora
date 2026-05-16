@@ -66,7 +66,7 @@ function loadSidebar() {
 
 // Populate the badge and dot placeholders in the sidebar
 async function addSidebarBadges() {
-    const user = Session.getUser();
+    const user = Utils.Session.getUser()
     if (!user) return;
 
     // Get current Firebase user for UID

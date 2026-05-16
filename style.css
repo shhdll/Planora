@@ -1081,9 +1081,17 @@ th {
 }
 
 #sidebar-container {
-    width: 0;
+
+    width: 288px;
+
+    min-width: 288px;
+
     flex-shrink: 0;
-    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 45%, #312e81 100%);
+
+    position: relative;
+
+    z-index: 1000;
+
 }
 
 /* Main Content Area */
@@ -1229,8 +1237,6 @@ th {
     display: flex;
     flex-direction: column;
     min-width: 0;
-    margin-left: 288px;
-    width: calc(100% - 288px);
     box-sizing: border-box;
 }
 
@@ -1536,4 +1542,87 @@ footer a:hover {
 .deadline-card.completed{
     opacity:0.7;
     border-left-color:#22c55e;
+}
+/* =========================
+   STUDY PLANNER
+========================= */
+
+#generate-plan-btn {
+    width: 100%;
+    margin-bottom: 18px;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+#generate-plan-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 18px rgba(37, 99, 235, 0.25);
+}
+
+#study-plan-body tr {
+    transition: background 0.2s ease;
+}
+
+#study-plan-body tr:hover {
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.planner-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    min-width: 90px;
+}
+
+.planner-status.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.planner-status.completed {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.planner-status.missed {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+#study-plan-body button {
+    width: auto;
+    padding: 8px 14px;
+    margin: 4px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#study-plan-body button:first-child {
+    background: #22c55e;
+    color: white;
+}
+
+#study-plan-body button:last-child {
+    background: #ef4444;
+    color: white;
+}
+
+#study-plan-body button:hover {
+    transform: scale(1.04);
 }
