@@ -1566,12 +1566,51 @@ footer a:hover {
     box-shadow: 0 10px 18px rgba(37, 99, 235, 0.25);
 }
 
+.plan-table {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.plan-table thead tr {
+    background: linear-gradient(135deg, #1e3a5f, #2563eb);
+}
+
+.plan-table th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.9);
+    border: none;
+    background: transparent;
+}
+
+.plan-table td {
+    padding: 14px 16px;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.9rem;
+    color: #334155;
+    text-align: left;
+}
+
+.plan-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
 #study-plan-body tr {
-    transition: background 0.2s ease;
+    transition: background 0.15s ease;
 }
 
 #study-plan-body tr:hover {
-    background: rgba(59, 130, 246, 0.05);
+    background: #f8faff;
 }
 
 .planner-status {
@@ -1584,11 +1623,6 @@ footer a:hover {
     font-weight: 700;
     text-transform: capitalize;
     min-width: 90px;
-}
-
-.planner-status.pending {
-    background: #fef3c7;
-    color: #92400e;
 }
 
 .planner-status.completed {
@@ -1614,13 +1648,13 @@ footer a:hover {
 }
 
 #study-plan-body button:first-child {
-    background: #22c55e;
-    color: white;
+    background: #f0fdf4;
+    color: #15803d;
 }
 
 #study-plan-body button:last-child {
-    background: #ef4444;
-    color: white;
+    background: #fee2e2;
+    color: #991b1b;
 }
 
 #study-plan-body button:hover {

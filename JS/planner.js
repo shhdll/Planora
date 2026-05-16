@@ -666,12 +666,8 @@ class StudyPlanner {
       return;
     }
 
-    // nearest sessions first
-
     plans.sort(
-
       (a, b) =>
-
         new Date(a.studyDate) -
         new Date(b.studyDate)
     );
@@ -699,7 +695,7 @@ class StudyPlanner {
 
       const isPending = plan.status === "pending";
 
-      const actionCell = isPending
+      const statusCell = isPending
         ? `<button onclick="StudyPlanner.markCompleted('${plan.id}')">Complete</button>
            <button onclick="StudyPlanner.markMissed('${plan.id}')">Missed</button>`
         : `<span class="planner-status ${plan.status}">${plan.status}</span>`;
@@ -710,7 +706,7 @@ class StudyPlanner {
           <td>${fmtDate(plan.studyDate)}</td>
           <td>${plan.course}</td>
           <td>${fmtTime(plan.startTime)} – ${fmtTime(plan.endTime)}</td>
-          <td>${actionCell}</td>
+          <td>${statusCell}</td>
         </tr>
       `;
     }).join("");
