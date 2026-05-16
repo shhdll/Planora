@@ -353,14 +353,6 @@ class Deadline {
             ${new Date(deadline.dueDate).toLocaleString()}
           </p>
 
-          <p>
-            ${
-              deadline.description
-                ? this.escapeHtml(deadline.description)
-                : "No description provided."
-            }
-          </p>
-
           <div class="deadline-actions">
 
             <button
