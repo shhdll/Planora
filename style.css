@@ -2289,3 +2289,61 @@ footer a:hover {
     background: #f1f5f9;
     color: #64748b;
 }
+
+/* ── MOBILE SIDEBAR ── */
+@media (max-width: 768px) {
+    .app-sidebar {
+        position: fixed;
+        top: 0;
+        left: -288px;
+        height: 100vh;
+        width: 288px;
+        z-index: 1000;
+        transition: left 0.3s ease;
+    }
+
+    .app-sidebar.mobile-open {
+        left: 0;
+    }
+
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+
+    .sidebar-overlay.active {
+        display: block;
+    }
+
+    .app-content-wrap {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    #sidebar-container {
+        width: 0 !important;
+        min-width: 0 !important;
+    }
+
+    .mobile-menu-btn {
+        display: flex;
+    }
+}
+
+.mobile-menu-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1.5px solid #e2e8f0;
+    background: #f8fafc;
+    cursor: pointer;
+    color: #64748b;
+    font-size: 1.2rem;
+    margin-right: auto;
+}
