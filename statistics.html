@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="style.css">
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 
 </head>
 
@@ -45,24 +46,36 @@
 
                 <h2>Study overview</h2>
 
-                <div class="stat-cards-grid">
+                <div class="stat-cards-grid" style="margin-top:32px;">
 
                     <div class="stat-card stat-card--blue">
+                        <div class="stat-card__icon stat-card__icon--blue">
+                            <i class="ti ti-book"></i>
+                        </div>
                         <div class="stat-card__value" id="stat-total-courses">0</div>
                         <div class="stat-card__label">Total courses</div>
                     </div>
 
                     <div class="stat-card stat-card--green">
+                        <div class="stat-card__icon stat-card__icon--green">
+                            <i class="ti ti-circle-check"></i>
+                        </div>
                         <div class="stat-card__value" id="stat-completed">0</div>
                         <div class="stat-card__label">Sessions completed</div>
                     </div>
 
                     <div class="stat-card stat-card--purple">
+                        <div class="stat-card__icon stat-card__icon--purple">
+                            <i class="ti ti-target"></i>
+                        </div>
                         <div class="stat-card__value" id="stat-rate">0%</div>
                         <div class="stat-card__label">Completion rate</div>
                     </div>
 
                     <div class="stat-card stat-card--indigo">
+                        <div class="stat-card__icon stat-card__icon--indigo">
+                            <i class="ti ti-flag-check"></i>
+                        </div>
                         <div class="stat-card__value" id="stat-deadlines">0</div>
                         <div class="stat-card__label">Deadlines completed</div>
                     </div>
