@@ -51,126 +51,77 @@
 
                 <h2>Study overview</h2>
 
-                <table class="plan-table">
+                <div class="stat-cards-grid">
 
-                    <thead>
+                    <div class="stat-card stat-card--blue">
+                        <div class="stat-card__value" id="stat-total-courses">0</div>
+                        <div class="stat-card__label">Total courses</div>
+                    </div>
 
-                        <tr>
+                    <div class="stat-card stat-card--green">
+                        <div class="stat-card__value" id="stat-completed">0</div>
+                        <div class="stat-card__label">Sessions completed</div>
+                    </div>
 
-                            <th>Statistic</th>
+                    <div class="stat-card stat-card--purple">
+                        <div class="stat-card__value" id="stat-rate">0%</div>
+                        <div class="stat-card__label">Completion rate</div>
+                    </div>
 
-                            <th>Value</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        <tr>
-
-                            <td class="bold">
-                                Total courses
-                            </td>
-
-                            <td id="stat-total-courses">
-                                0
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <td class="bold">
-                                Total study sessions
-                            </td>
-
-                            <td id="stat-total-sessions">
-                                0
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <td class="bold">
-                                Completed sessions
-                            </td>
-
-                            <td id="stat-completed">
-                                0
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <td class="bold">
-                                Pending sessions
-                            </td>
-
-                            <td id="stat-pending">
-                                0
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <td class="bold">
-                                Missed sessions
-                            </td>
-
-                            <td id="stat-missed">
-                                0
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <td class="bold">
-                                Completion rate
-                            </td>
-
-                            <td id="stat-rate">
-                                0%
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-
-                <!-- ====================== -->
-                <!-- CHART -->
-                <!-- ====================== -->
-
-                <h2>Progress overview</h2>
-
-                <div
-                    style="
-                        background:white;
-                        padding:25px;
-                        border-radius:18px;
-                        margin-top:20px;
-                        box-shadow:0 4px 14px rgba(0,0,0,0.08);
-                    "
-                >
-
-                    <canvas id="statsChart"></canvas>
+                    <div class="stat-card stat-card--indigo">
+                        <div class="stat-card__value" id="stat-deadlines">0</div>
+                        <div class="stat-card__label">Deadlines completed</div>
+                    </div>
 
                 </div>
 
 
-                <p style="margin-top:24px;">
+                <!-- ====================== -->
+                <!-- CHARTS ROW 1         -->
+                <!-- ====================== -->
 
-                    Great job! Keep following
-                    your study plan to stay on track.
+                <div class="charts-grid charts-grid--2col">
 
-                </p>
+                    <div class="chart-card" style="height:280px;">
+                        <h3 class="chart-title">Study hours per course</h3>
+                        <canvas id="chartHoursPerCourse"></canvas>
+                    </div>
+
+                    <div class="chart-card" style="height:280px;">
+                        <h3 class="chart-title">Deadline status</h3>
+                        <canvas id="chartDeadlineStatus"></canvas>
+                    </div>
+
+                </div>
+
+
+                <!-- ====================== -->
+                <!-- CHARTS ROW 2         -->
+                <!-- ====================== -->
+
+                <div class="chart-card" style="margin-top:24px; height:240px;">
+                    <h3 class="chart-title">This week's sessions by day</h3>
+                    <canvas id="chartWeeklyCompletion"></canvas>
+                </div>
+
+
+                <!-- ====================== -->
+                <!-- CHARTS ROW 3         -->
+                <!-- ====================== -->
+
+                <div class="charts-grid charts-grid--2col" style="margin-top:24px;">
+
+                    <div class="chart-card" style="height:260px;">
+                        <h3 class="chart-title">Study hours by day of week</h3>
+                        <canvas id="chartHoursByDay"></canvas>
+                    </div>
+
+                    <div class="chart-card" style="height:260px;">
+                        <h3 class="chart-title">Upcoming deadlines timeline</h3>
+                        <div id="deadlineCountdown" class="deadline-countdown"></div>
+                    </div>
+
+                </div>
 
             </main>
 
