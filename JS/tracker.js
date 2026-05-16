@@ -144,15 +144,12 @@ class Tracker {
   static async getCompletionRate() {
 
     const sessions = await this.getStudySessions();
-    const decided = sessions.filter(
-      (s) => s.status === "completed" || s.status === "missed"
-    );
 
-    if (!decided.length) return 0;
+    if (!sessions.length) return 0;
 
-    const completed = decided.filter((s) => s.status === "completed").length;
+    const completed = sessions.filter((s) => s.status === "completed").length;
 
-    return Math.round((completed / decided.length) * 100);
+    return Math.round((completed / sessions.length) * 100);
   }
 
   // =========================
