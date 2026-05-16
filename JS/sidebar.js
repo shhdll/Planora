@@ -1,12 +1,12 @@
 // Import Firebase
 import { db, auth } from './firebase-config.js';
 import {
-  collection,
-  query,
-  where,
-  getDocs,
-  doc,
-  getDoc
+    collection,
+    query,
+    where,
+    getDocs,
+    doc,
+    getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 function loadSidebar() {
@@ -46,20 +46,17 @@ function loadSidebar() {
         }
     });
 
-    // Attach logout event listener
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async (e) => {
             e.preventDefault();
             try {
-                const { handleLogout } = await import('./auth.js');
-                await handleLogout();
-            } catch (error) {
-                console.error("Logout error:", error);
-                // Fallback logout
-                sessionStorage.clear();
+                const { signOut } = await import("https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js");
+                await signOut(auth);
                 localStorage.removeItem('currentUser');
-                window.location.href = "login.html";
+                window.location.href = 'login.html';
+            } catch (error) {
+                console.error("Logout failed:", error);
             }
         });
     }
@@ -82,7 +79,7 @@ async function addSidebarBadges() {
         const coursesQuery = query(collection(db, "courses"), where("userId", "==", firebaseUser.uid));
         const coursesSnapshot = await getDocs(coursesQuery);
         const coursesCount = coursesSnapshot.size;
-        
+
         const badge = document.getElementById('courses-badge');
         if (badge && coursesCount > 0) {
             badge.textContent = coursesCount;
@@ -92,13 +89,13 @@ async function addSidebarBadges() {
         // Availability dot — load from Firestore
         const availabilityRef = doc(db, "availability", firebaseUser.uid);
         const availabilitySnap = await getDoc(availabilityRef);
-        
+
         let isSet = false;
         if (availabilitySnap.exists()) {
             const availability = availabilitySnap.data();
             isSet = availability.days && availability.days.length > 0;
         }
-        
+
         const dot = document.getElementById('availability-dot');
         if (dot) {
             dot.className = `app-nav__dot ${isSet ? 'app-nav__dot--set' : 'app-nav__dot--unset'}`;
