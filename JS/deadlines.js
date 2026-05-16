@@ -499,6 +499,28 @@ async function handleDeadlineSubmit(event) {
 
   event.preventDefault();
 
+  const dateValue =
+    document.getElementById(
+      "deadline-date"
+    ).value;
+
+  if (!dateValue) {
+    showToast("Due date is required.", "error");
+    return;
+  }
+
+  const today = new Date();
+  const todayStr = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, "0"),
+    String(today.getDate()).padStart(2, "0")
+  ].join("-");
+
+  if (dateValue < todayStr) {
+    showToast("The deadline date has already passed.", "error");
+    return;
+  }
+
   const deadline =
     Deadline.fromForm();
 
