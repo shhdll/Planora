@@ -1,6 +1,7 @@
 // Import Firebase
 import { db, auth } from './firebase-config.js';
 import { Session, showToast } from './utils.js';
+
 import {
   collection,
   query,
@@ -12,11 +13,21 @@ import {
   doc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// Deadlines Class (Now with Firestore)
+// Deadlines Class
 
 class Deadline {
-  constructor(title, course, dueDate, priority = "Medium", description = "", completed = false, id = null) {
-    this.id = id || Date.now(); // Use provided id or generate one
+
+  constructor(
+    title,
+    course,
+    dueDate,
+    priority = "Medium",
+    description = "",
+    completed = false,
+    id = null
+  ) {
+
+    this.id = id;
     this.title = title;
     this.course = course;
     this.dueDate = dueDate;
@@ -25,85 +36,103 @@ class Deadline {
     this.completed = completed;
   }
 
-  // Get current user ID from Firebase
-  static getCurrentUserId() {
-    const user = auth.currentUser;
-    return user ? user.uid : null;
+  // Get current user ID safely
+  static getCurrentUserId(passedUser = null) {
+
+    if (passedUser?.uid) {
+      return passedUser.uid;
+    }
+
+    const currentUser = auth.currentUser;
+
+    return currentUser ? currentUser.uid : null;
   }
 
-  // create a unique storage name for user's deadlines (maintains compatibility)
-  static getStorageKey() {
-    const user = Session.getUser(); // the user currently logged in
-    return user ? `deadlines_${user.id}` : null;
-  }
+  // Get all deadlines
+  static async getAll(passedUser = null) {
 
-  // Load all deadlines from Firestore
-  static async getAll() {
-    const userId = this.getCurrentUserId();
-    if (!userId) return [];
-    
+    const userId =
+      this.getCurrentUserId(passedUser);
+
+    if (!userId) {
+
+      console.warn(
+        "No valid user ID found."
+      );
+
+      return [];
+    }
+
     try {
-      const q = query(collection(db, "deadlines"), where("userId", "==", userId));
-      const querySnapshot = await getDocs(q);
+
+      const q = query(
+        collection(db, "deadlines"),
+        where("userId", "==", userId)
+      );
+
+      const querySnapshot =
+        await getDocs(q);
+
       const deadlines = [];
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        deadlines.push(new Deadline(
-          data.title,
-          data.course,
-          data.dueDate,
-          data.priority,
-          data.description,
-          data.completed,
-          doc.id // Use Firestore document ID
-        ));
-      });
+
+      querySnapshot.forEach(
+        (document) => {
+
+          const data =
+            document.data();
+
+          deadlines.push(
+
+            new Deadline(
+              data.title,
+              data.course,
+              data.dueDate,
+              data.priority,
+              data.description,
+              data.completed,
+              document.id
+            )
+          );
+        }
+      );
+
+      console.log(
+        "Deadlines loaded:",
+        deadlines
+      );
+
       return deadlines;
+
     } catch (error) {
-      console.error("Error getting deadlines:", error);
+
+      console.error(
+        "Error getting deadlines:",
+        error
+      );
+
       return [];
     }
   }
 
-  // Save all deadlines back to Firestore (replaces all deadlines for user)
-  static async saveAll(deadlines) {
-    const userId = this.getCurrentUserId();
-    if (!userId) return;
-    
-    try {
-      // Get existing deadlines
-      const existingDeadlines = await this.getAll();
-      
-      // Delete all existing deadlines for this user
-      for (const deadline of existingDeadlines) {
-        await deleteDoc(doc(db, "deadlines", deadline.id));
-      }
-      
-      // Add all new deadlines
-      for (const deadline of deadlines) {
-        const deadlineData = {
-          title: deadline.title,
-          course: deadline.course,
-          dueDate: deadline.dueDate,
-          priority: deadline.priority,
-          description: deadline.description,
-          completed: deadline.completed,
-          userId: userId
-        };
-        await addDoc(collection(db, "deadlines"), deadlineData);
-      }
-    } catch (error) {
-      console.error("Error saving deadlines:", error);
-    }
-  }
-
-  // Add new deadline
+  // Save deadline
   async save() {
-    const userId = Deadline.getCurrentUserId();
-    if (!userId) return;
-    
+
+    const userId =
+      Deadline.getCurrentUserId();
+
+    if (!userId) {
+
+      console.error(
+        "No user logged in."
+      );
+
+      return;
+    }
+
     try {
+
       const deadlineData = {
+
         title: this.title,
         course: this.course,
         dueDate: this.dueDate,
@@ -111,139 +140,289 @@ class Deadline {
         description: this.description,
         completed: this.completed,
         userId: userId,
-        createdAt: new Date().toISOString()
+        createdAt:
+          new Date().toISOString()
       };
-      
-      const docRef = await addDoc(collection(db, "deadlines"), deadlineData);
-      this.id = docRef.id; // Update with Firestore ID
+
+      const docRef =
+        await addDoc(
+          collection(db, "deadlines"),
+          deadlineData
+        );
+
+      this.id = docRef.id;
+
+      console.log(
+        "Deadline added:",
+        this.id
+      );
+
     } catch (error) {
-      console.error("Error saving deadline:", error);
+
+      console.error(
+        "Error saving deadline:",
+        error
+      );
     }
   }
 
-  // Validate deadline data
+  // Validate form
   validate() {
-    if (!this.title.trim()) { // if no title is written by user
+
+    if (!this.title.trim()) {
       return "Deadline title is required.";
     }
 
-    if (!this.course.trim()) { // if no course is written by user
+    if (!this.course.trim()) {
       return "Course name is required.";
     }
 
-    if (!this.dueDate) { // if no date is chosen by user
+    if (!this.dueDate) {
       return "Due date is required.";
     }
-    return null; // indicating no errors found
+
+    return null;
   }
 
-  // Toggle completion status
+  // Toggle complete
   async toggleComplete() {
-    this.completed = !this.completed; // Switch deadline between completed/not completed
-    
-    // Update in Firestore
-    const userId = Deadline.getCurrentUserId();
-    if (userId) {
-      try {
-        const deadlineRef = doc(db, "deadlines", this.id);
-        await updateDoc(deadlineRef, {
-          completed: this.completed
-        });
-      } catch (error) {
-        console.error("Error toggling deadline:", error);
-      }
+
+    this.completed =
+      !this.completed;
+
+    try {
+
+      const deadlineRef =
+        doc(
+          db,
+          "deadlines",
+          this.id
+        );
+
+      await updateDoc(
+        deadlineRef,
+        {
+          completed:
+            this.completed
+        }
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Error toggling deadline:",
+        error
+      );
     }
   }
 
   // Delete deadline
   static async delete(id) {
-    const userId = Deadline.getCurrentUserId();
-    if (!userId) return;
-    
+
+    if (!id) return;
+
     try {
-      await deleteDoc(doc(db, "deadlines", id));
+
+      await deleteDoc(
+        doc(
+          db,
+          "deadlines",
+          id
+        )
+      );
+
+      console.log(
+        "Deadline deleted:",
+        id
+      );
+
     } catch (error) {
-      console.error("Error deleting deadline:", error);
+
+      console.error(
+        "Error deleting deadline:",
+        error
+      );
     }
   }
 
-  // Find deadline by ID
+  // Find deadline
   static async findById(id) {
-    const deadlines = await this.getAll();
-    return deadlines.find((deadline) => deadline.id == id);
+
+    const deadlines =
+      await this.getAll(
+        auth.currentUser
+      );
+
+    return deadlines.find(
+      (deadline) =>
+        deadline.id === id
+    );
   }
 
-  // Render all deadlines (display them on the page)
-  static async render(containerId = "deadlines-list") {
-    const container = document.getElementById(containerId); // the HTML element where deadlines will appear
+  // Escape HTML
+  static escapeHtml(str) {
 
-    if (!container) return; // container does not exist
-    
-    const deadlines = await this.getAll(); // load the deadlines from Firestore
+    if (!str) return "";
 
-    if (deadlines.length === 0) { // if deadlines array is empty
-      container.innerHTML = `<div class="empty-state"> <p>No deadlines added yet.</p> </div>`;
+    return String(str).replace(
+      /[&<>]/g,
+      function(m) {
+
+        if (m === '&')
+          return '&amp;';
+
+        if (m === '<')
+          return '&lt;';
+
+        if (m === '>')
+          return '&gt;';
+
+        return m;
+      }
+    );
+  }
+
+  // Render deadlines
+  static async render(
+    containerId = "deadlines-list"
+  ) {
+
+    const container =
+      document.getElementById(
+        containerId
+      );
+
+    if (!container) return;
+
+    const deadlines =
+      await this.getAll(
+        auth.currentUser
+      );
+
+    if (
+      deadlines.length === 0
+    ) {
+
+      container.innerHTML = `
+        <p style="
+          color:#64748b;
+          font-size:0.95rem;
+          text-align:center;
+          width:100%;
+          margin-top:40px;
+        ">
+          No deadlines added yet.
+        </p>
+      `;
+
       return;
     }
-    
-    deadlines.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate)); // sort the array by the earliest date
 
-    container.innerHTML = deadlines.map(
+    deadlines.sort(
+
+      (a, b) =>
+        new Date(a.dueDate) -
+        new Date(b.dueDate)
+    );
+
+    container.innerHTML =
+      deadlines.map(
         (deadline) => `
-          <div class="deadline-card ${
-            deadline.completed ? "completed" : ""
-          }">
-            <div class="deadline-header">
-              <h3>${this.escapeHtml(deadline.title)}</h3>
-              <span class="priority ${deadline.priority.toLowerCase()}">
-                ${deadline.priority}
-              </span>
-            </div>
 
-            <p><strong>Course:</strong> ${this.escapeHtml(deadline.course)}</p>
-            <p><strong>Due:</strong> ${
-              new Date(deadline.dueDate).toLocaleString()
-            }</p>
+        <div class="deadline-card ${deadline.completed ? "completed" : ""}">
 
-            <p>${deadline.description ? this.escapeHtml(deadline.description) : "No description provided."}</p>
+          <div class="deadline-header">
 
-            <div class="deadline-actions">
-              <button onclick="window.toggleDeadline(${JSON.stringify(deadline.id)})">
-                ${deadline.completed ? "Undo" : "Complete"}
-              </button>
+            <h3>
+              ${this.escapeHtml(deadline.title)}
+            </h3>
 
-              <button onclick="window.removeDeadline(${JSON.stringify(deadline.id)})">
-                Delete
-              </button>
-            </div>
+            <span class="priority ${deadline.priority.toLowerCase()}">
+              ${deadline.priority}
+            </span>
+
           </div>
-        `
-      )
-      .join("");
-  }
-  
-  // Helper to escape HTML
-  static escapeHtml(str) {
-    if (!str) return "";
-    return str.replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;';
-      if (m === '<') return '&lt;';
-      if (m === '>') return '&gt;';
-      return m;
-    });
+
+          <p>
+            <strong>Course:</strong>
+            ${this.escapeHtml(deadline.course)}
+          </p>
+
+          <p>
+            <strong>Due:</strong>
+            ${new Date(deadline.dueDate).toLocaleString()}
+          </p>
+
+          <p>
+            ${
+              deadline.description
+                ? this.escapeHtml(deadline.description)
+                : "No description provided."
+            }
+          </p>
+
+          <div class="deadline-actions">
+
+            <button
+              onclick="window.toggleDeadline('${deadline.id}')"
+            >
+              ${deadline.completed ? "Undo" : "Complete"}
+            </button>
+
+            <button
+              onclick="window.removeDeadline('${deadline.id}')"
+            >
+              Delete
+            </button>
+
+          </div>
+
+        </div>
+
+      `
+      ).join("");
   }
 
-  // Create Deadline object from html form
+  // Create object from form
   static fromForm() {
-    const title = document.getElementById("deadline-title").value;
-    const course = document.getElementById("deadline-course").value;
-    const date = document.getElementById("deadline-date").value;
-    const time = document.getElementById("deadline-time").value;
-    const dueDate = `${date}T${time}`;
-    const priority = document.getElementById("deadline-priority").value;
-    const description = document.getElementById("deadline-description").value;
+
+    const title =
+      document.getElementById(
+        "deadline-title"
+      ).value;
+
+    const course =
+      document.getElementById(
+        "deadline-course"
+      ).value;
+
+    const date =
+      document.getElementById(
+        "deadline-date"
+      ).value;
+
+    const time =
+      document.getElementById(
+        "deadline-time"
+      ).value;
+
+    const dueDate =
+      time
+        ? `${date}T${time}`
+        : date;
+
+    const priority =
+      document.getElementById(
+        "deadline-priority"
+      ).value;
+
+    const description =
+      document.getElementById(
+        "deadline-description"
+      ).value;
 
     return new Deadline(
+
       title,
       course,
       dueDate,
@@ -255,53 +434,109 @@ class Deadline {
 
 // Initialize page
 async function initDeadlinesPage() {
-  Session.require(); // only logged users access it
-  await Deadline.render(); // display deadlines from Firestore
+
+  Session.require();
+
+  await Deadline.render();
 }
 
-// Handle add deadline form when submitted 
+// Handle submit
 async function handleDeadlineSubmit(event) {
-  event.preventDefault(); // stop page refresh
-  const deadline = Deadline.fromForm(); // create object from form
-  const error = deadline.validate(); // validate if errors exist
 
-  if (error) { 
-    showToast(error, "error"); // show pop-up error
+  event.preventDefault();
+
+  const deadline =
+    Deadline.fromForm();
+
+  const error =
+    deadline.validate();
+
+  if (error) {
+
+    showToast(
+      error,
+      "error"
+    );
+
     return;
   }
 
   await deadline.save();
-  showToast("Deadline added successfully!", "success");
-  document.getElementById("deadline-form").reset(); // clear form field
-  await Deadline.render(); // refresh list 
+
+  showToast(
+    "Deadline added successfully!",
+    "success"
+  );
+
+  document
+    .getElementById(
+      "deadline-form"
+    )
+    .reset();
+
+  await Deadline.render();
 }
 
 // Toggle completion
 async function toggleDeadline(id) {
-  const deadline = await Deadline.findById(id);
+
+  const deadline =
+    await Deadline.findById(id);
+
   if (!deadline) return;
-  await deadline.toggleComplete(); // flip completion state
-  await Deadline.render(); //refresh
+
+  await deadline.toggleComplete();
+
+  await Deadline.render();
 }
 
 // Remove deadline
 async function removeDeadline(id) {
+
   await Deadline.delete(id);
-  showToast("Deadline removed.", "success");
+
+  showToast(
+    "Deadline removed.",
+    "success"
+  );
+
   await Deadline.render();
 }
 
-// Make functions available globally for onclick handlers
-window.toggleDeadline = toggleDeadline;
-window.removeDeadline = removeDeadline;
+// Global functions
+window.toggleDeadline =
+  toggleDeadline;
 
-// Run page after DOM loads
-document.addEventListener("DOMContentLoaded", () => { // wait until page fully loads
-  initDeadlinesPage(); // initialize page
-  const form = document.getElementById("deadline-form"); // get form element
-  if (form) {
-    form.addEventListener("submit", handleDeadlineSubmit); // when user submits, run handleDeadlineSubmit()
+window.removeDeadline =
+  removeDeadline;
+
+// Wait for Firebase auth
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    auth.onAuthStateChanged(
+      async (user) => {
+
+        if (!user) return;
+
+        await initDeadlinesPage();
+
+        const form =
+          document.getElementById(
+            "deadline-form"
+          );
+
+        if (form) {
+
+          form.addEventListener(
+            "submit",
+            handleDeadlineSubmit
+          );
+        }
+      }
+    );
   }
-});
+);
 
 export { Deadline };
