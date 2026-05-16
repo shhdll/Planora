@@ -391,7 +391,8 @@ class StudyPlanner {
 
     await this.clearExistingPlans();
 
-    // Build this week's dates: today → Saturday
+    // Build the next 7 days from today
+    // Availability is a weekly pattern so we match each date's weekday
     const DAY_CODES = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
     const today = new Date();
@@ -403,10 +404,6 @@ class StudyPlanner {
 
       const d = new Date(today);
       d.setDate(today.getDate() + i);
-
-      // Stop at end of week (Saturday)
-      if (d.getDay() === 0 && i > 0) break;
-
       weekDays.push(d);
     }
 
