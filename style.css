@@ -343,6 +343,307 @@ nav a:hover {
     text-align: center;
 }
 
+/* ========================
+   DASHBOARD REDESIGN
+======================== */
+
+.dash-greeting {
+    background: linear-gradient(135deg, #1e1b4b, #312e81);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.dash-greeting h1 {
+    color: #fff;
+    font-size: clamp(1.3rem, 3vw, 1.6rem);
+    font-weight: 700;
+    margin: 0 0 6px;
+    text-align: left;
+}
+
+.dash-greeting p {
+    color: #c7d2fe;
+    font-size: 0.9rem;
+    margin: 0;
+    text-align: left;
+}
+
+.dash-streak {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 999px;
+    padding: 8px 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.dash-streak i {
+    color: #fb923c;
+    font-size: 1rem;
+}
+
+/* Stat Cards */
+.dash-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.dash-stat-card {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    border-radius: 14px;
+    padding: 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.dash-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+}
+
+.dash-stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.2rem;
+}
+
+.dash-stat-icon--blue { background: #eef2ff; color: #4338ca; }
+.dash-stat-icon--red  { background: #fef2f2; color: #dc2626; }
+.dash-stat-icon--green{ background: #f0fdf4; color: #15803d; }
+
+.dash-stat-label {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.dash-stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1;
+}
+
+.dash-stat-sub {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+
+/* Quote card */
+.dash-quote {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 1px solid #bbf7d0;
+    border-radius: 14px;
+    padding: 18px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.dash-quote i {
+    font-size: 1.8rem;
+    color: #15803d;
+    flex-shrink: 0;
+}
+
+.dash-quote-text {
+    font-size: 0.88rem;
+    color: #166534;
+    line-height: 1.6;
+    font-style: italic;
+}
+
+.dash-quote-author {
+    font-size: 0.75rem;
+    color: #15803d;
+    margin-top: 4px;
+    font-weight: 600;
+}
+
+/* Two column layout */
+.dash-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 0;
+}
+
+/* Generic card */
+.dash-card {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    border-radius: 14px;
+    padding: 20px;
+}
+
+.dash-card-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0 0 14px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dash-card-title i {
+    font-size: 1rem;
+    color: #6366f1;
+}
+
+.dash-empty {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    text-align: center;
+    padding: 16px 0;
+    margin: 0;
+}
+
+/* Deadline items */
+.dash-deadline-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dash-deadline-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.dash-deadline-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.dash-deadline-dot.high   { background: #ef4444; }
+.dash-deadline-dot.medium { background: #f59e0b; }
+.dash-deadline-dot.low    { background: #22c55e; }
+
+.dash-deadline-name {
+    font-size: 0.85rem;
+    color: #1e293b;
+    font-weight: 600;
+    flex: 1;
+}
+
+.dash-deadline-date {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+/* Today plan items */
+.dash-session-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.dash-session-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.dash-session-time {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    min-width: 80px;
+}
+
+.dash-session-course {
+    font-size: 0.85rem;
+    color: #1e293b;
+    font-weight: 600;
+    flex: 1;
+}
+
+.dash-status-pill {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.dash-status-pill.pending  { background: #fef3c7; color: #92400e; }
+.dash-status-pill.completed{ background: #dcfce7; color: #166534; }
+.dash-status-pill.missed   { background: #fee2e2; color: #991b1b; }
+
+/* Weekly progress bars */
+.dash-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.dash-progress-row:last-child { margin-bottom: 0; }
+
+.dash-progress-label {
+    font-size: 0.8rem;
+    color: #1e293b;
+    min-width: 130px;
+}
+
+.dash-progress-bar-wrap {
+    flex: 1;
+    height: 8px;
+    background: #f1f5f9;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.dash-progress-bar {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.6s ease;
+}
+
+.dash-progress-pct {
+    font-size: 0.75rem;
+    color: #64748b;
+    min-width: 34px;
+    text-align: right;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .dash-stats    { grid-template-columns: 1fr; }
+    .dash-two-col  { grid-template-columns: 1fr; }
+    .dash-greeting { flex-direction: column; align-items: flex-start; }
+}
+
 /* COURSES GRID */
 .courses-toolbar {
     display: flex;
