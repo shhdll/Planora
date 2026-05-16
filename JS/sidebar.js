@@ -4,9 +4,7 @@ import {
     collection,
     query,
     where,
-    getDocs,
-    doc,
-    getDoc
+    getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 function loadSidebar() {
@@ -43,7 +41,7 @@ function loadSidebar() {
                 <a href="dashboard.html" class="app-nav__link">Dashboard</a>
                 <a href="courses.html" class="app-nav__link">Courses <span id="courses-badge" class="app-nav__badge" style="display:none"></span></a>
                 <a href="deadlines.html" class="app-nav__link">Deadlines</a>
-                <a href="availability.html" class="app-nav__link">Availability <span id="availability-dot" class="app-nav__dot app-nav__dot--unset" title="Availability not set"></span></a>
+                <a href="availability.html" class="app-nav__link">Availability</a>
                 <a href="study-plan.html" class="app-nav__link">Study plan</a>
                 <a href="statistics.html" class="app-nav__link">Statistics</a>
             </nav>
@@ -163,21 +161,7 @@ async function addSidebarBadges() {
             badge.style.display = 'inline-block';
         }
 
-        // Availability dot — load from Firestore
-        const availabilityRef = doc(db, "availability", firebaseUser.uid);
-        const availabilitySnap = await getDoc(availabilityRef);
 
-        let isSet = false;
-        if (availabilitySnap.exists()) {
-            const availability = availabilitySnap.data();
-            isSet = availability.days && availability.days.length > 0;
-        }
-
-        const dot = document.getElementById('availability-dot');
-        if (dot) {
-            dot.className = `app-nav__dot ${isSet ? 'app-nav__dot--set' : 'app-nav__dot--unset'}`;
-            dot.title = isSet ? 'Availability set' : 'Availability not set';
-        }
     } catch (error) {
         console.error("Error loading sidebar badges:", error);
     }
