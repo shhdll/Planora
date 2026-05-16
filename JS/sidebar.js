@@ -31,7 +31,6 @@ function loadSidebar() {
                 <a href="statistics.html" class="app-nav__link">Statistics</a>
             </nav>
             <div class="app-sidebar__footer">
-                <a href="index.html" class="app-nav__link app-nav__link--muted">Home</a>
                 <a href="#" class="app-nav__link" id="logout-btn">
                     <img src="images/logout-icon.png" alt="" style="width:16px; height:16px; vertical-align:-2px; margin-right:6px;">
                     Log out
