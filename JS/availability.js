@@ -164,19 +164,46 @@ function renderSchedule(slots) {
 
   section.style.display = "";
 
-  document.getElementById("avail-slots").innerHTML =
+  const container = document.getElementById("avail-slots");
+
+  container.innerHTML =
     DAY_ORDER
       .filter((day) => byDay[day])
       .map((day) => `
         <div class="avail-slot">
           <span class="course-badge avail-day-badge">${DAY_LABELS[day]}</span>
           <div class="avail-slot__times">
-            ${byDay[day].map((t) =>
-              `<p class="avail-slot__time">${formatTime(t.startTime)} – ${formatTime(t.endTime)}</p>`
-            ).join("")}
+            ${byDay[day].map((t) => `
+              <div class="avail-slot__row">
+                <p class="avail-slot__time">${formatTime(t.startTime)} – ${formatTime(t.endTime)}</p>
+                <button
+                  class="avail-delete-btn"
+                  data-day="${day}"
+                  data-start="${t.startTime}"
+                  data-end="${t.endTime}"
+                  title="Remove"
+                >×</button>
+              </div>
+            `).join("")}
           </div>
         </div>
       `).join("");
+}
+
+async function deleteSlot(day, startTime, endTime) {
+
+  slots = slots.filter(
+    (s) =>
+      !(s.day === day &&
+        s.startTime === startTime &&
+        s.endTime === endTime)
+  );
+
+  const success = await saveSlots(slots);
+
+  if (success) {
+    renderSchedule(slots);
+  }
 }
 
 function resetForm() {
@@ -197,6 +224,18 @@ async function initAvailabilityPage() {
 
   slots = await loadSlots();
   renderSchedule(slots);
+
+  document
+    .getElementById("avail-slots")
+    .addEventListener("click", (e) => {
+      const btn = e.target.closest(".avail-delete-btn");
+      if (!btn) return;
+      deleteSlot(
+        btn.dataset.day,
+        btn.dataset.start,
+        btn.dataset.end
+      );
+    });
 }
 
 async function handleAvailabilitySubmit(event) {

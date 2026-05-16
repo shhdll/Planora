@@ -1716,6 +1716,14 @@ footer a:hover {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    flex: 1;
+}
+
+.avail-slot__row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
 }
 
 .avail-slot__time {
@@ -1723,4 +1731,23 @@ footer a:hover {
     font-size: 0.9rem;
     color: #555;
     font-weight: 500;
+}
+
+.avail-delete-btn {
+    background: none;
+    border: none;
+    color: #b0b8c1;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: background 0.15s, color 0.15s;
+    margin: 0;
+    width: auto;
+}
+
+.avail-delete-btn:hover {
+    background: #f1f5f9;
+    color: #64748b;
 }
