@@ -2,285 +2,182 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Planora - Dashboard</title>
-
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
-
+    <link rel="stylesheet" href="style.css">
+    
+    
 </head>
 
 <body class="page-app">
 
     <div class="app-shell">
-
         <div id="sidebar-container"></div>
 
         <div class="app-content-wrap">
-
             <div id="topbar-container"></div>
 
             <main class="app-main">
 
-                <div class="page-header">
-
-                    <h1 id="dashboard-greeting">
-                        Welcome!
-                    </h1>
-
-                    <p>
-                        Your study dashboard at a glance
-                    </p>
-
+                <!-- GREETING BANNER -->
+                <div class="dash-greeting">
+                    <div>
+                        <h1 id="dashboard-greeting">Good morning!</h1>
+                        <p id="dashboard-subline">Loading your dashboard...</p>
+                    </div>
+                    <div class="dash-streak" id="dash-streak" style="display:none">
+                        <i class="ti ti-flame"></i>
+                        <span id="streak-label">Day streak</span>
+                    </div>
                 </div>
 
-
-                <!-- OVERVIEW -->
-
-                <div class="overview">
-
-                    <div class="card">
-
-                        <h3>
-                            Total courses
-                        </h3>
-
-                        <p id="stat-courses">
-                            0
-                        </p>
-
+                <!-- STAT CARDS -->
+                <div class="dash-stats">
+                    <div class="dash-stat-card">
+                        <div class="dash-stat-icon dash-stat-icon--blue">
+                            <i class="ti ti-book"></i>
+                        </div>
+                        <div>
+                            <div class="dash-stat-label">Total courses</div>
+                            <div class="dash-stat-value" id="stat-courses">—</div>
+                            <div class="dash-stat-sub">This semester</div>
+                        </div>
                     </div>
-
-
-                    <div class="card">
-
-                        <h3>
-                            Upcoming deadlines
-                        </h3>
-
-                        <p id="stat-deadlines">
-                            0
-                        </p>
-
+                    <div class="dash-stat-card">
+                        <div class="dash-stat-icon dash-stat-icon--red">
+                            <i class="ti ti-calendar-due"></i>
+                        </div>
+                        <div>
+                            <div class="dash-stat-label">Upcoming deadlines</div>
+                            <div class="dash-stat-value" id="stat-deadlines">—</div>
+                            <div class="dash-stat-sub">Next 7 days</div>
+                        </div>
                     </div>
-
-
-                    <div class="card">
-
-                        <h3>
-                            Sessions today
-                        </h3>
-
-                        <p id="stat-sessions">
-                            0
-                        </p>
-
+                    <div class="dash-stat-card">
+                        <div class="dash-stat-icon dash-stat-icon--green">
+                            <i class="ti ti-clock"></i>
+                        </div>
+                        <div>
+                            <div class="dash-stat-label">Sessions today</div>
+                            <div class="dash-stat-value" id="stat-sessions">—</div>
+                            <div class="dash-stat-sub">Planned</div>
+                        </div>
                     </div>
-
                 </div>
 
-
-                <!-- QUICK ACTIONS -->
-
-                <h2>
-                    Quick actions
-                </h2>
-
-                <div class="buttons">
-
-                    <a href="courses.html">
-                        My courses
-                    </a>
-
-                    <a href="deadlines.html">
-                        Deadlines
-                    </a>
-
-                    <a href="availability.html">
-                        Availability
-                    </a>
-
-                    <a href="study-plan.html">
-                        Study plan
-                    </a>
-
-                    <a href="statistics.html">
-                        Statistics
-                    </a>
-
+                <!-- MOTIVATIONAL QUOTE -->
+                <div class="dash-quote" id="dash-quote">
+                    <i class="ti ti-quote"></i>
+                    <div>
+                        <div class="dash-quote-text" id="quote-text">Loading quote...</div>
+                        <div class="dash-quote-author" id="quote-author"></div>
+                    </div>
                 </div>
 
-
-                <!-- UPCOMING DEADLINES -->
-
-                <h2>
-                    Upcoming deadlines
-                </h2>
-
-                <div id="dashboard-deadlines-list">
-
-                    <div class="deadline">
-
-                        No upcoming deadlines yet.
-
+                <!-- DEADLINES + TODAY PLAN -->
+                <div class="dash-two-col">
+                    <div class="dash-card">
+                        <h2 class="dash-card-title">
+                            <i class="ti ti-alert-circle"></i> Upcoming deadlines
+                        </h2>
+                        <div id="dashboard-deadlines-list">
+                            <p class="dash-empty">No upcoming deadlines.</p>
+                        </div>
                     </div>
 
+                    <div class="dash-card">
+                        <h2 class="dash-card-title">
+                            <i class="ti ti-calendar"></i> Today's study plan
+                        </h2>
+                        <div id="today-plan-list">
+                            <p class="dash-empty">No sessions today. Generate a study plan first.</p>
+                        </div>
+                    </div>
                 </div>
 
-
-                <!-- TODAY PLAN -->
-
-                <h2>
-                    Today’s study plan
-                </h2>
-
-                <div class="studyPlan">
-
-                    <div class="table-wrap">
-
-                        <table id="today-plan-table">
-
-                            <thead>
-
-                                <tr>
-
-                                    <th>
-                                        Time
-                                    </th>
-
-                                    <th>
-                                        Course
-                                    </th>
-
-                                    <th>
-                                        Status
-                                    </th>
-
-                                </tr>
-
-                            </thead>
-
-                        </table>
-
+                <!-- WEEKLY PROGRESS -->
+                <div class="dash-card" style="margin-top:14px">
+                    <h2 class="dash-card-title">
+                        <i class="ti ti-chart-bar"></i> Weekly completion
+                    </h2>
+                    <div id="weekly-progress">
+                        <p class="dash-empty">No study data yet.</p>
                     </div>
-
-
-                    <p
-                        id="no-sessions-msg"
-
-                        style="
-                            text-align:center;
-                            color:#64748b;
-                            padding:12px;
-                        "
-                    >
-
-                        No study sessions today.
-                        Generate a study plan first.
-
-                    </p>
-
                 </div>
 
             </main>
 
-
             <footer>
-
-                <p>
-
-                    &copy; 2026 Planora.
-                    All rights reserved.
-
-                    ·
-
-                    <a href="mailto:support@planora.com">
-
-                        support@planora.com
-
-                    </a>
-
-                </p>
-
+                <p>&copy; 2026 Planora. All rights reserved. · <a href="mailto:support@planora.com">support@planora.com</a></p>
             </footer>
-
         </div>
-
     </div>
 
-
-    <!-- FIREBASE -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 
     <script type="importmap">
-
         {
             "imports": {
-
-                "firebase/app":
-                "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
-
-                "firebase/auth":
-                "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
-
-                "firebase/firestore":
-                "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+                "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+                "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
             }
         }
-
     </script>
 
+    <script src="JS/config.js"></script>   
 
-    <!-- MODULES -->
+    <script type="module" src="JS/firebase-config.js"></script>
+    <script type="module" src="JS/utils.js"></script>
+    <script type="module" src="JS/sidebar.js"></script>
+    <script type="module" src="JS/topbar.js"></script>
+    <script type="module" src="JS/deadlines.js"></script>
+    <script type="module" src="JS/reminders.js"></script>
+    <script type="module" src="JS/AI.js"></script>
+    <script type="module" src="JS/dashboard.js"></script>
 
-    <script
-        type="module"
-        src="JS/firebase-config.js">
-    </script>
+    <script type="module">
+        import { auth } from './JS/firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    <script
-        type="module"
-        src="JS/utils.js">
-    </script>
+        window.firebaseAuth = auth;
 
-    <script
-        type="module"
-        src="JS/sidebar.js">
-    </script>
+        // Greeting based on time
+        function setGreeting(name) {
+            const hour = new Date().getHours();
+            const period = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening';
+            document.getElementById('dashboard-greeting').textContent = `Good ${period}, ${name}!`;
+        }
 
-    <script
-        type="module"
-        src="JS/topbar.js">
-    </script>
+        // Motivational quotes
+        const quotes = [
+            { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+            { text: "It always seems impossible until it's done.", author: "Nelson Mandela" },
+            { text: "Don't watch the clock; do what it does. Keep going.", author: "Sam Levenson" },
+            { text: "The expert in anything was once a beginner.", author: "Helen Hayes" },
+            { text: "Push yourself, because no one else is going to do it for you.", author: "Unknown" },
+            { text: "Small steps every day lead to big results.", author: "Unknown" },
+        ];
 
-    <script
-        type="module"
-        src="JS/deadlines.js">
-    </script>
+        function setQuote() {
+            const q = quotes[Math.floor(Math.random() * quotes.length)];
+            document.getElementById('quote-text').textContent = `"${q.text}"`;
+            document.getElementById('quote-author').textContent = `— ${q.author}`;
+        }
 
-    <script
-        type="module"
-        src="JS/reminders.js">
-    </script>
+        setQuote();
 
-    <script
-        type="module"
-        src="JS/AI.js">
-    </script>
-
-    <script
-        type="module"
-        src="JS/dashboard.js">
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+                return;
+            }
+            const name = user.displayName || user.email.split('@')[0];
+            setGreeting(name);
+            document.getElementById('dashboard-subline').textContent = "Here's your study snapshot for today.";
+        });
     </script>
 
 </body>
-
 </html>

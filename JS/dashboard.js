@@ -1,38 +1,12 @@
-import { auth, db }
-from './firebase-config.js';
-
-import {
-    Session,
-    DateUtils,
-    showToast
-}
-from './utils.js';
-
-import {
-    collection,
-    query,
-    where,
-    getDocs
-}
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-import {
-    Deadline
-}
-from './deadlines.js';
-
+import { auth, db } from './firebase-config.js';
+import { Session, DateUtils, showToast } from './utils.js';
+import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { Deadline } from './deadlines.js';
 
 let user = null;
 
-
-// ======================
-// ESCAPE HTML
-// ======================
-
 function escapeHtml(str) {
-
     if (!str) return '';
-
     return str
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
@@ -41,457 +15,163 @@ function escapeHtml(str) {
         .replace(/'/g, '&#39;');
 }
 
-
-// ======================
-// LOAD DASHBOARD
-// ======================
-
 async function loadDashboardData() {
-
     try {
 
-        // ======================
         // COURSES
-        // ======================
-
-        const coursesQuery = query(
-
-            collection(db, "courses"),
-
-            where(
-                "userId",
-                "==",
-                user.uid
-            )
+        const coursesSnapshot = await getDocs(
+            query(collection(db, "courses"), where("userId", "==", user.uid))
         );
+        document.getElementById("stat-courses").textContent = coursesSnapshot.size;
 
-        const coursesSnapshot =
-            await getDocs(coursesQuery);
-
-        const courses = [];
-
-        coursesSnapshot.forEach((docItem) => {
-
-            courses.push({
-
-                id: docItem.id,
-                ...docItem.data()
-            });
-        });
-
-        document.getElementById(
-            "stat-courses"
-        ).textContent =
-            courses.length;
-
-
-        // ======================
         // DEADLINES
-        // ======================
+        const allDeadlines = await Deadline.getAll();
+        const pendingDeadlines = allDeadlines.filter(d => !d.completed);
 
-        const allDeadlines =
-            await Deadline.getAll();
+        document.getElementById("stat-deadlines").textContent = pendingDeadlines.length;
 
-        document.getElementById(
-            "stat-deadlines"
-        ).textContent =
-            allDeadlines.filter(
-                d => !d.completed
-            ).length;
+        const deadlineContainer = document.getElementById("dashboard-deadlines-list");
 
-
-        const deadlineContainer =
-            document.getElementById(
-                "dashboard-deadlines-list"
-            );
-
-
-        const upcoming =
-            allDeadlines
-
-            .filter(
-
-                d =>
-                    d.dueDate &&
-                    !d.completed
-            )
-
-            .sort(
-
-                (a, b) =>
-
-                    new Date(a.dueDate) -
-                    new Date(b.dueDate)
-            );
-
+        const upcoming = pendingDeadlines
+            .filter(d => d.dueDate && DateUtils.daysUntil(d.dueDate) >= 0)
+            .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
 
         if (upcoming.length > 0) {
-
             deadlineContainer.innerHTML = "";
+            upcoming.slice(0, 3).forEach((d) => {
+                const days = DateUtils.daysUntil(d.dueDate);
+                const priority = (d.priority || 'low').toLowerCase();
+                const daysLabel = days === 0 ? "Today!" : days === 1 ? "Tomorrow" : `In ${days} days`;
 
-            upcoming
-                .slice(0, 3)
-
-                .forEach((d) => {
-
-                    const days =
-                        DateUtils.daysUntil(
-                            d.dueDate
-                        );
-
-                    const div =
-                        document.createElement(
-                            "div"
-                        );
-
-                    div.className =
-                        "deadline";
-
-                    div.innerHTML = `
-
-                        <span style="${
-                            days <= 2
-                            ? "color:#ef4444;font-weight:bold;"
-                            : ""
-                        }">
-
-                            ${escapeHtml(d.title)}
-
-                            —
-
-                            ${new Date(d.dueDate).toLocaleDateString()}
-
-                        </span>
-
-                        <span style="
-                            float:right;
-                            color:#64748b;
-                            font-size:0.85rem;
-                        ">
-
-                            ${
-                                days === 0
-                                ? "Today!"
-
-                                : days === 1
-                                ? "Tomorrow"
-
-                                : `In ${days} days`
-                            }
-
-                        </span>
-                    `;
-
-                    deadlineContainer.appendChild(div);
-                });
-
+                const div = document.createElement("div");
+                div.className = "dash-deadline-item";
+                div.innerHTML = `
+                    <div class="dash-deadline-dot ${priority}"></div>
+                    <div class="dash-deadline-name">${escapeHtml(d.title)} — ${escapeHtml(d.course)}</div>
+                    <div class="dash-deadline-date">${daysLabel}</div>
+                `;
+                deadlineContainer.appendChild(div);
+            });
         } else {
-
-            deadlineContainer.innerHTML = `
-
-                <div class="deadline">
-
-                    No upcoming deadlines yet.
-
-                </div>
-            `;
+            deadlineContainer.innerHTML = `<p class="dash-empty">No upcoming deadlines.</p>`;
         }
 
-
-        // ======================
         // STUDY PLANS
-        // ======================
-
-        const plansQuery = query(
-
-            collection(db, "studyPlans"),
-
-            where(
-                "userId",
-                "==",
-                user.uid
-            )
+        const plansSnapshot = await getDocs(
+            query(collection(db, "studyPlans"), where("userId", "==", user.uid))
         );
 
-        const plansSnapshot =
-            await getDocs(plansQuery);
-
         const allPlans = [];
-
         plansSnapshot.forEach((docItem) => {
-
-            allPlans.push({
-
-                id: docItem.id,
-                ...docItem.data()
-            });
+            allPlans.push({ id: docItem.id, ...docItem.data() });
         });
 
+        const todayDate = new Date().toISOString().split("T")[0];
 
-        // ======================
-        // TODAY DATE
-        // ======================
+        const todaySessions = allPlans.filter((s) => {
+            if (!s.studyDate) return false;
+            const sessionDate = new Date(s.studyDate).toISOString().split("T")[0];
+            return sessionDate === todayDate;
+        });
 
-        const todayDate =
-            new Date()
-            .toISOString()
-            .split("T")[0];
+        const todayDeadlines = allDeadlines.filter((d) => {
+            if (!d.dueDate || d.completed) return false;
+            const deadlineDate = new Date(d.dueDate).toISOString().split("T")[0];
+            return deadlineDate === todayDate;
+        });
 
+        document.getElementById("stat-sessions").textContent =
+            todaySessions.length + todayDeadlines.length;
 
-        // ======================
-        // TODAY SESSIONS
-        // ======================
+        // TODAY PLAN LIST
+        const planList = document.getElementById("today-plan-list");
 
-        const todaySessions =
-
-            allPlans.filter((s) => {
-
-                if (!s.studyDate)
-                    return false;
-
-                const sessionDate =
-                    new Date(
-                        s.studyDate
-                    )
-                    .toISOString()
-                    .split("T")[0];
-
-                return (
-                    sessionDate === todayDate
-                );
-            });
-
-
-        // ======================
-        // TODAY DEADLINES
-        // ======================
-
-        const todayDeadlines =
-
-            allDeadlines.filter((d) => {
-
-                if (!d.dueDate)
-                    return false;
-
-                const deadlineDate =
-                    new Date(
-                        d.dueDate
-                    )
-                    .toISOString()
-                    .split("T")[0];
-
-                return (
-                    deadlineDate === todayDate &&
-                    !d.completed
-                );
-            });
-
-
-        // ======================
-        // TOTAL TODAY ACTIVITY
-        // ======================
-
-        document.getElementById(
-            "stat-sessions"
-        ).textContent =
-
-            todaySessions.length +
-            todayDeadlines.length;
-
-
-        // ======================
-        // TABLE
-        // ======================
-
-        const table =
-            document.getElementById(
-                "today-plan-table"
-            );
-
-        const noMsg =
-            document.getElementById(
-                "no-sessions-msg"
-            );
-
-
-        while (
-            table.rows.length > 1
-        ) {
-
-            table.deleteRow(1);
-        }
-
-
-        // ======================
-        // SHOW DATA
-        // ======================
-
-        if (
-            todaySessions.length > 0 ||
-            todayDeadlines.length > 0
-        ) {
-
-            noMsg.style.display =
-                "none";
-
-
-            // ======================
-            // STUDY SESSIONS
-            // ======================
+        if (todaySessions.length > 0 || todayDeadlines.length > 0) {
+            planList.innerHTML = "";
 
             todaySessions.forEach((s) => {
-
-                const row =
-                    table.insertRow();
-
-                const statusColor =
-
-                    s.status === "completed"
-                    ? "#22c55e"
-
-                    : s.status === "missed"
-                    ? "#ef4444"
-
-                    : "#64748b";
-
-                row.innerHTML = `
-
-                    <td>
-
-                        <strong>
-
-                            ${escapeHtml(s.startTime)}
-
-                            –
-
-                            ${escapeHtml(s.endTime)}
-
-                        </strong>
-
-                    </td>
-
-                    <td>
-
-                        ${escapeHtml(s.course)}
-
-                    </td>
-
-                    <td style="
-                        color:${statusColor};
-                        font-weight:600;
-                        text-transform:capitalize;
-                    ">
-
-                        ${escapeHtml(s.status || "pending")}
-
-                    </td>
+                const status = s.status || "pending";
+                const div = document.createElement("div");
+                div.className = "dash-session-item";
+                div.innerHTML = `
+                    <div class="dash-session-time">${escapeHtml(s.startTime)} – ${escapeHtml(s.endTime)}</div>
+                    <div class="dash-session-course">${escapeHtml(s.course)}</div>
+                    <span class="dash-status-pill ${status}">${status}</span>
                 `;
+                planList.appendChild(div);
             });
 
-
-            // ======================
-            // DEADLINES TODAY
-            // ======================
-
             todayDeadlines.forEach((d) => {
-
-                const row =
-                    table.insertRow();
-
-                row.innerHTML = `
-
-                    <td>
-
-                        <strong style="
-                            color:#ef4444;
-                        ">
-
-                            Deadline
-
-                        </strong>
-
-                    </td>
-
-                    <td>
-
-                        ${escapeHtml(d.course)}
-
-                    </td>
-
-                    <td style="
-                        color:#ef4444;
-                        font-weight:600;
-                    ">
-
-                        Due Today
-
-                    </td>
+                const div = document.createElement("div");
+                div.className = "dash-session-item";
+                div.innerHTML = `
+                    <div class="dash-session-time" style="color:#ef4444;font-weight:600;">Due today</div>
+                    <div class="dash-session-course">${escapeHtml(d.title)}</div>
+                    <span class="dash-status-pill missed">Deadline</span>
                 `;
+                planList.appendChild(div);
             });
 
         } else {
+            planList.innerHTML = `<p class="dash-empty">No sessions today. Generate a study plan first.</p>`;
+        }
 
-            noMsg.style.display =
-                "block";
+        // WEEKLY PROGRESS
+        const progressContainer = document.getElementById("weekly-progress");
+
+        const courseNames = [...new Set(allPlans.map(s => s.course).filter(Boolean))];
+
+        if (courseNames.length > 0) {
+            const colors = ["#6366f1", "#0ea5e9", "#f59e0b", "#10b981", "#f43f5e"];
+
+            progressContainer.innerHTML = courseNames.map((course, i) => {
+                const sessions = allPlans.filter(s => s.course === course);
+                const completed = sessions.filter(s => s.status === "completed").length;
+                const pct = sessions.length > 0 ? Math.round((completed / sessions.length) * 100) : 0;
+
+                return `
+                    <div class="dash-progress-row">
+                        <div class="dash-progress-label">${escapeHtml(course)}</div>
+                        <div class="dash-progress-bar-wrap">
+                            <div class="dash-progress-bar" style="width:${pct}%;background:${colors[i % colors.length]}"></div>
+                        </div>
+                        <div class="dash-progress-pct">${pct}%</div>
+                    </div>
+                `;
+            }).join("");
+        } else {
+            progressContainer.innerHTML = `<p class="dash-empty">No study data yet.</p>`;
         }
 
     } catch (error) {
-
-        console.error(
-            "Dashboard error:",
-            error
-        );
-
-        showToast(
-            "Error loading dashboard",
-            "error"
-        );
+        console.error("Dashboard error:", error);
+        showToast("Error loading dashboard", "error");
     }
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+    auth.onAuthStateChanged(async (firebaseUser) => {
+        if (!firebaseUser) {
+            window.location.href = "login.html";
+            return;
+        }
 
-// ======================
-// AUTH
-// ======================
+        user = firebaseUser;
 
-document.addEventListener(
+        const sessionUser = Session.getUser();
+        const userName = sessionUser?.name || user.email?.split('@')[0] || 'User';
 
-    "DOMContentLoaded",
+        const greetingEl = document.getElementById("dashboard-greeting");
+        if (greetingEl) greetingEl.textContent = `Good ${getTimePeriod()}, ${userName}!`;
 
-    () => {
+        const sublineEl = document.getElementById("dashboard-subline");
+        if (sublineEl) sublineEl.textContent = "Here's your study snapshot for today.";
 
-        auth.onAuthStateChanged(
+        await loadDashboardData();
+    });
+});
 
-            async (firebaseUser) => {
-
-                if (!firebaseUser) {
-
-                    window.location.href =
-                        "login.html";
-
-                    return;
-                }
-
-                user = firebaseUser;
-
-                const greetingElement =
-                    document.getElementById(
-                        "dashboard-greeting"
-                    );
-
-                const sessionUser =
-                    Session.getUser();
-
-                const userName =
-                    sessionUser?.name ||
-                    user.email?.split('@')[0] ||
-                    'User';
-
-                greetingElement.innerHTML =
-                    `Welcome, ${escapeHtml(userName)}! 👋`;
-
-                await loadDashboardData();
-            }
-        );
-    }
-);
+function getTimePeriod() {
+    const h = new Date().getHours();
+    return h < 12 ? "morning" : h < 17 ? "afternoon" : "evening";
+}

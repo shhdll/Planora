@@ -17,7 +17,8 @@
             <main class="app-main">
                 <div class="page-header">
                     <h1>Set your weekly availability</h1>
-                    <p>Let Planora know when you are available to study, so we can help you create a better study plan.</p>
+                    <p>Let Planora know when you are available to study, so we can help you create a better study plan.
+                    </p>
                 </div>
 
                 <div class="form-card">
@@ -25,13 +26,20 @@
                         <div class="form-group">
                             <label>Select available days</label>
                             <div class="avail-days-grid">
-                                <label class="avail-day-toggle"><input type="checkbox" name="days" value="sun"><span>Sun</span></label>
-                                <label class="avail-day-toggle"><input type="checkbox" name="days" value="mon"><span>Mon</span></label>
-                                <label class="avail-day-toggle"><input type="checkbox" name="days" value="tue"><span>Tue</span></label>
-                                <label class="avail-day-toggle"><input type="checkbox" name="days" value="wed"><span>Wed</span></label>
-                                <label class="avail-day-toggle"><input type="checkbox" name="days" value="thu"><span>Thu</span></label>
-                                <label class="avail-day-toggle"><input type="checkbox" name="days" value="fri"><span>Fri</span></label>
-                                <label class="avail-day-toggle"><input type="checkbox" name="days" value="sat"><span>Sat</span></label>
+                                <label class="avail-day-toggle"><input type="checkbox" name="days"
+                                        value="sun"><span>Sun</span></label>
+                                <label class="avail-day-toggle"><input type="checkbox" name="days"
+                                        value="mon"><span>Mon</span></label>
+                                <label class="avail-day-toggle"><input type="checkbox" name="days"
+                                        value="tue"><span>Tue</span></label>
+                                <label class="avail-day-toggle"><input type="checkbox" name="days"
+                                        value="wed"><span>Wed</span></label>
+                                <label class="avail-day-toggle"><input type="checkbox" name="days"
+                                        value="thu"><span>Thu</span></label>
+                                <label class="avail-day-toggle"><input type="checkbox" name="days"
+                                        value="fri"><span>Fri</span></label>
+                                <label class="avail-day-toggle"><input type="checkbox" name="days"
+                                        value="sat"><span>Sat</span></label>
                             </div>
                         </div>
 
@@ -60,38 +68,45 @@
             </main>
 
             <footer>
-                <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a href="mailto:support@planora.com">support@planora.com</a></p>
+                <p>&copy; 2026 Planora. All Rights Reserved. | Contact: <a
+                        href="mailto:support@planora.com">support@planora.com</a></p>
             </footer>
         </div>
     </div>
 
     <!-- Firebase Module Scripts -->
     <script type="importmap">
-        {
-            "imports": {
-                "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
-                "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
-                "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
-            }
+    {
+        "imports": {
+            "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+            "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+            "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
         }
-    </script>
-    
+    }
+</script>
+
+    <script src="JS/config.js"></script>
+
     <script type="module" src="JS/firebase-config.js"></script>
     <script type="module" src="JS/utils.js"></script>
-    <script type="module" src="js/sidebar.js"></script>
+    <script type="module" src="JS/sidebar.js"></script>
     <script type="module" src="JS/topbar.js"></script>
-    <script type="module" src="JS/auth.js"></script>
+    <script type="module" src="JS/AI.js"></script>
     <script type="module" src="JS/availability.js"></script>
-    
+
     <script type="module">
-        import { Session } from './JS/utils.js';
-        
-        // Check if user is logged in
-        Session.require();
-        
-        // Note: availability.js automatically initializes on DOMContentLoaded
-        // and handles form submission
+        import { auth } from './JS/firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+        window.firebaseAuth = auth;
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+            }
+        });
     </script>
 
 </body>
+
 </html>
