@@ -8,12 +8,7 @@ class Reminder {
   // Check upcoming deadlines
   static async checkDeadlines() {
 
-<<<<<<< HEAD
-    // get all deadlines from Firestore (using Deadline class from deadlines.js)
-    const deadlines = await Deadline.getAll();
-=======
     const deadlines = Deadline.getAll();
->>>>>>> b36a63a79e13c265943b72821b2b78dada77b527
 
     const now = new Date();
 
@@ -23,35 +18,14 @@ class Reminder {
 
         if (!deadline.dueDate) return;
 
-<<<<<<< HEAD
-      // difference in milliseconds
-      const diff = dueDate - now;
-
-      // convert to hours
-      const hoursLeft = diff / (1000 * 60 * 60);
-=======
         const dueDate =
             new Date(deadline.dueDate);
 
         if (isNaN(dueDate.getTime())) return;
->>>>>>> b36a63a79e13c265943b72821b2b78dada77b527
 
         const diff =
             dueDate.getTime() - now.getTime();
 
-<<<<<<< HEAD
-        // toast message (using warning style)
-        showToast(
-          `Reminder: ${deadline.title} is due soon!`,
-          "info" // Changed to "info" since "warning" wasn't defined in showToast
-        );
-
-        // browser notification
-        Reminder.sendBrowserNotification(
-          `${deadline.title} is due soon! Course: ${deadline.course}`
-        );
-      }
-=======
         const hoursLeft =
             diff / (1000 * 60 * 60);
 
@@ -66,7 +40,6 @@ class Reminder {
                 `${deadline.title} is due soon!`
             );
         }
->>>>>>> b36a63a79e13c265943b72821b2b78dada77b527
     });
 }
 
