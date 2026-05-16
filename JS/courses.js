@@ -1,5 +1,6 @@
 // Import Firebase
 import { db, auth } from './firebase-config.js';
+import { showToast } from './utils.js';
 import {
   collection,
   query,
@@ -170,7 +171,7 @@ async function handleAddCourse(event) {
   const creditHours = document.getElementById("creditHours")?.value;
 
   if (!name || !code) {
-    if (typeof showToast === "function") showToast("Course name and code are required.", "error");
+    showToast("Course name and code are required.", "error");
     return;
   }
 
@@ -179,7 +180,7 @@ async function handleAddCourse(event) {
     (c) => c.code.toLowerCase() === code.toLowerCase()
   );
   if (duplicate) {
-    if (typeof showToast === "function") showToast(`A course with code "${code}" already exists.`, "error");
+    showToast(`A course with code "${code}" already exists.`, "error");
     return;
   }
 
@@ -193,10 +194,10 @@ async function handleAddCourse(event) {
   const added = await addCourse(newCourse);
 
   if (added) {
-    if (typeof showToast === "function") showToast(`"${name}" added successfully!`, "success");
+    showToast(`"${name}" added successfully!`, "success");
     window.location.href = "courses.html"; // ← removed setTimeout, redirect immediately
   } else {
-    if (typeof showToast === "function") showToast(`Failed to add "${name}". Please try again.`, "error");
+    showToast(`Failed to add "${name}". Please try again.`, "error");
   }
 }
 
@@ -242,7 +243,7 @@ async function handleEditCourse(event) {
   const creditHours = document.getElementById("creditHours")?.value;
 
   if (!name || !code) {
-    if (typeof showToast === "function") showToast("Course name and code are required.", "error");
+    showToast("Course name and code are required.", "error");
     return;
   }
 
@@ -251,7 +252,7 @@ async function handleEditCourse(event) {
     (c) => c.code.toLowerCase() === code.toLowerCase() && c.id !== id
   );
   if (duplicate) {
-    if (typeof showToast === "function") showToast(`Another course already uses code "${code}".`, "error");
+    showToast(`Another course already uses code "${code}".`, "error");
     return;
   }
 
@@ -265,10 +266,10 @@ async function handleEditCourse(event) {
   const success = await updateCourse(id, updatedCourse);
 
   if (success) {
-    if (typeof showToast === "function") showToast("Course updated successfully!", "success");
+    showToast("Course updated successfully!", "success");
     window.location.href = "courses.html";
   } else {
-    if (typeof showToast === "function") showToast("Failed to update course. Please try again.", "error");
+    showToast("Failed to update course. Please try again.", "error");
   }
 }
 
@@ -325,10 +326,10 @@ window.inlineDeleteCourse = async function(id) {
   const success = await deleteCourse(id);
 
   if (success) {
-    if (typeof showToast === "function") showToast("Course removed successfully.", "success");
+    showToast("Course removed successfully.", "success");
     await renderCourses();
   } else {
-    if (typeof showToast === "function") showToast("Failed to remove course. Please try again.", "error");
+    showToast("Failed to remove course. Please try again.", "error");
   }
 };
 

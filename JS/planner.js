@@ -141,6 +141,61 @@ class StudyPlanner {
   }
 
   // =========================
+  // AVAILABILITY SLOTS (per-day)
+  // =========================
+
+  static async getAvailabilitySlots() {
+
+    const userId = this.getUserId();
+    if (!userId) return [];
+
+    const q = query(
+      collection(db, "availability"),
+      where("userId", "==", userId)
+    );
+
+    const snapshot = await getDocs(q);
+    if (snapshot.empty) return [];
+
+    const data = snapshot.docs[0].data();
+
+    // Current per-day format: {slots: [{day, startTime, endTime}]}
+    if (
+      Array.isArray(data.slots) &&
+      data.slots.length > 0 &&
+      data.slots[0].day
+    ) {
+      return data.slots;
+    }
+
+    // Old multi-day format: {slots: [{days: [], startTime, endTime}]}
+    if (
+      Array.isArray(data.slots) &&
+      data.slots.length > 0 &&
+      data.slots[0].days
+    ) {
+      const perDay = [];
+      data.slots.forEach((slot) => {
+        slot.days.forEach((day) => {
+          perDay.push({ day, startTime: slot.startTime, endTime: slot.endTime });
+        });
+      });
+      return perDay;
+    }
+
+    // Very old flat format: {days: [], startTime, endTime}
+    if (Array.isArray(data.days) && data.days.length) {
+      return data.days.map((day) => ({
+        day,
+        startTime: data.startTime,
+        endTime: data.endTime
+      }));
+    }
+
+    return [];
+  }
+
+  // =========================
   // DEADLINES
   // =========================
 
@@ -279,18 +334,20 @@ class StudyPlanner {
       return;
     }
 
-    const availability =
-      await this.getAvailability();
+    const availSlots =
+      await this.getAvailabilitySlots();
 
-    if (
-      !availability ||
-      !availability.days.length
-    ) {
+    if (!availSlots.length) {
 
       showToast(
         "Please set your availability first.",
         "error"
       );
+
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "Generate Weekly Study Plan";
+      }
 
       return;
     }
@@ -298,24 +355,11 @@ class StudyPlanner {
     const allDeadlines =
       await this.getDeadlines();
 
-    // remove completed deadlines
-    // sort nearest first
-
-    const deadlines =
-
-      allDeadlines
-
-      .filter(
-        deadline =>
-          !deadline.completed
-      )
-
-      .sort(
-
-        (a, b) =>
-
-          new Date(a.dueDate) -
-          new Date(b.dueDate)
+    const deadlines = allDeadlines
+      .filter((d) => !d.completed)
+      .sort((a, b) =>
+        this.calculatePriority(b) -
+        this.calculatePriority(a)
       );
 
     const courses =
@@ -323,186 +367,99 @@ class StudyPlanner {
 
     if (!courses.length) {
 
-      showToast(
-        "Add courses first.",
-        "error"
-      );
+      showToast("Add courses first.", "error");
+
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "Generate Weekly Study Plan";
+      }
 
       return;
     }
 
     if (!deadlines.length) {
 
-      showToast(
-        "No active deadlines found.",
-        "error"
-      );
+      showToast("No active deadlines found.", "error");
+
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "Generate Weekly Study Plan";
+      }
 
       return;
     }
 
-    // remove old plans
-
     await this.clearExistingPlans();
 
+    // Build this week's dates: today → Saturday
+    const DAY_CODES = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const weekDays = [];
+
+    for (let i = 0; i < 7; i++) {
+
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+
+      // Stop at end of week (Saturday)
+      if (d.getDay() === 0 && i > 0) break;
+
+      weekDays.push(d);
+    }
+
+    // Group availability slots by day code
+    const slotsByDay = {};
+
+    availSlots.forEach((s) => {
+      if (!slotsByDay[s.day]) slotsByDay[s.day] = [];
+      slotsByDay[s.day].push(s);
+    });
+
     const generatedSessions = [];
+    let deadlineIndex = 0;
 
-    let currentDayIndex = 0;
+    for (const date of weekDays) {
 
-    let currentHour =
+      if (deadlineIndex >= deadlines.length) break;
 
-      parseInt(
-        availability.startTime
-        .split(":")[0]
-      );
+      const dayCode = DAY_CODES[date.getDay()];
+      const daySlots = slotsByDay[dayCode] || [];
 
-    const startHour =
+      for (const slot of daySlots) {
 
-      parseInt(
-        availability.startTime
-        .split(":")[0]
-      );
+        let currentHour =
+          parseInt(slot.startTime.split(":")[0]);
 
-    const endHour =
+        const endHour =
+          parseInt(slot.endTime.split(":")[0]);
 
-      parseInt(
-        availability.endTime
-        .split(":")[0]
-      );
+        while (
+          currentHour + 2 <= endHour &&
+          deadlineIndex < deadlines.length
+        ) {
 
-    for (
+          const deadline = deadlines[deadlineIndex];
 
-      let i = 0;
+          generatedSessions.push({
+            title: deadline.title,
+            course: deadline.course,
+            dueDate: deadline.dueDate,
+            studyDate: date.toISOString().split("T")[0],
+            day: dayCode,
+            startTime: `${String(currentHour).padStart(2, "0")}:00`,
+            endTime: `${String(currentHour + 2).padStart(2, "0")}:00`,
+            priority: deadline.priority,
+            status: "pending",
+            userId,
+            createdAt: new Date().toISOString()
+          });
 
-      i < deadlines.length;
-
-      i++
-
-    ) {
-
-      const deadline =
-        deadlines[i];
-
-      const dueDate =
-        new Date(deadline.dueDate);
-
-      // =========================
-      // START STUDY BEFORE DEADLINE
-      // =========================
-
-      const studyDate =
-        new Date(dueDate);
-
-      let daysBefore = 3;
-
-      if (
-        deadline.priority === "High"
-      ) {
-
-        daysBefore = 5;
-
-      } else if (
-
-        deadline.priority === "Medium"
-
-      ) {
-
-        daysBefore = 3;
-
-      } else {
-
-        daysBefore = 2;
-      }
-
-      studyDate.setDate(
-
-        dueDate.getDate() -
-        daysBefore
-      );
-
-      // =========================
-      // MOVE TO NEXT DAY
-      // =========================
-
-      if (
-        currentHour + 2 > endHour
-      ) {
-
-        currentDayIndex++;
-
-        currentHour =
-          startHour;
-      }
-
-      const startTime =
-
-        `${String(currentHour)
-        .padStart(2, '0')}:00`;
-
-      const endTime =
-
-        this.addHours(
-          startTime,
-          2
-        );
-
-      // =========================
-      // SESSION OBJECT
-      // =========================
-
-      const session = {
-
-        title:
-          deadline.title,
-
-        course:
-          deadline.course,
-
-        dueDate:
-          deadline.dueDate,
-
-        studyDate:
-
-          studyDate
-          .toISOString()
-          .split("T")[0],
-
-        day:
-
-          availability.days[
-
-            currentDayIndex
-            %
-            availability.days.length
-          ],
-
-        startTime,
-
-        endTime,
-
-        priority:
-          deadline.priority,
-
-        status:
-          "pending",
-
-        userId,
-
-        createdAt:
-          new Date().toISOString()
-      };
-
-      generatedSessions.push(
-        session
-      );
-
-      currentHour += 2;
-
-      // break after every 2 sessions
-
-      if ((i + 1) % 2 === 0) {
-
-        currentHour += 1;
+          currentHour += 2;
+          deadlineIndex++;
+        }
       }
     }
 
@@ -686,7 +643,7 @@ class StudyPlanner {
 
     tableBody.innerHTML = `
       <tr>
-        <td colspan="6" class="plan-loading">
+        <td colspan="5" class="plan-loading">
           <span class="plan-spinner"></span>
           Loading your study plan…
         </td>
@@ -699,17 +656,11 @@ class StudyPlanner {
     if (!plans.length) {
 
       tableBody.innerHTML = `
-
         <tr>
-
-          <td colspan="6">
-
+          <td colspan="5" style="text-align:center; color:#94a3b8; padding:32px;">
             No study plan generated yet.
-
           </td>
-
         </tr>
-
       `;
 
       return;
@@ -725,78 +676,44 @@ class StudyPlanner {
         new Date(b.studyDate)
     );
 
-    tableBody.innerHTML =
+    const DAY_LABELS = {
+      sun: "Sunday", mon: "Monday", tue: "Tuesday",
+      wed: "Wednesday", thu: "Thursday", fri: "Friday", sat: "Saturday"
+    };
 
-      plans.map((plan) => {
+    const fmtDate = (d) => {
+      if (!d) return "N/A";
+      const [y, m, day] = d.split("-");
+      return new Date(y, m - 1, day)
+        .toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    };
 
-        return `
+    const fmtTime = (t) => {
+      if (!t) return "";
+      const [h, min] = t.split(":");
+      const hour = parseInt(h, 10);
+      return `${hour % 12 || 12}:${min} ${hour >= 12 ? "PM" : "AM"}`;
+    };
 
-          <tr>
+    tableBody.innerHTML = plans.map((plan) => {
 
-            <td>
-              ${plan.studyDate || "N/A"}
-            </td>
+      const isPending = plan.status === "pending";
 
-            <td>
-              ${plan.day}
-            </td>
+      const actionCell = isPending
+        ? `<button onclick="StudyPlanner.markCompleted('${plan.id}')">Complete</button>
+           <button onclick="StudyPlanner.markMissed('${plan.id}')">Missed</button>`
+        : `<span class="planner-status ${plan.status}">${plan.status}</span>`;
 
-            <td>
-              ${plan.course}
-            </td>
-
-            <td>
-
-              ${plan.startTime}
-
-              -
-
-              ${plan.endTime}
-
-            </td>
-
-            <td>
-
-              <span class="planner-status ${plan.status}">
-
-                ${plan.status}
-
-              </span>
-
-            </td>
-
-            <td>
-
-              <button
-                onclick="
-                  StudyPlanner.markCompleted(
-                    '${plan.id}'
-                  )
-                "
-              >
-
-                Complete
-
-              </button>
-
-              <button
-                onclick="
-                  StudyPlanner.markMissed(
-                    '${plan.id}'
-                  )
-                "
-              >
-
-                Missed
-
-              </button>
-
-            </td>
-
-          </tr>
-
-        `;
-      }).join("");
+      return `
+        <tr>
+          <td>${DAY_LABELS[plan.day] || plan.day}</td>
+          <td>${fmtDate(plan.studyDate)}</td>
+          <td>${plan.course}</td>
+          <td>${fmtTime(plan.startTime)} – ${fmtTime(plan.endTime)}</td>
+          <td>${actionCell}</td>
+        </tr>
+      `;
+    }).join("");
   }
 }
 

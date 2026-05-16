@@ -1,6 +1,7 @@
 // Import Firebase
 import { db, auth } from './firebase-config.js';
 import { Session, showToast } from './utils.js';
+import { getCourses } from './courses.js';
 
 import {
   collection,
@@ -179,6 +180,23 @@ class Deadline {
 
     if (!this.dueDate) {
       return "Due date is required.";
+    }
+
+    const dateOnly = this.dueDate.split("T")[0];
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateOnly)) {
+      return "Please enter a valid date.";
+    }
+
+    const today = new Date();
+    const todayStr = [
+      today.getFullYear(),
+      String(today.getMonth() + 1).padStart(2, "0"),
+      String(today.getDate()).padStart(2, "0")
+    ].join("-");
+
+    if (dateOnly < todayStr) {
+      return "The deadline date has already passed.";
     }
 
     return null;
@@ -425,10 +443,54 @@ class Deadline {
 }
 
 // Initialize page
+async function populateCourseDropdown() {
+
+  const select =
+    document.getElementById(
+      "deadline-course"
+    );
+
+  if (!select) return;
+
+  const courses =
+    await getCourses(auth.currentUser);
+
+  if (!courses.length) {
+
+    select.innerHTML =
+      `<option value="" disabled selected>No courses added yet</option>`;
+
+    return;
+  }
+
+  select.innerHTML =
+    `<option value="" disabled selected>Select a course</option>` +
+    courses
+      .map(
+        (c) =>
+          `<option value="${c.code}">${c.name} (${c.code})</option>`
+      )
+      .join("");
+}
+
 async function initDeadlinesPage() {
 
   Session.require();
 
+  // Restrict date picker to today and future
+  const dateInput =
+    document.getElementById("deadline-date");
+
+  if (dateInput) {
+    const today = new Date();
+    dateInput.min = [
+      today.getFullYear(),
+      String(today.getMonth() + 1).padStart(2, "0"),
+      String(today.getDate()).padStart(2, "0")
+    ].join("-");
+  }
+
+  await populateCourseDropdown();
   await Deadline.render();
 }
 
