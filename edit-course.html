@@ -6,38 +6,55 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Planora - Edit Course</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="topbar.css"> <!-- Links your global topbar styles -->
+    <link rel="stylesheet" href="topbar.css">
+    <link rel="stylesheet" href="add-course.css">
 </head>
 
 <body class="page-app">
 
     <div class="app-shell">
         <div id="sidebar-container"></div>
+
         <div class="app-content-wrap">
             <div id="topbar-container"></div>
+
             <main class="app-main">
                 <div class="page-header">
                     <h1>Edit course</h1>
+                    <p>Update the course details below.</p>
                 </div>
 
-                <form id="edit-course-form">
-                    <input type="hidden" id="courseId">
+                <div class="form-card">
+                    <form id="edit-course-form">
+                        <input type="hidden" id="courseId">
 
-                    <label for="courseName">Course name</label>
-                    <input class="input-format" type="text" id="courseName" placeholder="Web Applications Development" required>
+                        <div class="form-group">
+                            <label for="courseName">Course name</label>
+                            <input class="input-format" type="text" id="courseName" placeholder="Web Applications Development" required>
+                        </div>
 
-                    <label for="courseCode">Course code</label>
-                    <input class="input-format" type="text" id="courseCode" placeholder="SWE381" required>
+                        <div class="form-group">
+                            <label for="courseCode">Course code</label>
+                            <input class="input-format" type="text" id="courseCode" placeholder="SWE381" required>
+                        </div>
 
-                    <label for="instructor">Instructor</label>
-                    <input class="input-format" type="text" id="instructor" placeholder="Dr. Rawan">
+                        <div class="form-divider">
+                            <div class="form-group">
+                                <label for="instructor">Instructor name</label>
+                                <input class="input-format" type="text" id="instructor" placeholder="Dr. Rawan">
+                            </div>
+                            <div class="form-group">
+                                <label for="creditHours">Credit hours</label>
+                                <input class="input-format" type="number" id="creditHours" placeholder="3" min="1" max="6">
+                            </div>
+                        </div>
 
-                    <label for="creditHours">Credit hours</label>
-                    <input class="input-format" type="number" id="creditHours" placeholder="3" min="1" max="6">
-
-                    <button type="submit">Save changes</button>
-                    <a href="courses.html">Back to courses</a>
-                </form>
+                        <div class="form-actions">
+                            <a href="courses.html" class="btn-back">← Back</a>
+                            <button type="submit" class="btn-submit">Save changes</button>
+                        </div>
+                    </form>
+                </div>
             </main>
 
             <footer>
@@ -46,7 +63,6 @@
         </div>
     </div>
 
-    <!-- Firebase Module Scripts -->
     <script type="importmap">
         {
             "imports": {
@@ -56,25 +72,19 @@
             }
         }
     </script>
-    
+
     <script type="module" src="JS/firebase-config.js"></script>
     <script type="module" src="JS/utils.js"></script>
     <script type="module" src="JS/sidebar.js"></script>
     <script type="module" src="JS/topbar.js"></script>
-    <script type="module" src="JS/auth.js"></script>
-    <script type="module" src="JS/courses.js"></script>
-    <script type="module" src="JS/config.js"></script>
-    <script type="module" src="JS/AI.js"></script>
-    
+
     <script type="module">
         import { auth } from './JS/firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
         import { loadEditForm, handleEditCourse } from './JS/courses.js';
-        
-        // Share auth instance instantly with topbar.js
+
         window.firebaseAuth = auth;
-        
-        // Attach form submit handler cleanly
+
         const form = document.getElementById("edit-course-form");
         if (form) {
             form.addEventListener("submit", async (e) => {
@@ -82,17 +92,15 @@
             });
         }
 
-        // Initialize state inside the listener so the form waits for Firebase
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 try {
-                    // Populate the course data input values
                     await loadEditForm();
                 } catch (error) {
-                    console.error("Error populating editing forms:", error);
+                    console.error("Error loading edit form:", error);
                 }
             } else {
-                window.location.href = 'login.html';
+                window.location.href = "login.html";
             }
         });
     </script>

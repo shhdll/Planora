@@ -6,59 +6,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Planora - Add Course</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="topbar.css"> <!-- Links your global topbar styles -->
-    <style>
-        /* Additional inline styles to ensure sidebar works */
-        #sidebar-container .app-sidebar {
-            width: 280px;
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 45%, #312e81 100%);
-            min-height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            padding: 20px 16px;
-        }
-        .app-content-wrap {
-            margin-left: 280px;
-        }
-    </style>
-
-    <!-- 1. IMPORT YOUR REAL TOPBAR SCRIPT (Just like all other pages) -->
-    <script type="module" src="topbar.js" defer></script>
+    <link rel="stylesheet" href="topbar.css">
+    <link rel="stylesheet" href="add-course.css">
 </head>
 
 <body class="page-app">
 
     <div class="app-shell">
-        <div id="sidebar-container">
-            <!-- Sidebar will be injected here -->
-        </div>
+        <div id="sidebar-container"></div>
+
         <div class="app-content-wrap">
-            <!-- This container will now be automatically filled by topbar.js -->
             <div id="topbar-container"></div>
-            
+
             <main class="app-main">
                 <div class="page-header">
                     <h1>Add a new course</h1>
                     <p>Enter the course details to start planning your study schedule.</p>
                 </div>
 
-                <form id="add-course-form">
-                    <label for="courseName">Course name</label>
-                    <input class="input-format" type="text" id="courseName" placeholder="Web Applications Development" required>
+                <div class="form-card">
+                    <form id="add-course-form">
+                        <div class="form-group">
+                            <label for="courseName">Course name</label>
+                            <input class="input-format" type="text" id="courseName" placeholder="Web Applications Development" required>
+                        </div>
 
-                    <label for="courseCode">Course code</label>
-                    <input class="input-format" type="text" id="courseCode" placeholder="SWE381" required>
+                        <div class="form-group">
+                            <label for="courseCode">Course code</label>
+                            <input class="input-format" type="text" id="courseCode" placeholder="SWE381" required>
+                        </div>
 
-                    <label for="instructor">Instructor name</label>
-                    <input class="input-format" type="text" id="instructor" placeholder="Dr. Rawan">
+                        <div class="form-divider">
+                            <div class="form-group">
+                                <label for="instructor">Instructor name</label>
+                                <input class="input-format" type="text" id="instructor" placeholder="Dr. Rawan">
+                            </div>
+                            <div class="form-group">
+                                <label for="creditHours">Credit hours</label>
+                                <input class="input-format" type="number" id="creditHours" placeholder="3" min="1" max="6">
+                            </div>
+                        </div>
 
-                    <label for="creditHours">Credit hours</label>
-                    <input class="input-format" type="number" id="creditHours" placeholder="3" min="1" max="6">
-
-                    <button type="submit">Add course</button>
-                    <a href="courses.html">Back to courses</a>
-                </form>
+                        <div class="form-actions">
+                            <a href="courses.html" class="btn-back">← Back</a>
+                            <button type="submit" class="btn-submit">Add course</button>
+                        </div>
+                    </form>
+                </div>
             </main>
 
             <footer>
@@ -77,154 +71,27 @@
         }
     </script>
 
+    <script type="module" src="JS/firebase-config.js"></script>
+    <script type="module" src="JS/utils.js"></script>
+    <script type="module" src="JS/sidebar.js"></script>
+    <script type="module" src="JS/topbar.js"></script>
+
     <script type="module">
-        import { initializeApp } from "firebase/app";
-        import { getAuth, signOut } from "firebase/auth";
-        import { getFirestore, collection, addDoc } from "firebase/firestore";
-        
-        const firebaseConfig = {
-            apiKey: "AIzaSyCRveCvpIB6_1r3xVWQmoN9KTkWpIafeh4",
-            authDomain: "planora-f2a2b.firebaseapp.com",
-            projectId: "planora-f2a2b",
-            storageBucket: "planora-f2a2b.firebasestorage.app",
-            messagingSenderId: "892064755158",
-            appId: "1:892064755158:web:f44f6526b490892b2c0877"
-        };
-        
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        
-        // Expose auth instance to global scope so topbar.js reads it instantly
+        import { auth } from './JS/firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { handleAddCourse } from './JS/courses.js';
+
         window.firebaseAuth = auth;
 
-        // Expose log out to window global scope so topbar.html's onclick="handleLogout()" executes smoothly
-        window.handleLogout = async function() {
-            await signOut(auth);
-            localStorage.removeItem('currentUser');
-            window.location.href = 'login.html';
-        };
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                setTimeout(() => { window.location.href = "login.html"; }, 500);
+                return;
+            }
 
-        // ============ SIDEBAR (built directly) ============
-        function injectSidebar() {
-            const container = document.getElementById('sidebar-container');
-            if (!container) return;
-            
-            container.innerHTML = `
-                <aside class="app-sidebar">
-                    <a href="index.html" class="app-brand">
-                        <img src="images/planora_logo.png" alt="Planora Logo" class="app-brand-logo">
-                    </a>
-                    <nav class="app-nav">
-                        <a href="dashboard.html" class="app-nav__link">Dashboard</a>
-                        <a href="courses.html" class="app-nav__link">Courses</a>
-                        <a href="deadlines.html" class="app-nav__link">Deadlines</a>
-                        <a href="availability.html" class="app-nav__link">Availability</a>
-                        <a href="study-plan.html" class="app-nav__link">Study plan</a>
-                        <a href="statistics.html" class="app-nav__link">Statistics</a>
-                    </nav>
-                    <div class="app-sidebar__footer">
-                        <a href="index.html" class="app-nav__link app-nav__link--muted">Home</a>
-                        <a href="#" class="app-nav__link" id="sidebar-logout-btn">
-                            <img src="images/logout-icon.png" alt="" style="width:16px; vertical-align:-2px; margin-right:6px;">
-                            Log out
-                        </a>
-                    </div>
-                </aside>
-            `;
-            
-            // Highlight current page
-            document.querySelectorAll('.app-nav__link').forEach(link => {
-                if (link.href === window.location.href) {
-                    link.setAttribute('aria-current', 'page');
-                }
-            });
-            
-            // Logout click binding
-            const logoutBtn = document.getElementById('sidebar-logout-btn');
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    window.handleLogout();
-                });
-            }
-        }
-        
-        // ============ ADD COURSE LOGIC ============
-        const form = document.getElementById("add-course-form");
-        
-        function showMessage(msg, isError) {
-            const div = document.createElement('div');
-            div.textContent = msg;
-            div.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: ${isError ? '#dc2626' : '#22c55e'};
-                color: white;
-                padding: 12px 24px;
-                border-radius: 8px;
-                z-index: 10000;
-                font-weight: bold;
-            `;
-            document.body.appendChild(div);
-            setTimeout(() => div.remove(), 3000);
-        }
-        
-        async function handleAddCourse(e) {
-            e.preventDefault();
-            
-            const user = auth.currentUser;
-            if (!user) {
-                showMessage("Please login first", true);
-                window.location.href = "login.html";
-                return;
-            }
-            
-            const name = document.getElementById("courseName").value.trim();
-            const code = document.getElementById("courseCode").value.trim();
-            const instructor = document.getElementById("instructor").value.trim();
-            const creditHours = parseInt(document.getElementById("creditHours").value);
-            
-            if (!name || !code) {
-                showMessage("Course name and code are required", true);
-                return;
-            }
-            
-            try {
-                await addDoc(collection(db, "courses"), {
-                    name: name,
-                    code: code,
-                    instructor: instructor || "",
-                    creditHours: creditHours || null,
-                    userId: user.uid,
-                    createdAt: new Date().toISOString()
-                });
-                
-                showMessage(`"${name}" added successfully!`, false);
-                setTimeout(() => {
-                    window.location.href = "courses.html";
-                }, 1000);
-            } catch (error) {
-                console.error(error);
-                showMessage("Error: " + error.message, true);
-            }
-        }
-        
-        // ============ INIT ============
-        auth.onAuthStateChanged((user) => {
-            injectSidebar();
-            if (!user) {
-                // Safely boot out only after Firebase explicitly confirms there's no session active
-                showMessage("Please login", true);
-                window.location.href = "login.html";
-            }
+            const form = document.getElementById("add-course-form");
+            if (form) form.addEventListener("submit", handleAddCourse);
         });
-        
-        if (form) {
-            form.addEventListener("submit", handleAddCourse);
-        }
     </script>
 
 </body>
