@@ -20,27 +20,43 @@
                     <p>Let Planora know when you are available to study, so we can help you create a better study plan.</p>
                 </div>
 
-                <form id="availability-form">
-                    <label>Select available days</label><br><br>
-                    <input type="checkbox" name="days" value="sun"> Sunday
-                    <input type="checkbox" name="days" value="mon"> Monday
-                    <input type="checkbox" name="days" value="tue"> Tuesday
-                    <input type="checkbox" name="days" value="wed"> Wednesday
-                    <input type="checkbox" name="days" value="thu"> Thursday
-                    <input type="checkbox" name="days" value="fri"> Friday
-                    <input type="checkbox" name="days" value="sat"> Saturday
+                <div class="form-card">
+                    <form id="availability-form">
+                        <div class="form-group">
+                            <label>Select available days</label>
+                            <div class="avail-days-grid">
+                                <label class="avail-day-toggle"><input type="checkbox" name="days" value="sun"><span>Sun</span></label>
+                                <label class="avail-day-toggle"><input type="checkbox" name="days" value="mon"><span>Mon</span></label>
+                                <label class="avail-day-toggle"><input type="checkbox" name="days" value="tue"><span>Tue</span></label>
+                                <label class="avail-day-toggle"><input type="checkbox" name="days" value="wed"><span>Wed</span></label>
+                                <label class="avail-day-toggle"><input type="checkbox" name="days" value="thu"><span>Thu</span></label>
+                                <label class="avail-day-toggle"><input type="checkbox" name="days" value="fri"><span>Fri</span></label>
+                                <label class="avail-day-toggle"><input type="checkbox" name="days" value="sat"><span>Sat</span></label>
+                            </div>
+                        </div>
 
-                    <br><br>
+                        <div class="form-divider">
+                            <div class="form-group">
+                                <label for="start-time">Start time</label>
+                                <input id="start-time" class="input-format" type="time" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="end-time">End time</label>
+                                <input id="end-time" class="input-format" type="time" required>
+                            </div>
+                        </div>
 
-                    <label>Start time</label>
-                    <input id="start-time" class="input-format" type="time" required>
+                        <div class="form-actions">
+                            <a href="dashboard.html" class="btn-back">← Back</a>
+                            <button type="submit" class="btn-submit">Add availability</button>
+                        </div>
+                    </form>
+                </div>
 
-                    <label>End time</label>
-                    <input id="end-time" class="input-format" type="time" required>
-
-                    <button type="submit">Save availability</button>
-                    <a href="dashboard.html">Back</a>
-                </form>
+                <section id="availability-schedule" class="avail-schedule" style="display:none;">
+                    <h2 class="avail-schedule__title">You Are Available At</h2>
+                    <div id="avail-slots"></div>
+                </section>
             </main>
 
             <footer>

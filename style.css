@@ -1626,3 +1626,101 @@ footer a:hover {
 #study-plan-body button:hover {
     transform: scale(1.04);
 }
+
+/* Availability Day Toggles */
+.avail-days-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.avail-day-toggle input {
+    display: none;
+}
+
+.avail-day-toggle span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1.5px solid #e2e8f0;
+    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    user-select: none;
+}
+
+.avail-day-toggle span:hover {
+    border-color: #6366f1;
+    color: #4338ca;
+}
+
+.avail-day-toggle input:checked + span {
+    background: #eef2ff;
+    border-color: #6366f1;
+    color: #4338ca;
+}
+
+/* Availability Schedule Section */
+.avail-schedule {
+    margin-top: 32px;
+    background: white;
+    border-radius: 12px;
+    padding: 24px 28px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border-left: 4px solid #103b80;
+}
+
+.avail-schedule__title {
+    margin: 0 0 16px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #103b80;
+}
+
+.avail-slot {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 14px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.avail-slot:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.avail-slot:first-child {
+    padding-top: 0;
+}
+
+.avail-day-badge {
+    background: #eef2ff;
+    color: #4338ca;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 90px;
+    text-align: center;
+}
+
+.avail-slot__times {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.avail-slot__time {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #555;
+    font-weight: 500;
+}

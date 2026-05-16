@@ -12,243 +12,216 @@ import {
   getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// Get current user ID
 function getCurrentUserId() {
-
   const user = auth.currentUser;
-
   return user ? user.uid : null;
 }
 
-// Load availability
-async function loadAvailability() {
+// Load all saved slots
+async function loadSlots() {
 
-  const userId =
-    getCurrentUserId();
-
-  if (!userId) return null;
+  const userId = getCurrentUserId();
+  if (!userId) return [];
 
   try {
 
-    const availabilityRef =
-      doc(
-        db,
-        "availability",
-        userId
-      );
+    const snap = await getDoc(
+      doc(db, "availability", userId)
+    );
 
-    const availabilitySnap =
-      await getDoc(
-        availabilityRef
-      );
+    if (!snap.exists()) return [];
 
-    if (
-      availabilitySnap.exists()
-    ) {
+    const data = snap.data();
 
-      return availabilitySnap.data();
+    // Support old single-slot format
+    if (Array.isArray(data.slots)) {
+      return data.slots;
     }
 
-    return {
+    if (data.days && data.days.length) {
+      return [{
+        days: data.days,
+        startTime: data.startTime,
+        endTime: data.endTime
+      }];
+    }
 
-      days: [],
-      startTime: "",
-      endTime: ""
-    };
+    return [];
 
   } catch (error) {
 
-    console.error(
-      "Error loading availability:",
-      error
-    );
-
-    return {
-
-      days: [],
-      startTime: "",
-      endTime: ""
-    };
+    console.error("Error loading availability:", error);
+    return [];
   }
 }
 
-// Save availability
-async function saveAvailability(data) {
+// Save all slots
+async function saveSlots(slots) {
 
-  const userId =
-    getCurrentUserId();
+  const userId = getCurrentUserId();
 
   if (!userId) {
-
-    console.error(
-      "No logged in user."
-    );
-
+    console.error("No logged in user.");
     return false;
   }
 
   try {
 
-    const availabilityRef =
-      doc(
-        db,
-        "availability",
-        userId
-      );
-
     await setDoc(
-      availabilityRef,
+      doc(db, "availability", userId),
       {
-
-        days: data.days,
-        startTime: data.startTime,
-        endTime: data.endTime,
-        userId: userId,
-        updatedAt:
-          new Date().toISOString()
+        slots,
+        userId,
+        updatedAt: new Date().toISOString()
       }
-    );
-
-    console.log(
-      "Availability saved"
     );
 
     return true;
 
   } catch (error) {
 
-    console.error(
-      "Error saving availability:",
-      error
-    );
-
+    console.error("Error saving availability:", error);
     return false;
   }
 }
 
-// Initialize page
+const DAY_LABELS = {
+  sun: "Sunday",
+  mon: "Monday",
+  tue: "Tuesday",
+  wed: "Wednesday",
+  thu: "Thursday",
+  fri: "Friday",
+  sat: "Saturday"
+};
+
+function formatTime(t) {
+  if (!t) return "";
+  const [h, m] = t.split(":");
+  const hour = parseInt(h, 10);
+  const ampm = hour >= 12 ? "PM" : "AM";
+  const h12 = hour % 12 || 12;
+  return `${h12}:${m} ${ampm}`;
+}
+
+const DAY_ORDER = [
+  "sun", "mon", "tue", "wed", "thu", "fri", "sat"
+];
+
+function renderSchedule(slots) {
+
+  const section =
+    document.getElementById(
+      "availability-schedule"
+    );
+
+  if (!section) return;
+
+  if (!slots || slots.length === 0) {
+    section.style.display = "none";
+    return;
+  }
+
+  // Group time ranges by day
+  const byDay = {};
+  slots.forEach((slot) => {
+    slot.days.forEach((day) => {
+      if (!byDay[day]) byDay[day] = [];
+      byDay[day].push({
+        startTime: slot.startTime,
+        endTime: slot.endTime
+      });
+    });
+  });
+
+  section.style.display = "";
+
+  document.getElementById(
+    "avail-slots"
+  ).innerHTML =
+    DAY_ORDER
+      .filter((day) => byDay[day])
+      .map((day) => `
+        <div class="avail-slot">
+          <span class="course-badge avail-day-badge">${DAY_LABELS[day]}</span>
+          <div class="avail-slot__times">
+            ${byDay[day].map((t) =>
+              `<p class="avail-slot__time">${formatTime(t.startTime)} – ${formatTime(t.endTime)}</p>`
+            ).join("")}
+          </div>
+        </div>
+      `).join("");
+}
+
+function resetForm() {
+
+  document
+    .querySelectorAll('input[name="days"]')
+    .forEach((cb) => { cb.checked = false; });
+
+  document.getElementById("start-time").value = "";
+  document.getElementById("end-time").value = "";
+}
+
+let slots = [];
+
 async function initAvailabilityPage() {
 
   Session.require();
 
-  const saved =
-    await loadAvailability();
-
-  if (!saved) return;
-
-  // Restore checked days
-  if (
-    saved.days &&
-    saved.days.length
-  ) {
-
-    document
-      .querySelectorAll(
-        'input[name="days"]'
-      )
-      .forEach((cb) => {
-
-        cb.checked =
-          saved.days.includes(
-            cb.value
-          );
-      });
-  }
-
-  // Restore times
-  if (saved.startTime) {
-
-    document.getElementById(
-      "start-time"
-    ).value =
-      saved.startTime;
-  }
-
-  if (saved.endTime) {
-
-    document.getElementById(
-      "end-time"
-    ).value =
-      saved.endTime;
-  }
+  slots = await loadSlots();
+  renderSchedule(slots);
 }
 
-// Handle form submit
 async function handleAvailabilitySubmit(event) {
 
   event.preventDefault();
 
   const selectedDays =
-
     Array.from(
-
       document.querySelectorAll(
         'input[name="days"]:checked'
       )
-
-    ).map(
-      (cb) => cb.value
-    );
+    ).map((cb) => cb.value);
 
   const startTime =
-    document.getElementById(
-      "start-time"
-    ).value;
+    document.getElementById("start-time").value;
 
   const endTime =
-    document.getElementById(
-      "end-time"
-    ).value;
+    document.getElementById("end-time").value;
 
-  if (
-    selectedDays.length === 0
-  ) {
-
+  if (selectedDays.length === 0) {
     showToast(
       "Please select at least one available day.",
       "error"
     );
-
     return;
   }
 
-  if (
-    startTime >= endTime
-  ) {
-
+  if (startTime >= endTime) {
     showToast(
       "End time must be after start time.",
       "error"
     );
-
     return;
   }
 
-  const success =
-    await saveAvailability({
+  slots = [...slots, { days: selectedDays, startTime, endTime }];
 
-      days: selectedDays,
-      startTime,
-      endTime
-    });
+  const success = await saveSlots(slots);
 
   if (success) {
 
     showToast(
-      "Availability saved successfully!",
+      "Availability added!",
       "success"
     );
 
-    setTimeout(() => {
-
-      window.location.href =
-        "dashboard.html";
-
-    }, 1000);
+    renderSchedule(slots);
+    resetForm();
   }
 }
 
-// Wait for Firebase auth
 document.addEventListener(
   "DOMContentLoaded",
   () => {
@@ -266,7 +239,6 @@ document.addEventListener(
           );
 
         if (form) {
-
           form.addEventListener(
             "submit",
             handleAvailabilitySubmit
