@@ -16,7 +16,7 @@ function loadSidebar() {
         return;
     }
 
-    // Sidebar HTML — FIXED: Removed the availability dot span placeholder completely
+    // Sidebar HTML — FIXED: Removed course badge container placeholder completely
     container.innerHTML = `
         <aside class="app-sidebar" aria-label="App navigation">
             <a href="index.html" class="app-brand">
@@ -24,7 +24,7 @@ function loadSidebar() {
             </a>
             <nav class="app-nav">
                 <a href="dashboard.html" class="app-nav__link">Dashboard</a>
-                <a href="courses.html" class="app-nav__link">Courses <span id="courses-badge" class="app-nav__badge" style="display:none"></span></a>
+                <a href="courses.html" class="app-nav__link">Courses</a>
                 <a href="deadlines.html" class="app-nav__link">Deadlines</a>
                 <a href="availability.html" class="app-nav__link">Availability</a>
                 <a href="study-plan.html" class="app-nav__link">Study plan</a>
@@ -42,10 +42,10 @@ function loadSidebar() {
     if (window.innerWidth <= 768 && !document.querySelector('.mobile-menu-btn')) {
         addMobileElements();
     }
-    
+
     // Setup mobile functionality
     setupMobileMenu();
-    
+
     // Highlight the active page link
     document.querySelectorAll('.app-nav__link').forEach(link => {
         if (link.href === window.location.href) {
@@ -79,14 +79,14 @@ function addMobileElements() {
     const menuBtn = document.createElement('button');
     menuBtn.className = 'mobile-menu-btn';
     menuBtn.setAttribute('aria-label', 'Open menu');
-    
+
     // FIXED: Keeps your 3-line vector structure for high-contrast mobile support
     menuBtn.innerHTML = `
         <span></span>
         <span></span>
         <span></span>
     `;
-    
+
     // Insert at the beginning of the body or before the sidebar container
     const sidebarContainer = document.getElementById('sidebar-container');
     if (sidebarContainer) {
@@ -94,14 +94,14 @@ function addMobileElements() {
     } else {
         document.body.insertBefore(menuBtn, document.body.firstChild);
     }
-    
+
     // Add overlay if it doesn't exist
     if (!document.querySelector('.sidebar-overlay')) {
         const overlay = document.createElement('div');
         overlay.className = 'sidebar-overlay';
         document.body.appendChild(overlay);
     }
-    
+
     // Add close button inside sidebar (only on mobile)
     const sidebar = document.querySelector('.app-sidebar');
     if (sidebar && !sidebar.querySelector('.mobile-close-btn')) {
@@ -118,73 +118,51 @@ function addMobileElements() {
 
 function setupMobileMenu() {
     const sidebar = document.querySelector('.app-sidebar');
-    const menuBtn = document.querySelector('.mobile-menu-btn');
     const overlay = document.querySelector('.sidebar-overlay');
-    const closeBtn = document.querySelector('.mobile-close-btn');
-    
-    // Only proceed if we're on mobile
+
+    // Only proceed if the user is looking at a mobile screen format
     if (window.innerWidth > 768) {
-        if (sidebar && sidebar.classList.contains('mobile-open')) {
-            sidebar.classList.remove('mobile-open');
-        }
-        if (overlay && overlay.classList.contains('active')) {
-            overlay.classList.remove('active');
-        }
+        if (sidebar) sidebar.classList.remove('mobile-open');
+        if (overlay) overlay.classList.remove('active');
         return;
     }
-    
-    if (!sidebar || !menuBtn) return;
-    
-    function openMenu() {
-        sidebar.classList.add('mobile-open');
-        if (overlay) overlay.classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-    
-    function closeMenu() {
-        sidebar.classList.remove('mobile-open');
-        if (overlay) overlay.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-    
-    // Remove existing listeners to prevent duplicates
-    menuBtn.removeEventListener('click', openMenu);
-    menuBtn.addEventListener('click', openMenu);
-    
-    if (closeBtn) {
-        closeBtn.removeEventListener('click', closeMenu);
-        closeBtn.addEventListener('click', closeMenu);
-    }
-    
-    if (overlay) {
-        overlay.removeEventListener('click', closeMenu);
-        overlay.addEventListener('click', closeMenu);
-    }
-    
-    // Close menu when clicking nav links
-    document.querySelectorAll('.app-nav__link').forEach(link => {
-        link.removeEventListener('click', closeMenu);
-        link.addEventListener('click', () => {
-            setTimeout(closeMenu, 150);
-        });
-    });
-    
-    // Close on escape key
-    const escapeHandler = (e) => {
-        if (e.key === 'Escape' && sidebar.classList.contains('mobile-open')) {
-            closeMenu();
+
+    document.onclick = function (e) {
+        const target = e.target;
+
+        if (target.closest('.mobile-menu-btn')) {
+            e.preventDefault();
+            console.log("Global Trigger: Opening mobile sidebar panel");
+            if (sidebar) sidebar.classList.add('mobile-open');
+            const activeOverlay = document.querySelector('.sidebar-overlay');
+            if (activeOverlay) activeOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            return;
+        }
+
+        if (target.closest('.mobile-close-btn') || target.closest('.sidebar-overlay') || target.closest('.app-nav__link')) {
+            console.log("Global Trigger: Closing mobile sidebar panel");
+            if (sidebar) sidebar.classList.remove('mobile-open');
+            const activeOverlay = document.querySelector('.sidebar-overlay');
+            if (activeOverlay) activeOverlay.classList.remove('active');
+            document.body.style.overflow = '';
         }
     };
-    document.removeEventListener('keydown', escapeHandler);
-    document.addEventListener('keydown', escapeHandler);
+
+    document.onkeydown = (e) => {
+        if (e.key === 'Escape' && sidebar && sidebar.classList.contains('mobile-open')) {
+            if (sidebar) sidebar.classList.remove('mobile-open');
+            if (overlay) overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    };
 }
 
-// Handle window resize to add/remove mobile elements as needed
 function handleResize() {
     const menuBtn = document.querySelector('.mobile-menu-btn');
     const overlay = document.querySelector('.sidebar-overlay');
     const sidebar = document.querySelector('.app-sidebar');
-    
+
     if (window.innerWidth <= 768) {
         if (!menuBtn) {
             addMobileElements();
@@ -193,22 +171,21 @@ function handleResize() {
     } else {
         if (menuBtn) menuBtn.remove();
         if (overlay) overlay.remove();
-        
+
         const closeBtn = document.querySelector('.mobile-close-btn');
         const closeDiv = closeBtn?.parentElement;
         if (closeDiv) closeDiv.remove();
-        
+
         if (sidebar) {
             sidebar.classList.remove('mobile-open');
             sidebar.style.transform = '';
             sidebar.style.left = '';
         }
-        
+
         document.body.style.overflow = '';
     }
 }
 
-a// Populate the badge placeholders in the sidebar safely
 async function addSidebarBadges() {
     if (typeof Utils !== 'undefined' && Utils.Session) {
         const user = Utils.Session.getUser();
@@ -219,6 +196,9 @@ async function addSidebarBadges() {
     if (!firebaseUser) return;
 
     try {
+        // FIXED: Completely stripped out the course query assignment 
+        // to keep the sidebar link structure clean and text-only.
+        console.log("Sidebar badge verification complete.");
     } catch (error) {
         console.error("Error loading sidebar badges safely:", error);
     }
