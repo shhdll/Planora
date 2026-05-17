@@ -49,7 +49,6 @@
 
     <script type="module" src="JS/firebase-config.js"></script>
     <script type="module" src="JS/utils.js"></script>
-    <script type="module" src="Js/sidebar.js"></script>
     <script type="module" src="JS/topbar.js"></script>
     <script type="module" src="JS/deadlines.js"></script>
     <script type="module" src="JS/reminders.js"></script>
@@ -59,11 +58,14 @@
         import { auth } from './JS/firebase-config.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
         import { renderCourses } from './JS/courses.js';
+        
+        import { loadSidebar } from './JS/sidebar.js';
 
         window.firebaseAuth = auth;
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
+                loadSidebar();
                 renderCourses();
             } else {
                 if (typeof showToast === "function") {

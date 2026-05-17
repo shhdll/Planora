@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Planora - Deadlines</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="topbar.css">
 </head>
 <body class="page-app">
     <div class="app-shell">
@@ -84,7 +85,6 @@
     
     <script type="module" src="JS/firebase-config.js"></script>
     <script type="module" src="JS/utils.js"></script>
-    <script type="module" src="Js/sidebar.js"></script>
     <script type="module" src="JS/topbar.js"></script>
     <script type="module" src="JS/auth.js"></script>
     <script type="module" src="JS/config.js"></script>
@@ -94,12 +94,17 @@
     
     <script type="module">
         import { Session } from './JS/utils.js';
+        import { auth } from './JS/firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+        import { loadSidebar } from './JS/sidebar.js';
         
-        // Check if user is logged in
         Session.require();
         
-        // Note: deadlines.js automatically initializes on DOMContentLoaded
-        // and reminders.js runs automatically
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                loadSidebar();
+            }
+        });
     </script>
 </body>
 </html>
