@@ -270,6 +270,13 @@ class StudyPlanner {
   // TIME HELPERS
   // =========================
 
+  static toLocalDateStr(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  }
+
   static toMinutes(time) {
     const [h, m] = time.split(":").map(Number);
     return h * 60 + m;
@@ -429,7 +436,7 @@ class StudyPlanner {
             title: deadline.title,
             course: deadline.course,
             dueDate: deadline.dueDate,
-            studyDate: date.toISOString().split("T")[0],
+            studyDate: this.toLocalDateStr(date),
             day: dayCode,
             startTime: this.fromMinutes(current),
             endTime: this.fromMinutes(current + 120),
@@ -620,7 +627,7 @@ class StudyPlanner {
       date.setDate(start.getDate() + i);
 
       const dayCode = DAY_CODES[date.getDay()];
-      const dateStr = date.toISOString().split("T")[0];
+      const dateStr = this.toLocalDateStr(date);
       const daySlots = slotsByDay[dayCode] || [];
 
       for (const slot of daySlots) {
