@@ -169,8 +169,12 @@ npx live-server
     userId, name, code, instructor, creditHours, createdAt
 
 /deadlines/{docId}
-    userId, title, dueDate, courseId, priority, completed
+    userId, title, course, dueDate, priority, description, completed, createdAt
 
 /availability/{userId}
-    userId, days[], startTime, endTime, updatedAt
+    userId, updatedAt
+    slots[] → { day, startTime, endTime }
+
+/studyPlans/{docId}
+    userId, title, course, day, dueDate, startTime, endTime, priority, status, createdAt
 ```
