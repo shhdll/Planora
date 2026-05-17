@@ -1564,12 +1564,19 @@ th {
     color: #6366f1;
     cursor: pointer;
     font-weight: 600;
-    padding: 0;
+    padding: 2px 6px;
     margin-left: auto;
     white-space: nowrap;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
 }
 
-.notif-dismiss-all:hover { text-decoration: underline; }
+.notif-dismiss-all:hover {
+    background: #fee2e2;
+    color: #ef4444;
+    border-radius: 6px;
+    text-decoration: none;
+}
 
 /* Notification items */
 .notif-item {
