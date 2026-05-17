@@ -152,7 +152,9 @@ Get a free key at [console.groq.com](https://console.groq.com).
 
 ### Step 5 — Run a local server
 
-**VS Code:** Right-click `index.html` → **Open with Live Server**
+**Open with Live Server**  
+  
+**Or**
 
 **Terminal:**
 ```bash
@@ -165,11 +167,14 @@ npx live-server
 
 ```
 /courses/{docId}
-    userId, name, code, instructor, creditHours, createdAt
-
+{ userId, name, code, instructor, creditHours, createdAt }
+  
 /deadlines/{docId}
-    userId, title, dueDate, courseId, priority, completed
-
+{ userId, title, dueDate, courseId, priority, completed  }
+  
 /availability/{userId}
-    userId, days[], startTime, endTime, updatedAt
+{  userId, days[], startTime, endTime, updatedAt  }
+
+/studyPlans/{docId}
+{  userId, course, studyDate, startTime, endTime, status  }
 ```
