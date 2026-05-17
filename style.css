@@ -1806,6 +1806,22 @@ footer a:hover {
     opacity:0.7;
     border-left-color:#22c55e;
 }
+
+.deadline-card.overdue{
+    border-left-color:#ef4444;
+    background:#fffafa;
+}
+
+.deadline-overdue-badge{
+    font-size:0.72rem;
+    font-weight:700;
+    color:#b91c1c;
+    background:#fee2e2;
+    padding:3px 8px;
+    border-radius:20px;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+}
 /* =========================
    STUDY PLANNER
 ========================= */

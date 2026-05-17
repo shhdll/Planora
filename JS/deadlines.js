@@ -343,11 +343,23 @@ class Deadline {
         new Date(b.dueDate)
     );
 
+    const now = new Date();
+
     container.innerHTML =
       deadlines.map(
-        (deadline) => `
+        (deadline) => {
 
-        <div class="deadline-card ${deadline.completed ? "completed" : ""}">
+          const isOverdue =
+            !deadline.completed &&
+            new Date(deadline.dueDate) < now;
+
+          const cardClass = deadline.completed
+            ? "completed"
+            : isOverdue ? "overdue" : "";
+
+          return `
+
+        <div class="deadline-card ${cardClass}">
 
           <div class="deadline-header">
 
@@ -355,9 +367,12 @@ class Deadline {
               ${this.escapeHtml(deadline.title)}
             </h3>
 
-            <span class="priority ${deadline.priority.toLowerCase()}">
-              ${deadline.priority}
-            </span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              ${isOverdue ? `<span class="deadline-overdue-badge">Overdue</span>` : ""}
+              <span class="priority ${deadline.priority.toLowerCase()}">
+                ${deadline.priority}
+              </span>
+            </div>
 
           </div>
 
@@ -389,7 +404,8 @@ class Deadline {
 
         </div>
 
-      `
+      `;
+        }
       ).join("");
   }
 
