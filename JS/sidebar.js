@@ -16,7 +16,6 @@ function loadSidebar() {
         return;
     }
 
-    // Sidebar HTML with close button included
     container.innerHTML = `
         <aside class="app-sidebar" aria-label="App navigation">
             <div class="mobile-only-header" style="padding: 16px; display: flex; justify-content: flex-end; border-bottom: 1px solid rgba(148, 163, 184, 0.15);">
@@ -29,12 +28,12 @@ function loadSidebar() {
                 <a href="dashboard.html" class="app-nav__link">Dashboard</a>
                 <a href="courses.html" class="app-nav__link">Courses <span id="courses-badge" class="app-nav__badge" style="display:none"></span></a>
                 <a href="deadlines.html" class="app-nav__link">Deadlines</a>
-                <a href="availability.html" class="app-nav__link">Availability <span id="availability-dot" class="app-nav__dot app-nav__dot--unset" title="Availability not set"></span></a>
+                <a href="availability.html" class="app-nav__link">Availability</a>
                 <a href="study-plan.html" class="app-nav__link">Study plan</a>
                 <a href="statistics.html" class="app-nav__link">Statistics</a>
             </nav>
             <div class="app-sidebar__footer">
-                <a href="#" class="app-nav__link" onclick="handleLogout(); return false;">
+                <a href="#" class="app-nav__link">
                     <img src="images/logout-icon.png" alt="" style="width:16px; height:16px; vertical-align:-2px; margin-right:6px;">
                     Log out
                 </a>
@@ -42,7 +41,7 @@ function loadSidebar() {
         </aside>`;
 
     // Add mobile menu button if on mobile and it doesn't exist
-    if (window.innerWidth <= 768 && !document.querySelector('.mobile-menu-btn')) {
+    if (window.innerWidth <= 768) {
         addMobileMenuButton();
     }
     
@@ -82,8 +81,13 @@ function addMobileMenuButton() {
     
     const menuBtn = document.createElement('button');
     menuBtn.className = 'mobile-menu-btn';
-    menuBtn.innerHTML = '☰';
     menuBtn.setAttribute('aria-label', 'Open menu');
+    
+    menuBtn.innerHTML = `
+        <span></span>
+        <span></span>
+        <span></span>
+    `;
     document.body.appendChild(menuBtn);
     console.log("Mobile menu button added");
     
@@ -102,53 +106,38 @@ function setupMobileMenu() {
     const overlay = document.querySelector('.sidebar-overlay');
     const closeBtn = document.querySelector('.mobile-close-btn');
     
-    // Only proceed on mobile
     if (window.innerWidth > 768) {
-        // Close menu if open on resize
-        if (sidebar && sidebar.classList.contains('mobile-open')) {
-            sidebar.classList.remove('mobile-open');
-        }
-        if (overlay && overlay.classList.contains('active')) {
-            overlay.classList.remove('active');
-        }
+        if (sidebar) sidebar.classList.remove('mobile-open');
+        if (overlay) overlay.classList.remove('active');
         return;
     }
     
-    if (!sidebar) {
-        console.error("Sidebar not found");
-        return;
-    }
-    
-    if (!menuBtn) {
-        console.error("Menu button not found");
+    if (!sidebar || !menuBtn) {
+        setTimeout(setupMobileMenu, 100);
         return;
     }
     
     function openMenu(e) {
-        e.preventDefault();
+        if (e) e.preventDefault();
         console.log("Opening menu");
         sidebar.classList.add('mobile-open');
-        if (overlay) overlay.classList.add('active');
+        const activeOverlay = document.querySelector('.sidebar-overlay');
+        if (activeOverlay) activeOverlay.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
     
     function closeMenu() {
         console.log("Closing menu");
         sidebar.classList.remove('mobile-open');
-        if (overlay) overlay.classList.remove('active');
+        const activeOverlay = document.querySelector('.sidebar-overlay');
+        if (activeOverlay) activeOverlay.classList.remove('active');
         document.body.style.overflow = '';
     }
     
-    // Set up event listeners
     menuBtn.onclick = openMenu;
     
-    if (closeBtn) {
-        closeBtn.onclick = closeMenu;
-    }
-    
-    if (overlay) {
-        overlay.onclick = closeMenu;
-    }
+    if (closeBtn) closeBtn.onclick = closeMenu;
+    if (overlay) overlay.onclick = closeMenu;
     
     // Close menu when clicking nav links
     document.querySelectorAll('.app-nav__link').forEach(link => {
@@ -177,14 +166,12 @@ window.addEventListener('resize', function() {
         if (window.innerWidth <= 768) {
             if (!menuBtn) {
                 addMobileMenuButton();
-                setupMobileMenu();
             }
+            setupMobileMenu();
         } else {
             if (menuBtn) menuBtn.remove();
             if (overlay) overlay.remove();
-            if (sidebar) {
-                sidebar.classList.remove('mobile-open');
-            }
+            if (sidebar) sidebar.classList.remove('mobile-open');
             document.body.style.overflow = '';
         }
     }, 250);
@@ -192,8 +179,10 @@ window.addEventListener('resize', function() {
 
 // Populate badges
 async function addSidebarBadges() {
-    const user = Utils.Session.getUser()
-    if (!user) return;
+    if (typeof Utils !== 'undefined' && Utils.Session) {
+        const user = Utils.Session.getUser();
+        if (!user) return;
+    }
 
     const firebaseUser = auth.currentUser;
     if (!firebaseUser) return;
@@ -209,20 +198,7 @@ async function addSidebarBadges() {
             badge.style.display = 'inline-block';
         }
 
-        const availabilityRef = doc(db, "availability", firebaseUser.uid);
-        const availabilitySnap = await getDoc(availabilityRef);
 
-        let isSet = false;
-        if (availabilitySnap.exists()) {
-            const availability = availabilitySnap.data();
-            isSet = availability.days && availability.days.length > 0;
-        }
-
-        const dot = document.getElementById('availability-dot');
-        if (dot) {
-            dot.className = `app-nav__dot ${isSet ? 'app-nav__dot--set' : 'app-nav__dot--unset'}`;
-            dot.title = isSet ? 'Availability set' : 'Availability not set';
-        }
     } catch (error) {
         console.error("Error loading sidebar badges:", error);
     }

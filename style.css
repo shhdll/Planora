@@ -2306,12 +2306,10 @@ footer a:hover {
     background: #f1f5f9;
     color: #64748b;
 }
-/* ============================================
-   FIXED MOBILE SIDEBAR - ADD THIS AT THE END
-   ============================================ */
+/* MOBILE SIDEBAR */
 
-/* Force mobile menu button to be visible on phones */
 @media (max-width: 768px) {
+    /* Force mobile menu button to be visible on phones */
     .mobile-menu-btn {
         display: flex !important;
         position: fixed !important;
@@ -2322,14 +2320,28 @@ footer a:hover {
         border-radius: 8px !important;
         background: #4A90E2 !important;
         border: none !important;
-        color: white !important;
-        font-size: 24px !important;
         cursor: pointer !important;
-        align-items: center !important;
+        
+        /* FIXED: Set up flex-direction and centering for internal 3-line span icons */
+        flex-direction: column !important;
         justify-content: center !important;
+        align-items: center !important;
+        gap: 4px !important;
+        
         z-index: 1002 !important;
         box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
         margin-right: 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* FIXED: Style the three dynamic lines inside your hamburger button so they are visible */
+    .mobile-menu-btn span {
+        display: block !important;
+        width: 20px !important;
+        height: 3px !important;
+        background-color: white !important; /* Clean, clear white vector bars */
+        border-radius: 2px !important;
+        transition: all 0.2s ease-in-out !important;
     }
     
     /* Override the existing app-sidebar styles to ensure it works */
