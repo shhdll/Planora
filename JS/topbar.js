@@ -7,6 +7,8 @@ import {
     getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+
+
 function loadTopbar() {
     fetch('topbar.html')
         .then(res => res.text())

@@ -13,7 +13,7 @@ Planora is a web application designed to help students organize and manage their
 
 ## Live Demo
 
-🔗 [planora-f2a2b.web.app](https://planora-f2a2b.web.app)
+🔗 https://planora-study-planner.vercel.app/
 
 
 
@@ -63,8 +63,6 @@ planora/
 ├── about-us.html
 ├── topbar.html
 ├── style.css
-├── add-course.css
-├── topbar.css
 ├── images/
 └── JS/
     ├── firebase-config.js  (not included — see setup below)
