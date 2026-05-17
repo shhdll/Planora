@@ -147,13 +147,26 @@ async function updateCourse(courseId, courseData) {
   }
 }
 
-// Delete a course
+// Delete a course and all its associated deadlines
 async function deleteCourse(courseId) {
   if (!courseId) {
     console.error("deleteCourse received an empty courseId!");
     return false;
   }
   try {
+    const courseSnap = await getDoc(doc(db, "courses", courseId));
+    if (courseSnap.exists()) {
+      const courseCode = courseSnap.data().code;
+      const userId = getActiveUserId(auth.currentUser);
+      if (courseCode && userId) {
+        const dlSnap = await getDocs(query(
+          collection(db, "deadlines"),
+          where("userId", "==", userId),
+          where("course", "==", courseCode)
+        ));
+        await Promise.all(dlSnap.docs.map(d => deleteDoc(doc(db, "deadlines", d.id))));
+      }
+    }
     await deleteDoc(doc(db, "courses", courseId));
     return true;
   } catch (error) {
