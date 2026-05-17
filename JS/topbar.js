@@ -45,24 +45,35 @@ function updateUIWithUserData(user) {
 // NOTIFICATIONS
 // ======================
 
-const STORAGE_KEY = 'planora_dismissed_notifs';
+const DISMISSED_KEY = 'planora_dismissed_notifs';
+const SEEN_KEY      = 'planora_seen_notifs';
 
 function getDismissed() {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    return JSON.parse(localStorage.getItem(DISMISSED_KEY) || '[]');
+}
+
+function getSeen() {
+    return JSON.parse(localStorage.getItem(SEEN_KEY) || '[]');
+}
+
+function markAllSeen(ids) {
+    const seen = getSeen();
+    ids.forEach(id => { if (!seen.includes(id)) seen.push(id); });
+    localStorage.setItem(SEEN_KEY, JSON.stringify(seen));
 }
 
 function dismiss(id) {
     const dismissed = getDismissed();
     if (!dismissed.includes(id)) {
         dismissed.push(id);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(dismissed));
+        localStorage.setItem(DISMISSED_KEY, JSON.stringify(dismissed));
     }
 }
 
 function dismissAll(ids) {
     const dismissed = getDismissed();
     ids.forEach(id => { if (!dismissed.includes(id)) dismissed.push(id); });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(dismissed));
+    localStorage.setItem(DISMISSED_KEY, JSON.stringify(dismissed));
 }
 
 function toLocalDateStr(date) {
@@ -158,10 +169,12 @@ function renderNotifications(notifications) {
     if (!list) return;
 
     const dismissed = getDismissed();
+    const seen = getSeen();
     const visible = notifications.filter(n => !dismissed.includes(n.id));
+    const hasUnseen = visible.some(n => !seen.includes(n.id));
 
-    // Red dot
-    if (badge) badge.style.display = visible.length > 0 ? 'block' : 'none';
+    // Red dot only for unseen
+    if (badge) badge.style.display = hasUnseen ? 'block' : 'none';
     if (dismissAllBtn) dismissAllBtn.style.display = visible.length > 0 ? 'block' : 'none';
 
     if (!visible.length) {
@@ -246,6 +259,12 @@ function initTopbar() {
             e.stopPropagation();
             notifDropdown.classList.toggle('open');
             if (profileDropdown) profileDropdown.classList.remove('open');
+
+            if (notifDropdown.classList.contains('open')) {
+                const visible = [...document.querySelectorAll('.notif-item')].map(el => el.dataset.id);
+                if (visible.length) markAllSeen(visible);
+                if (badge) badge.style.display = 'none';
+            }
         });
     }
 

@@ -80,10 +80,11 @@
 
     <script type="module">
         import { auth } from './JS/firebase-config.js';
+        import { Session } from './JS/utils.js';
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
         import { loadEditForm, handleEditCourse } from './JS/courses.js';
 
-        window.firebaseAuth = auth;
+        Session.require();
 
         const form = document.getElementById("edit-course-form");
         if (form) {
@@ -93,14 +94,11 @@
         }
 
         onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                try {
-                    await loadEditForm();
-                } catch (error) {
-                    console.error("Error loading edit form:", error);
-                }
-            } else {
-                window.location.href = "login.html";
+            if (!user) return;
+            try {
+                await loadEditForm();
+            } catch (error) {
+                console.error("Error loading edit form:", error);
             }
         });
     </script>
