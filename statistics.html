@@ -4,41 +4,31 @@
 <head>
 
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <title>Planora - Statistics</title>
-
+    
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mobile.css">
+    <link rel="stylesheet" href="topbar.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 
 </head>
 
 <body class="page-app">
 
     <div class="app-shell">
-
         <div id="sidebar-container"></div>
 
         <div class="app-content-wrap">
-
             <div id="topbar-container"></div>
 
             <main class="app-main">
-
                 <div class="page-header">
-
                     <h1>Your study statistics</h1>
-
-                    <p>
-                        Track your study progress
-                        and stay motivated.
-                    </p>
-
+                    <p>Track your study progress and stay motivated.</p>
                 </div>
-
 
                 <!-- ====================== -->
                 <!-- STUDY OVERVIEW -->
@@ -47,7 +37,6 @@
                 <h2>Study overview</h2>
 
                 <div class="stat-cards-grid" style="margin-top:32px;">
-
                     <div class="stat-card stat-card--blue">
                         <div class="stat-card__icon stat-card__icon--blue">
                             <i class="ti ti-book"></i>
@@ -79,16 +68,13 @@
                         <div class="stat-card__value" id="stat-deadlines">0</div>
                         <div class="stat-card__label">Deadlines completed</div>
                     </div>
-
                 </div>
 
-
                 <!-- ====================== -->
-                <!-- CHARTS ROW 1         -->
+                <!-- CHARTS ROW 1 -->
                 <!-- ====================== -->
 
                 <div class="charts-grid charts-grid--2col">
-
                     <div class="chart-card" style="height:280px;">
                         <h3 class="chart-title">Study hours per course</h3>
                         <canvas id="chartHoursPerCourse"></canvas>
@@ -98,12 +84,10 @@
                         <h3 class="chart-title">Deadline status</h3>
                         <canvas id="chartDeadlineStatus"></canvas>
                     </div>
-
                 </div>
 
-
                 <!-- ====================== -->
-                <!-- CHARTS ROW 2         -->
+                <!-- CHARTS ROW 2 -->
                 <!-- ====================== -->
 
                 <div class="chart-card" style="margin-top:24px; height:240px;">
@@ -111,13 +95,11 @@
                     <canvas id="chartWeeklyCompletion"></canvas>
                 </div>
 
-
                 <!-- ====================== -->
-                <!-- CHARTS ROW 3         -->
+                <!-- CHARTS ROW 3 -->
                 <!-- ====================== -->
 
                 <div class="charts-grid charts-grid--2col" style="margin-top:24px;">
-
                     <div class="chart-card" style="height:260px;">
                         <h3 class="chart-title">This week you accomplished</h3>
                         <canvas id="chartHoursByDay"></canvas>
@@ -127,86 +109,56 @@
                         <h3 class="chart-title">Upcoming deadlines timeline</h3>
                         <div id="deadlineCountdown" class="deadline-countdown"></div>
                     </div>
-
                 </div>
 
             </main>
 
-
             <footer>
-
                 <p>
-
-                    &copy; 2026 Planora.
-                    All Rights Reserved.
-                    |
-                    Contact:
-
-                    <a href="mailto:support@planora.com">
-
-                        support@planora.com
-
-                    </a>
-
+                    &copy; 2026 Planora. All Rights Reserved. | 
+                    Contact: <a href="mailto:support@planora.com">support@planora.com</a>
                 </p>
-
             </footer>
-
         </div>
-
     </div>
+
+    <!-- Additional Tabler icons link -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
+    <!-- Scripts -->
     <script src="JS/config.js"></script>
-    <script type="module" src="JS/AI.js"></script>
-
-
-    <!-- ====================== -->
-    <!-- FIREBASE -->
-    <!-- ====================== -->
 
     <script type="importmap">
-
         {
             "imports": {
-
-                "firebase/app":
-                "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
-
-                "firebase/auth":
-                "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
-
-                "firebase/firestore":
-                "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
+                "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js",
+                "firebase/firestore": "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"
             }
         }
-
     </script>
 
+    <script type="module" src="JS/firebase-config.js"></script>
+    <script type="module" src="JS/utils.js"></script>
+    <script type="module" src="JS/sidebar.js"></script>
+    <script type="module" src="JS/topbar.js"></script>
+    <script type="module" src="JS/auth.js"></script>
+    <script type="module" src="JS/tracker.js"></script>
+    <script type="module" src="JS/AI.js"></script>
+    <script type="module" src="JS/stats.js"></script>
 
-    <!-- ====================== -->
-    <!-- MODULES -->
-    <!-- ====================== -->
+    <script type="module">
+        import { auth } from './JS/firebase-config.js';
+        import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    <script type="module" src="JS/firebase-config.js">
-    </script>
+        window.firebaseAuth = auth;
 
-    <script type="module" src="JS/utils.js">
-    </script>
-
-    <script type="module" src="JS/sidebar.js">
-    </script>
-
-    <script type="module" src="JS/topbar.js">
-    </script>
-
-    <script type="module" src="JS/auth.js">
-    </script>
-
-    <script type="module" src="JS/tracker.js">
-    </script>
-
-    <script type="module" src="JS/stats.js">
+        onAuthStateChanged(auth, (user) => {
+            if (!user) {
+                window.location.href = 'login.html';
+            }
+        });
     </script>
 
 </body>
-
 </html>
