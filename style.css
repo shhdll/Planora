@@ -1544,23 +1544,95 @@ th {
 }
 
 
-/* Notification badge */
-.topbar-notif-badge {
+/* Notification dot */
+.topbar-notif-dot {
     position: absolute;
-    top: -4px;
-    right: -4px;
+    top: 2px;
+    right: 2px;
+    width: 9px;
+    height: 9px;
     background: #ef4444;
-    color: white;
-    font-size: 0.65rem;
-    font-weight: 700;
-    width: 18px;
-    height: 18px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     border: 2px solid white;
 }
+
+/* Dismiss all button */
+.notif-dismiss-all {
+    background: none;
+    border: none;
+    font-size: 0.75rem;
+    color: #6366f1;
+    cursor: pointer;
+    font-weight: 600;
+    padding: 0;
+}
+
+.notif-dismiss-all:hover {
+    text-decoration: underline;
+}
+
+/* Notification items */
+.notif-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    margin-bottom: 6px;
+    background: #f8fafc;
+}
+
+.notif-item--deadline { border-left: 3px solid #f59e0b; }
+.notif-item--session  { border-left: 3px solid #6366f1; }
+
+.notif-item__icon {
+    font-size: 1rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.notif-item--deadline .notif-item__icon { color: #d97706; }
+.notif-item--session  .notif-item__icon { color: #6366f1; }
+
+.notif-item__body {
+    flex: 1;
+    min-width: 0;
+}
+
+.notif-item__title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notif-item__sub {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 1px;
+}
+
+.notif-item__label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-top: 3px;
+}
+
+.notif-item__dismiss {
+    background: none;
+    border: none;
+    color: #cbd5e1;
+    cursor: pointer;
+    font-size: 0.75rem;
+    padding: 0 2px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.notif-item__dismiss:hover { color: #ef4444; }
 
 #notif-dropdown {
     right: auto;

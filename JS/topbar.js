@@ -1,6 +1,11 @@
-// Import Firebase (for auth state)
-import { auth } from './firebase-config.js';
+import { auth, db } from './firebase-config.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+    collection,
+    query,
+    where,
+    getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 function loadTopbar() {
     fetch('topbar.html')
@@ -17,7 +22,6 @@ function loadTopbar() {
 function updateUIWithUserData(user) {
     if (!user) return;
 
-    // Calculate initials safely
     const initials = user.name
         ? user.name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
         : user.email ? user.email[0].toUpperCase() : '?';
@@ -37,8 +41,174 @@ function updateUIWithUserData(user) {
     if (emailElement) emailElement.textContent = user.email || '';
 }
 
+// ======================
+// NOTIFICATIONS
+// ======================
+
+const STORAGE_KEY = 'planora_dismissed_notifs';
+
+function getDismissed() {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+}
+
+function dismiss(id) {
+    const dismissed = getDismissed();
+    if (!dismissed.includes(id)) {
+        dismissed.push(id);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(dismissed));
+    }
+}
+
+function dismissAll(ids) {
+    const dismissed = getDismissed();
+    ids.forEach(id => { if (!dismissed.includes(id)) dismissed.push(id); });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dismissed));
+}
+
+function toLocalDateStr(date) {
+    return [
+        date.getFullYear(),
+        String(date.getMonth() + 1).padStart(2, '0'),
+        String(date.getDate()).padStart(2, '0')
+    ].join('-');
+}
+
+function fmtTime(t) {
+    if (!t) return '';
+    const [h, min] = t.split(':');
+    const hour = parseInt(h, 10);
+    return `${hour % 12 || 12}:${min} ${hour >= 12 ? 'PM' : 'AM'}`;
+}
+
+function timeUntil(date) {
+    const diff = date - new Date();
+    const h = Math.floor(diff / (1000 * 60 * 60));
+    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    if (h <= 0 && m <= 0) return 'now';
+    if (h === 0) return `in ${m}m`;
+    if (m === 0) return `in ${h}h`;
+    return `in ${h}h ${m}m`;
+}
+
+async function loadNotifications(firebaseUser) {
+    const now = new Date();
+    const in24h = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+    const todayStr = toLocalDateStr(now);
+    const tomorrowStr = toLocalDateStr(new Date(now.getTime() + 24 * 60 * 60 * 1000));
+
+    const notifications = [];
+
+    // Deadlines due within the next 24 hours
+    try {
+        const dlSnap = await getDocs(query(
+            collection(db, 'deadlines'),
+            where('userId', '==', firebaseUser.uid),
+            where('completed', '==', false)
+        ));
+        dlSnap.forEach(d => {
+            const data = { id: d.id, ...d.data() };
+            const due = new Date(data.dueDate);
+            if (due > now && due <= in24h) {
+                notifications.push({
+                    id: `dl_${data.id}`,
+                    type: 'deadline',
+                    title: data.title,
+                    sub: data.course,
+                    time: due,
+                    label: `Due ${timeUntil(due)}`
+                });
+            }
+        });
+    } catch (e) { console.error('Notif deadlines error', e); }
+
+    // Study sessions starting within the next 24 hours
+    try {
+        const ssSnap = await getDocs(query(
+            collection(db, 'studyPlans'),
+            where('userId', '==', firebaseUser.uid),
+            where('status', '==', 'pending')
+        ));
+        ssSnap.forEach(s => {
+            const data = { id: s.id, ...s.data() };
+            if (data.studyDate !== todayStr && data.studyDate !== tomorrowStr) return;
+            const sessionStart = new Date(`${data.studyDate}T${data.startTime}`);
+            if (sessionStart > now && sessionStart <= in24h) {
+                notifications.push({
+                    id: `ss_${data.id}`,
+                    type: 'session',
+                    title: data.course,
+                    sub: `${fmtTime(data.startTime)} – ${fmtTime(data.endTime)}`,
+                    time: sessionStart,
+                    label: `Starts ${timeUntil(sessionStart)}`
+                });
+            }
+        });
+    } catch (e) { console.error('Notif sessions error', e); }
+
+    // Sort soonest first
+    notifications.sort((a, b) => a.time - b.time);
+
+    renderNotifications(notifications);
+}
+
+function renderNotifications(notifications) {
+    const list = document.getElementById('notif-list');
+    const badge = document.getElementById('notif-badge');
+    const dismissAllBtn = document.getElementById('notif-dismiss-all');
+    if (!list) return;
+
+    const dismissed = getDismissed();
+    const visible = notifications.filter(n => !dismissed.includes(n.id));
+
+    // Red dot
+    if (badge) badge.style.display = visible.length > 0 ? 'block' : 'none';
+    if (dismissAllBtn) dismissAllBtn.style.display = visible.length > 0 ? 'block' : 'none';
+
+    if (!visible.length) {
+        list.innerHTML = `<p class="topbar-dropdown__empty">No new notifications</p>`;
+        return;
+    }
+
+    list.innerHTML = visible.map(n => `
+        <div class="notif-item notif-item--${n.type}" data-id="${n.id}">
+            <div class="notif-item__icon">
+                ${n.type === 'deadline'
+                    ? `<i class="ti ti-calendar-due"></i>`
+                    : `<i class="ti ti-clock"></i>`}
+            </div>
+            <div class="notif-item__body">
+                <div class="notif-item__title">${n.title}</div>
+                <div class="notif-item__sub">${n.sub}</div>
+                <div class="notif-item__label">${n.label}</div>
+            </div>
+            <button class="notif-item__dismiss" data-id="${n.id}" aria-label="Dismiss">✕</button>
+        </div>
+    `).join('');
+
+    // Individual dismiss
+    list.querySelectorAll('.notif-item__dismiss').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dismiss(btn.dataset.id);
+            renderNotifications(notifications);
+        });
+    });
+
+    // Dismiss all
+    if (dismissAllBtn) {
+        dismissAllBtn.onclick = (e) => {
+            e.stopPropagation();
+            dismissAll(notifications.map(n => n.id));
+            renderNotifications(notifications);
+        };
+    }
+}
+
+// ======================
+// INIT
+// ======================
+
 function initTopbar() {
-    // 1. Set page title based on current page string mapping
     const titles = {
         'dashboard.html': 'Dashboard',
         'courses.html': 'Courses',
@@ -52,20 +222,12 @@ function initTopbar() {
         'remove-course.html': 'Remove Course'
     };
     const page = window.location.pathname.split('/').pop();
-    const pageTitle = titles[page] || 'Planora';
-    
     const pageTitleElement = document.getElementById('topbar-page-title');
-    if (pageTitleElement) {
-        pageTitleElement.textContent = pageTitle;
-    }
+    if (pageTitleElement) pageTitleElement.textContent = titles[page] || 'Planora';
 
-    // 2. Fallback: Populate layout instantly if a baseline local session exists
     const sessionUser = typeof Session !== 'undefined' ? Session.getUser() : null;
-    if (sessionUser) {
-        updateUIWithUserData(sessionUser);
-    }
+    if (sessionUser) updateUIWithUserData(sessionUser);
 
-    // 3. Dropdown click management setup
     const profileBtn = document.getElementById('profile-btn');
     const profileDropdown = document.getElementById('profile-dropdown');
     const notifBtn = document.getElementById('notif-btn');
@@ -87,29 +249,22 @@ function initTopbar() {
         });
     }
 
-    // Dismiss active elements if click lands outside dropdown ecosystems
     document.addEventListener('click', () => {
         if (profileDropdown) profileDropdown.classList.remove('open');
         if (notifDropdown) notifDropdown.classList.remove('open');
     });
-    
-    // Prevent closing when interacting inside the panels themselves
-    if (profileDropdown) profileDropdown.addEventListener('click', (e) => e.stopPropagation());
-    if (notifDropdown) notifDropdown.addEventListener('click', (e) => e.stopPropagation());
 
-    // 4. Hook real-time listener from Firebase for authoritative state changes
+    if (profileDropdown) profileDropdown.addEventListener('click', e => e.stopPropagation());
+    if (notifDropdown) notifDropdown.addEventListener('click', e => e.stopPropagation());
+
     onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
-            const mappedUser = {
-                name: firebaseUser.displayName,
-                email: firebaseUser.email
-            };
-            updateUIWithUserData(mappedUser);
+            updateUIWithUserData({ name: firebaseUser.displayName, email: firebaseUser.email });
+            loadNotifications(firebaseUser);
         }
     });
 }
 
-// Global invocation setup
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', loadTopbar);
 } else {
