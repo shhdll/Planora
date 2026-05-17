@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Planora - Edit Course</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="topbar.css">
-    <link rel="stylesheet" href="add-course.css">
+    <link rel="stylesheet" href="mobile.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 </head>
 
 <body class="page-app">
@@ -63,6 +63,8 @@
         </div>
     </div>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
     <script type="importmap">
         {
             "imports": {
@@ -73,10 +75,12 @@
         }
     </script>
 
+    <script src="JS/config.js"></script>
     <script type="module" src="JS/firebase-config.js"></script>
     <script type="module" src="JS/utils.js"></script>
-    <script type="module" src="js/sidebar.js"></script>
+    <script type="module" src="JS/sidebar.js"></script>
     <script type="module" src="JS/topbar.js"></script>
+    <script type="module" src="JS/courses.js"></script>
 
     <script type="module">
         import { auth } from './JS/firebase-config.js';
@@ -84,7 +88,10 @@
         import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
         import { loadEditForm, handleEditCourse } from './JS/courses.js';
 
+        // Friend's session check (more elegant)
         Session.require();
+
+        window.firebaseAuth = auth;
 
         const form = document.getElementById("edit-course-form");
         if (form) {
@@ -93,12 +100,16 @@
             });
         }
 
+        // Combined auth check
         onAuthStateChanged(auth, async (user) => {
-            if (!user) return;
-            try {
-                await loadEditForm();
-            } catch (error) {
-                console.error("Error loading edit form:", error);
+            if (user) {
+                try {
+                    await loadEditForm();
+                } catch (error) {
+                    console.error("Error loading edit form:", error);
+                }
+            } else {
+                window.location.href = "login.html";
             }
         });
     </script>

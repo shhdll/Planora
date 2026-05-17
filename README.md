@@ -13,6 +13,7 @@ Planora is a web application designed to help students organize and manage their
 
 ## Live Demo
 
+🔗 https://planora-study-planner.vercel.app/
 
 
 
@@ -62,8 +63,6 @@ planora/
 ├── about-us.html
 ├── topbar.html
 ├── style.css
-├── add-course.css
-├── topbar.css
 ├── images/
 └── JS/
     ├── firebase-config.js  (not included — see setup below)
@@ -169,12 +168,8 @@ npx live-server
     userId, name, code, instructor, creditHours, createdAt
 
 /deadlines/{docId}
-    userId, title, course, dueDate, priority, description, completed, createdAt
+    userId, title, dueDate, courseId, priority, completed
 
 /availability/{userId}
-    userId, updatedAt
-    slots[] → { day, startTime, endTime }
-
-/studyPlans/{docId}
-    userId, title, course, day, dueDate, startTime, endTime, priority, status, createdAt
+    userId, days[], startTime, endTime, updatedAt
 ```

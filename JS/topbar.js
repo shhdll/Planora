@@ -7,6 +7,8 @@ import {
     getDocs
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+
+
 function loadTopbar() {
     fetch('topbar.html')
         .then(res => res.text())
@@ -173,7 +175,7 @@ function renderNotifications(notifications) {
     const visible = notifications.filter(n => !dismissed.includes(n.id));
     const hasUnseen = visible.some(n => !seen.includes(n.id));
 
-    // Red dot only for unseen
+    // Red dot only for unseen (friend's feature)
     if (badge) badge.style.display = hasUnseen ? 'block' : 'none';
     if (dismissAllBtn) dismissAllBtn.style.display = visible.length > 0 ? 'block' : 'none';
 
@@ -218,6 +220,51 @@ function renderNotifications(notifications) {
 }
 
 // ======================
+// MOBILE SIDEBAR (YOUR FEATURE)
+// ======================
+
+function setupMobileSidebar() {
+    // Create overlay
+    let overlay = document.getElementById('sidebar-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'sidebar-overlay';
+        overlay.className = 'sidebar-overlay';
+        document.body.appendChild(overlay);
+    }
+
+    const menuBtn = document.getElementById('mobile-menu-btn');
+
+    if (menuBtn) {
+        menuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const sidebar = document.querySelector('.app-sidebar');
+            if (!sidebar) return;
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = sidebar.classList.contains('mobile-open') ? 'hidden' : '';
+        });
+    }
+
+    overlay.addEventListener('click', () => {
+        const sidebar = document.querySelector('.app-sidebar');
+        if (sidebar) sidebar.classList.remove('mobile-open');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+
+    // Close sidebar when nav link clicked on mobile
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.app-nav__link') && window.innerWidth <= 768) {
+            const sidebar = document.querySelector('.app-sidebar');
+            if (sidebar) sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+}
+
+// ======================
 // INIT
 // ======================
 
@@ -234,6 +281,7 @@ function initTopbar() {
         'edit-course.html': 'Edit Course',
         'remove-course.html': 'Remove Course'
     };
+    
     const page = window.location.pathname.split('/').pop();
     const pageTitleElement = document.getElementById('topbar-page-title');
     if (pageTitleElement) pageTitleElement.textContent = titles[page] || 'Planora';
@@ -245,6 +293,7 @@ function initTopbar() {
     const profileDropdown = document.getElementById('profile-dropdown');
     const notifBtn = document.getElementById('notif-btn');
     const notifDropdown = document.getElementById('notif-dropdown');
+    const badge = document.getElementById('notif-badge');
 
     if (profileBtn && profileDropdown) {
         profileBtn.addEventListener('click', (e) => {
@@ -260,6 +309,7 @@ function initTopbar() {
             notifDropdown.classList.toggle('open');
             if (profileDropdown) profileDropdown.classList.remove('open');
 
+            // Mark notifications as seen when dropdown opens (friend's feature)
             if (notifDropdown.classList.contains('open')) {
                 const visible = [...document.querySelectorAll('.notif-item')].map(el => el.dataset.id);
                 if (visible.length) markAllSeen(visible);
@@ -276,6 +326,10 @@ function initTopbar() {
     if (profileDropdown) profileDropdown.addEventListener('click', e => e.stopPropagation());
     if (notifDropdown) notifDropdown.addEventListener('click', e => e.stopPropagation());
 
+    // Setup mobile sidebar (your feature)
+    setTimeout(setupMobileSidebar, 100);
+
+    // Firebase auth
     onAuthStateChanged(auth, (firebaseUser) => {
         if (firebaseUser) {
             updateUIWithUserData({ name: firebaseUser.displayName, email: firebaseUser.email });
