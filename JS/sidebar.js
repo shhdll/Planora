@@ -208,6 +208,7 @@ function handleResize() {
     }
 }
 
+a// Populate the badge placeholders in the sidebar safely
 async function addSidebarBadges() {
     if (typeof Utils !== 'undefined' && Utils.Session) {
         const user = Utils.Session.getUser();
@@ -218,17 +219,6 @@ async function addSidebarBadges() {
     if (!firebaseUser) return;
 
     try {
-        // Course count badge
-        const coursesQuery = query(collection(db, "courses"), where("userId", "==", firebaseUser.uid));
-        const coursesSnapshot = await getDocs(coursesQuery);
-        const coursesCount = coursesSnapshot.size;
-
-        const badge = document.getElementById('courses-badge');
-        if (badge && coursesCount > 0) {
-            badge.textContent = coursesCount;
-            badge.style.display = 'inline-block';
-        }
-
     } catch (error) {
         console.error("Error loading sidebar badges safely:", error);
     }
