@@ -39,7 +39,7 @@ Planora is a web application designed to help students organize and manage their
 | Database | Firebase Firestore |
 | Authentication | Firebase Auth (Email/Password) |
 | AI Chatbot | Groq API (LLaMA 3.3) |
-| Hosting | Firebase Hosting |
+| Hosting | Vercel |
 
 
 

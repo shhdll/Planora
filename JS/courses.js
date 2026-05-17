@@ -9,7 +9,8 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
-  doc
+  doc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // Helper to get active user safely
@@ -32,7 +33,7 @@ async function getCourses(passedUser) {
     const querySnapshot = await getDocs(q);
     const courses = [];
     querySnapshot.forEach((doc) => {
-      courses.push({ id: doc.id, ...doc.data() });
+      courses.push({ ...doc.data(), id: doc.id });
     });
     console.log("Courses loaded:", courses);
     return courses;
@@ -203,33 +204,33 @@ async function handleAddCourse(event) {
 
 // Load edit form
 async function loadEditForm() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const id = urlParams.get("id");
+  const id = new URLSearchParams(window.location.search).get("id");
 
   if (!id) {
     showToast("No course selected.", "error");
     return;
   }
 
-  const courses = await getCourses(auth.currentUser);
-  const course = courses.find((c) => c.id === id);
+  try {
+    const snap = await getDoc(doc(db, "courses", id));
 
-  if (!course) {
-    showToast("Course not found.", "error");
-    return;
+    if (!snap.exists()) {
+      showToast("Course not found.", "error");
+      return;
+    }
+
+    const course = { ...snap.data(), id: snap.id };
+
+    document.getElementById("courseId").value        = course.id;
+    document.getElementById("courseName").value      = course.name        || "";
+    document.getElementById("courseCode").value      = course.code        || "";
+    document.getElementById("instructor").value      = course.instructor  || "";
+    document.getElementById("creditHours").value     = course.creditHours || "";
+
+  } catch (err) {
+    console.error("loadEditForm error:", err);
+    showToast("Failed to load course.", "error");
   }
-
-  const idField = document.getElementById("courseId");
-  const nameField = document.getElementById("courseName");
-  const codeField = document.getElementById("courseCode");
-  const instructorField = document.getElementById("instructor");
-  const creditField = document.getElementById("creditHours");
-
-  if (idField) idField.value = course.id;
-  if (nameField) nameField.value = course.name;
-  if (codeField) codeField.value = course.code;
-  if (instructorField) instructorField.value = course.instructor || "";
-  if (creditField) creditField.value = course.creditHours || "";
 }
 
 // Handle edit course
