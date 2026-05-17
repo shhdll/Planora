@@ -16,9 +16,12 @@ function loadSidebar() {
         return;
     }
 
-    // Sidebar HTML - Keep your original structure
+    // Sidebar HTML with close button included
     container.innerHTML = `
         <aside class="app-sidebar" aria-label="App navigation">
+            <div class="mobile-only-header" style="padding: 16px; display: flex; justify-content: flex-end; border-bottom: 1px solid rgba(148, 163, 184, 0.15);">
+                <button class="mobile-close-btn" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #cbd5e1; padding: 8px;">✕</button>
+            </div>
             <a href="index.html" class="app-brand">
                 <img src="images/planora_logo.png" alt="Planora Logo" class="app-brand-logo">
             </a>
@@ -38,15 +41,15 @@ function loadSidebar() {
             </div>
         </aside>`;
 
-    // ONLY add mobile elements if we're on mobile AND they don't exist yet
+    // Add mobile menu button if on mobile and it doesn't exist
     if (window.innerWidth <= 768 && !document.querySelector('.mobile-menu-btn')) {
-        addMobileElements();
+        addMobileMenuButton();
     }
     
-    // Setup mobile functionality (only adds event listeners if elements exist)
+    // Setup mobile menu functionality
     setupMobileMenu();
     
-    // Highlight the active page link
+    // Highlight active page link
     document.querySelectorAll('.app-nav__link').forEach(link => {
         if (link.href === window.location.href) {
             link.setAttribute('aria-current', 'page');
@@ -54,7 +57,7 @@ function loadSidebar() {
     });
 
     // Handle logout
-    const logoutBtn = document.querySelector('#logout-btn, .app-sidebar__footer a');
+    const logoutBtn = document.querySelector('.app-sidebar__footer a');
     if (logoutBtn && !logoutBtn.hasListener) {
         logoutBtn.hasListener = true;
         logoutBtn.addEventListener('click', async (e) => {
@@ -74,38 +77,22 @@ function loadSidebar() {
     addSidebarBadges();
 }
 
-function addMobileElements() {
-    // Add mobile menu button
+function addMobileMenuButton() {
+    if (document.querySelector('.mobile-menu-btn')) return;
+    
     const menuBtn = document.createElement('button');
     menuBtn.className = 'mobile-menu-btn';
     menuBtn.innerHTML = '☰';
     menuBtn.setAttribute('aria-label', 'Open menu');
-    
-    // Insert at the beginning of the body or before the sidebar container
-    const sidebarContainer = document.getElementById('sidebar-container');
-    if (sidebarContainer) {
-        sidebarContainer.insertAdjacentElement('beforebegin', menuBtn);
-    } else {
-        document.body.insertBefore(menuBtn, document.body.firstChild);
-    }
+    document.body.appendChild(menuBtn);
+    console.log("Mobile menu button added");
     
     // Add overlay if it doesn't exist
     if (!document.querySelector('.sidebar-overlay')) {
         const overlay = document.createElement('div');
         overlay.className = 'sidebar-overlay';
         document.body.appendChild(overlay);
-    }
-    
-    // Add close button inside sidebar (only on mobile)
-    const sidebar = document.querySelector('.app-sidebar');
-    if (sidebar && !sidebar.querySelector('.mobile-close-btn')) {
-        const closeDiv = document.createElement('div');
-        closeDiv.style.padding = '16px';
-        closeDiv.style.display = 'flex';
-        closeDiv.style.justifyContent = 'flex-end';
-        closeDiv.style.borderBottom = '1px solid #e2e8f0';
-        closeDiv.innerHTML = '<button class="mobile-close-btn" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #64748b; padding: 8px;">✕</button>';
-        sidebar.insertBefore(closeDiv, sidebar.firstChild);
+        console.log("Overlay added");
     }
 }
 
@@ -115,9 +102,9 @@ function setupMobileMenu() {
     const overlay = document.querySelector('.sidebar-overlay');
     const closeBtn = document.querySelector('.mobile-close-btn');
     
-    // Only proceed if we're on mobile
+    // Only proceed on mobile
     if (window.innerWidth > 768) {
-        // Make sure sidebar is closed on desktop
+        // Close menu if open on resize
         if (sidebar && sidebar.classList.contains('mobile-open')) {
             sidebar.classList.remove('mobile-open');
         }
@@ -127,88 +114,83 @@ function setupMobileMenu() {
         return;
     }
     
-    if (!sidebar || !menuBtn) return;
+    if (!sidebar) {
+        console.error("Sidebar not found");
+        return;
+    }
     
-    function openMenu() {
+    if (!menuBtn) {
+        console.error("Menu button not found");
+        return;
+    }
+    
+    function openMenu(e) {
+        e.preventDefault();
+        console.log("Opening menu");
         sidebar.classList.add('mobile-open');
         if (overlay) overlay.classList.add('active');
         document.body.style.overflow = 'hidden';
     }
     
     function closeMenu() {
+        console.log("Closing menu");
         sidebar.classList.remove('mobile-open');
         if (overlay) overlay.classList.remove('active');
         document.body.style.overflow = '';
     }
     
-    // Remove existing listeners to prevent duplicates
-    menuBtn.removeEventListener('click', openMenu);
-    menuBtn.addEventListener('click', openMenu);
+    // Set up event listeners
+    menuBtn.onclick = openMenu;
     
     if (closeBtn) {
-        closeBtn.removeEventListener('click', closeMenu);
-        closeBtn.addEventListener('click', closeMenu);
+        closeBtn.onclick = closeMenu;
     }
     
     if (overlay) {
-        overlay.removeEventListener('click', closeMenu);
-        overlay.addEventListener('click', closeMenu);
+        overlay.onclick = closeMenu;
     }
     
     // Close menu when clicking nav links
     document.querySelectorAll('.app-nav__link').forEach(link => {
-        link.removeEventListener('click', closeMenu);
-        link.addEventListener('click', () => {
+        link.onclick = () => {
             setTimeout(closeMenu, 150);
-        });
+        };
     });
     
     // Close on escape key
-    const escapeHandler = (e) => {
+    document.onkeydown = (e) => {
         if (e.key === 'Escape' && sidebar.classList.contains('mobile-open')) {
             closeMenu();
         }
     };
-    document.removeEventListener('keydown', escapeHandler);
-    document.addEventListener('keydown', escapeHandler);
 }
 
-// Handle window resize to add/remove mobile elements as needed
-function handleResize() {
-    const menuBtn = document.querySelector('.mobile-menu-btn');
-    const overlay = document.querySelector('.sidebar-overlay');
-    const sidebar = document.querySelector('.app-sidebar');
-    
-    if (window.innerWidth <= 768) {
-        // Mobile view - add elements if missing
-        if (!menuBtn) {
-            addMobileElements();
+// Handle window resize
+let resizeTimer;
+window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+        const menuBtn = document.querySelector('.mobile-menu-btn');
+        const overlay = document.querySelector('.sidebar-overlay');
+        const sidebar = document.querySelector('.app-sidebar');
+        
+        if (window.innerWidth <= 768) {
+            if (!menuBtn) {
+                addMobileMenuButton();
+                setupMobileMenu();
+            }
+        } else {
+            if (menuBtn) menuBtn.remove();
+            if (overlay) overlay.remove();
+            if (sidebar) {
+                sidebar.classList.remove('mobile-open');
+            }
+            document.body.style.overflow = '';
         }
-        setupMobileMenu();
-    } else {
-        // Desktop view - remove mobile elements if they exist
-        if (menuBtn) menuBtn.remove();
-        if (overlay) overlay.remove();
-        
-        // Remove close button if exists
-        const closeBtn = document.querySelector('.mobile-close-btn');
-        const closeDiv = closeBtn?.parentElement;
-        if (closeDiv) closeDiv.remove();
-        
-        // Ensure sidebar is visible on desktop
-        if (sidebar) {
-            sidebar.classList.remove('mobile-open');
-            // Make sure desktop sidebar styles are applied
-            sidebar.style.transform = '';
-            sidebar.style.left = '';
-        }
-        
-        // Reset body overflow
-        document.body.style.overflow = '';
-    }
-}
+    }, 250);
+});
 
-// Populate the badge and dot placeholders in the sidebar
+// Populate badges
 async function addSidebarBadges() {
     const user = Utils.Session.getUser()
     if (!user) return;
@@ -217,7 +199,6 @@ async function addSidebarBadges() {
     if (!firebaseUser) return;
 
     try {
-        // Course count badge
         const coursesQuery = query(collection(db, "courses"), where("userId", "==", firebaseUser.uid));
         const coursesSnapshot = await getDocs(coursesQuery);
         const coursesCount = coursesSnapshot.size;
@@ -228,7 +209,6 @@ async function addSidebarBadges() {
             badge.style.display = 'inline-block';
         }
 
-        // Availability dot
         const availabilityRef = doc(db, "availability", firebaseUser.uid);
         const availabilitySnap = await getDoc(availabilityRef);
 
@@ -248,10 +228,7 @@ async function addSidebarBadges() {
     }
 }
 
-// Listen for resize events
-window.addEventListener('resize', handleResize);
-
-// Auto-initialize when DOM is ready
+// Initialize
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', loadSidebar);
 } else {

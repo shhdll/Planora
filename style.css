@@ -2306,95 +2306,125 @@ footer a:hover {
     background: #f1f5f9;
     color: #64748b;
 }
+/* ============================================
+   FIXED MOBILE SIDEBAR - ADD THIS AT THE END
+   ============================================ */
 
-/* ── MOBILE SIDEBAR ── */
+/* Force mobile menu button to be visible on phones */
 @media (max-width: 768px) {
+    .mobile-menu-btn {
+        display: flex !important;
+        position: fixed !important;
+        top: 16px !important;
+        left: 16px !important;
+        width: 44px !important;
+        height: 44px !important;
+        border-radius: 8px !important;
+        background: #4A90E2 !important;
+        border: none !important;
+        color: white !important;
+        font-size: 24px !important;
+        cursor: pointer !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 1002 !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+        margin-right: 0 !important;
+    }
+    
+    /* Override the existing app-sidebar styles to ensure it works */
     .app-sidebar {
-        position: fixed;
-        top: 0;
-        left: -288px;
-        height: 100vh;
-        width: 288px;
-        z-index: 1000;
-        transition: left 0.3s ease;
+        position: fixed !important;
+        top: 0 !important;
+        left: -288px !important;
+        height: 100vh !important;
+        width: 288px !important;
+        z-index: 1001 !important;
+        transition: left 0.3s ease !important;
+        background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 45%, #312e81 100%) !important;
+        overflow-y: auto !important;
     }
-
+    
     .app-sidebar.mobile-open {
-        left: 0;
+        left: 0 !important;
     }
-
-    .sidebar-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 999;
-    }
-
-    .sidebar-overlay.active {
-        display: block;
-    }
-
-    .app-content-wrap {
-        margin-left: 0 !important;
-        width: 100% !important;
-    }
-
+    
+    /* Make sure the sidebar container doesn't block the button */
     #sidebar-container {
+        position: static !important;
         width: 0 !important;
         min-width: 0 !important;
     }
-
-    .mobile-menu-btn {
-        display: flex;
+    
+    /* Push main content down to make room for the menu button */
+    .app-content-wrap {
+        margin-left: 0 !important;
+        padding-top: 70px !important;
+    }
+    
+    /* Fix the greeting banner to not be hidden behind the button */
+    .dash-greeting {
+        margin-top: 0 !important;
+        padding-top: 10px !important;
     }
 }
 
-.mobile-menu-btn {
+/* Ensure the close button inside sidebar is visible on mobile */
+.mobile-only-header {
     display: none;
-    align-items: center;
-    justify-content: center;
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    border: 1.5px solid #e2e8f0;
-    background: #f8fafc;
-    cursor: pointer;
-    color: #64748b;
-    font-size: 1.2rem;
-    margin-right: auto;
 }
-/* Add to your existing CSS for better mobile experience */
 
-/* Ensure the close button works well */
+@media (max-width: 768px) {
+    .mobile-only-header {
+        display: flex !important;
+    }
+}
+
 .mobile-close-btn {
     background: none;
     border: none;
     font-size: 24px;
     cursor: pointer;
-    color: #64748b;
+    color: #cbd5e1 !important;
     padding: 8px;
     transition: color 0.2s;
+    width: auto !important;
 }
 
 .mobile-close-btn:hover {
-    color: #4A90E2;
+    color: white !important;
 }
 
-/* Prevent body scroll when menu is open on mobile */
-body.menu-open {
-    overflow: hidden;
+/* Overlay styles */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
 }
 
-/* Ensure sidebar links are clickable on mobile */
-@media (max-width: 768px) {
-    .app-nav__link {
-        font-size: 16px;
-        padding: 14px 16px !important;
+.sidebar-overlay.active {
+    display: block !important;
+}
+
+/* Desktop: hide mobile elements */
+@media (min-width: 769px) {
+    .mobile-menu-btn,
+    .sidebar-overlay,
+    .mobile-close-btn,
+    .mobile-only-header {
+        display: none !important;
     }
     
-    /* Add a subtle animation for the menu button */
-    .mobile-menu-btn:active {
-        transform: scale(0.95);
+    .app-sidebar {
+        position: sticky !important;
+        left: 0 !important;
+        top: 0 !important;
+    }
+    
+    #sidebar-container {
+        width: 288px !important;
+        min-width: 288px !important;
     }
 }
