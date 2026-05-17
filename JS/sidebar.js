@@ -208,7 +208,6 @@ function handleResize() {
     }
 }
 
-// Populate the badge and dot placeholders in the sidebar
 async function addSidebarBadges() {
     if (typeof Utils !== 'undefined' && Utils.Session) {
         const user = Utils.Session.getUser();
@@ -230,11 +229,8 @@ async function addSidebarBadges() {
             badge.style.display = 'inline-block';
         }
 
-        // FIXED: Cleaned out the availability dot Firestore fetches completely 
-        // to stay synchronized with your UI layout specifications.
-
     } catch (error) {
-        console.error("Error loading sidebar badges:", error);
+        console.error("Error loading sidebar badges safely:", error);
     }
 }
 
