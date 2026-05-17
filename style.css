@@ -637,12 +637,7 @@ nav a:hover {
     text-align: right;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .dash-stats    { grid-template-columns: 1fr; }
-    .dash-two-col  { grid-template-columns: 1fr; }
-    .dash-greeting { flex-direction: column; align-items: flex-start; }
-}
+
 
 /* COURSES GRID */
 .courses-toolbar {
@@ -1462,39 +1457,6 @@ th {
     margin: 0;
 }
 
-/* Responsive Sidebar */
-@media (max-width: 768px) {
-    .app-shell {
-        flex-direction: column;
-    }
-
-    .app-sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
-        padding: 16px;
-    }
-
-    .app-nav {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 16px;
-    }
-
-    .app-nav__link {
-        padding: 8px 12px;
-        font-size: 0.85rem;
-    }
-
-    .app-sidebar__footer {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-
-}
 
 @media (max-width: 480px) {
     .app-sidebar {
@@ -1903,11 +1865,6 @@ footer a:hover {
     letter-spacing: 0.01em;
 }
 
-@media (max-width: 768px) {
-    .charts-grid--2col {
-        grid-template-columns: 1fr;
-    }
-}
 
 /* ====================== */
 /* DEADLINE COUNTDOWN     */
@@ -2307,9 +2264,34 @@ footer a:hover {
     color: #64748b;
 }
 /* MOBILE SIDEBAR */
-
 @media (max-width: 768px) {
-    /* Force mobile menu button to be visible on phones */
+    .app-shell {
+        display: flex;
+        flex-direction: column; /* Stacks the content flow vertically */
+    }
+
+    .app-content-wrap {
+        margin-left: 0 !important;
+        padding-top: 76px !important; /* Pushes content down cleanly beneath fixed button */
+        width: 100%;
+    }
+
+    /* Grid layout reflows */
+    .dash-stats, 
+    .dash-two-col, 
+    .charts-grid--2col { 
+        grid-template-columns: 1fr !important; 
+        gap: 16px;
+    }
+
+    .dash-greeting { 
+        flex-direction: column !important; 
+        align-items: flex-start !important; 
+        margin-top: 0 !important;
+        padding-top: 10px !important;
+    }
+
+    /* 2. THE HAMBURGER BUTTON FIXES */
     .mobile-menu-btn {
         display: flex !important;
         position: fixed !important;
@@ -2318,79 +2300,84 @@ footer a:hover {
         width: 44px !important;
         height: 44px !important;
         border-radius: 8px !important;
-        background: #4A90E2 !important;
+        background: #4A90E2 !important; /* Your brand blue */
         border: none !important;
         cursor: pointer !important;
+        z-index: 1002 !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+        padding: 0 !important;
+        margin-right: 0 !important;
         
-        /* FIXED: Set up flex-direction and centering for internal 3-line span icons */
+        /* Keep the 3 bars perfectly isolated and centered */
         flex-direction: column !important;
         justify-content: center !important;
         align-items: center !important;
         gap: 4px !important;
-        
-        z-index: 1002 !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
-        margin-right: 0 !important;
-        padding: 0 !important;
     }
     
-    /* FIXED: Style the three dynamic lines inside your hamburger button so they are visible */
+    /* Style the spans so they act as individual vector lines, not buttons */
     .mobile-menu-btn span {
         display: block !important;
         width: 20px !important;
         height: 3px !important;
-        background-color: white !important; /* Clean, clear white vector bars */
+        background-color: white !important;
         border-radius: 2px !important;
         transition: all 0.2s ease-in-out !important;
     }
-    
-    /* Override the existing app-sidebar styles to ensure it works */
+
+    /* 3. SLIDING SIDEBAR MOBILE OVERRIDES */
     .app-sidebar {
         position: fixed !important;
         top: 0 !important;
         left: -288px !important;
         height: 100vh !important;
         width: 288px !important;
-        z-index: 1001 !important;
-        transition: left 0.3s ease !important;
+        z-index: 1005 !important;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 45%, #312e81 100%) !important;
         overflow-y: auto !important;
+        box-shadow: 5px 0 25px rgba(0, 0, 0, 0.3) !important;
     }
     
     .app-sidebar.mobile-open {
         left: 0 !important;
     }
-    
-    /* Make sure the sidebar container doesn't block the button */
+
+    /* Fix logo stretching inside sliding sidebar drawer */
+    .app-brand {
+        display: flex !important;
+        justify-content: center !important;
+        padding: 20px 16px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .app-brand-logo {
+        width: auto !important;
+        max-width: 150px !important; /* Forces logo to retain aspect ratio */
+        height: auto !important;
+        display: block !important;
+    }
+
+    /* Prevent structural placeholders from tracking spaces */
     #sidebar-container {
         position: static !important;
         width: 0 !important;
         min-width: 0 !important;
     }
-    
-    /* Push main content down to make room for the menu button */
-    .app-content-wrap {
-        margin-left: 0 !important;
-        padding-top: 70px !important;
-    }
-    
-    /* Fix the greeting banner to not be hidden behind the button */
-    .dash-greeting {
-        margin-top: 0 !important;
-        padding-top: 10px !important;
+
+    /* 4. SIDEBAR INTERNAL HEADER AND TRIGGERS */
+    .mobile-only-header {
+        display: flex !important;
+        width: 100%;
+        box-sizing: border-box;
     }
 }
-
 /* Ensure the close button inside sidebar is visible on mobile */
 .mobile-only-header {
     display: none;
 }
 
-@media (max-width: 768px) {
-    .mobile-only-header {
-        display: flex !important;
-    }
-}
 
 .mobile-close-btn {
     background: none;
