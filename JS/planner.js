@@ -407,20 +407,21 @@ class StudyPlanner {
   // RESCHEDULE
   static async reschedule(missed) {
     const availSlots = await this.getAvailabilitySlots();
-
     if (!availSlots.length) return false;
 
     const allPlans = await this.getPlans();
 
-    // Collect already-occupied pending slots to avoid overlap
-    const taken = allPlans.filter((p) => p.status === "pending").map((p) => `${p.studyDate}|${p.startTime}`);
+    // EXCLUDE the missed session and only take OTHER pending sessions
+    const taken = allPlans
+        .filter((p) => p.status === "pending" && p.id !== missed.id)
+        .map((p) => `${p.studyDate}|${p.startTime}`);
 
     const DAY_CODES = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
     const slotsByDay = {};
     availSlots.forEach((s) => {
-      if (!slotsByDay[s.day]) slotsByDay[s.day] = [];
-      slotsByDay[s.day].push(s);
+        if (!slotsByDay[s.day]) slotsByDay[s.day] = [];
+        slotsByDay[s.day].push(s);
     });
 
     // Search the next 7 days for a free 2-hour window
@@ -429,70 +430,81 @@ class StudyPlanner {
     start.setHours(0, 0, 0, 0);
 
     for (let i = 0; i < 7; i++) {
-      const date = new Date(start);
-      date.setDate(start.getDate() + i);
+        const date = new Date(start);
+        date.setDate(start.getDate() + i);
 
-      const dayCode = DAY_CODES[date.getDay()];
-      const dateStr = this.toLocalDateStr(date);
-      const daySlots = slotsByDay[dayCode] || [];
+        const dayCode = DAY_CODES[date.getDay()];
+        const dateStr = this.toLocalDateStr(date);
+        const daySlots = slotsByDay[dayCode] || [];
 
-      for (const slot of daySlots) {
-        let current = this.snapToHalf(this.toMinutes(slot.startTime));
-        const slotEnd = this.toMinutes(slot.endTime);
+        for (const slot of daySlots) {
+            let current = this.snapToHalf(this.toMinutes(slot.startTime));
+            const slotEnd = this.toMinutes(slot.endTime);
 
-        while (current + 120 <= slotEnd) {
-          const startTime = this.fromMinutes(current);
+            while (current + 120 <= slotEnd) {
+                const startTime = this.fromMinutes(current);
+                const endTime = this.fromMinutes(current + 120);
+                const slotKey = `${dateStr}|${startTime}`;
 
-          if (!taken.includes(`${dateStr}|${startTime}`)) {
-            await addDoc(this.collectionRef, {
-              title: missed.title,
-              course: missed.course,
-              dueDate: missed.dueDate,
-              studyDate: dateStr,
-              day: dayCode,
-              startTime,
-              endTime: this.fromMinutes(current + 120),
-              priority: missed.priority,
-              status: "pending",
-              rescheduled: true,
-              userId: this.getUserId(),
-              createdAt: new Date().toISOString(),
-            });
+                // Check if this slot is already taken
+                if (!taken.includes(slotKey)) {
+                    // Also check if this is the same as the original missed session
+                    const isSameAsOriginal = (dateStr === missed.studyDate && startTime === missed.startTime);
 
-            return true;
-          }
+                    if (!isSameAsOriginal) {
+                        await addDoc(this.collectionRef, {
+                            title: missed.title,
+                            course: missed.course,
+                            dueDate: missed.dueDate,
+                            studyDate: dateStr,
+                            day: dayCode,
+                            startTime: startTime,
+                            endTime: endTime,
+                            priority: missed.priority,
+                            status: "pending",
+                            rescheduled: true,
+                            rescheduledFrom: missed.id,
+                            userId: this.getUserId(),
+                            createdAt: new Date().toISOString(),
+                        });
 
-          current += 120;
+                        return true;
+                    }
+                }
+
+                current += 120;
+            }
         }
-      }
     }
 
     return false;
-  }
+}
 
   // MISSED
-
   static async markMissed(id) {
     const allPlans = await this.getPlans();
     const missed = allPlans.find((p) => p.id === id);
 
-    await updateDoc(doc(db, "studyPlans", id), { status: "missed" });
+    if (!missed) return;
 
-    if (missed) {
-      const rescheduled = await this.reschedule(missed);
+    // First, mark the current session as missed
+    await updateDoc(doc(db, "studyPlans", id), {
+        status: "missed",
+        missedAt: new Date().toISOString()
+    });
 
-      showToast(
+    // Then try to reschedule to a different day/time
+    const rescheduled = await this.reschedule(missed);
+
+    showToast(
         rescheduled
-          ? "Session missed — rescheduled to the next available slot."
-          : "Session missed. No free slot found in the next 7 days.",
+            ? "Session missed — rescheduled to the next available slot."
+            : "Session missed. No free slot found in the next 7 days.",
         "info",
-      );
-    } else {
-      showToast("Session marked as missed.", "info");
-    }
+    );
 
     await this.renderStudyPlan();
-  }
+}
 
   // RENDER PLAN
 
