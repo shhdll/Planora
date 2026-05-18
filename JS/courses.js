@@ -1,6 +1,6 @@
 // Import Firebase
-import { db, auth } from './firebase-config.js';
-import { showToast } from './utils.js';
+import { db, auth } from "./firebase-config.js";
+import { showToast } from "./utils.js";
 import {
   collection,
   query,
@@ -10,17 +10,15 @@ import {
   updateDoc,
   deleteDoc,
   doc,
-  getDoc
+  getDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// Helper to get active user safely
 function getActiveUserId(passedUser) {
   if (passedUser && passedUser.uid) return passedUser.uid;
   const currentUser = auth.currentUser;
   return currentUser ? currentUser.uid : null;
 }
 
-// Get courses from Firestore
 async function getCourses(passedUser) {
   const userId = getActiveUserId(passedUser);
   if (!userId) {
@@ -43,7 +41,6 @@ async function getCourses(passedUser) {
   }
 }
 
-// Accent color palette — cycles per course index
 const ACCENTS = [
   "linear-gradient(90deg,#6366f1,#8b5cf6)",
   "linear-gradient(90deg,#0ea5e9,#06b6d4)",
@@ -52,18 +49,16 @@ const ACCENTS = [
   "linear-gradient(90deg,#f43f5e,#ec4899)",
 ];
 
-// Helper to escape HTML
 function escapeHtml(str) {
   if (!str) return "";
-  return String(str).replace(/[&<>]/g, function(m) {
-    if (m === '&') return '&amp;';
-    if (m === '<') return '&lt;';
-    if (m === '>') return '&gt;';
+  return String(str).replace(/[&<>]/g, function (m) {
+    if (m === "&") return "&amp;";
+    if (m === "<") return "&lt;";
+    if (m === ">") return "&gt;";
     return m;
   });
 }
 
-// Render courses as cards
 async function renderCourses() {
   const container = document.getElementById("courses-list");
   const countEl = document.getElementById("courses-count");
@@ -77,29 +72,31 @@ async function renderCourses() {
   const courses = await getCourses(auth.currentUser);
 
   if (countEl) {
-    countEl.textContent = `${courses.length} course${courses.length !== 1 ? 's' : ''} enrolled`;
+    countEl.textContent = `${courses.length} course${courses.length !== 1 ? "s" : ""} enrolled`;
   }
 
- if (courses.length === 0) {
+  if (courses.length === 0) {
     container.innerHTML = `
       <p style="color:#64748b;font-size:0.95rem;text-align:center;width:100%;margin-top:40px;">
         No courses added yet. <a href="add-course.html" style="color:#6366f1;font-weight:600;">Add your first course</a>
       </p>`;
     return;
-}
+  }
 
-  container.innerHTML = courses.map((c, i) => `
+  container.innerHTML = courses
+    .map(
+      (c, i) => `
     <div class="course-card">
       <div class="course-card__accent" style="background:${ACCENTS[i % ACCENTS.length]}"></div>
       <div class="course-card__body">
         <div>
           <div class="course-card__name">${escapeHtml(c.name)} <span style="font-weight:500;color:#64748b;font-size:0.9rem;">(${escapeHtml(c.code)})</span></div>
           <div class="course-card__sub">
-            ${c.instructor ? escapeHtml(c.instructor) : 'No instructor set'}
+            ${c.instructor ? escapeHtml(c.instructor) : "No instructor set"}
           </div>
         </div>
         <div class="course-card__badges">
-          ${c.creditHours ? `<span class="course-badge course-badge--credits">★ ${escapeHtml(String(c.creditHours))} credit hrs</span>` : ''}
+          ${c.creditHours ? `<span class="course-badge course-badge--credits">★ ${escapeHtml(String(c.creditHours))} credit hrs</span>` : ""}
           <span class="course-badge course-badge--active">● Active</span>
         </div>
       </div>
@@ -112,12 +109,13 @@ async function renderCourses() {
         >✕ Remove</button>
       </div>
     </div>
-  `).join("");
+  `,
+    )
+    .join("");
 
   console.log("Courses rendered, count:", courses.length);
 }
 
-// Add a course
 async function addCourse(courseData) {
   const userId = getActiveUserId(auth.currentUser);
   if (!userId) return null;
@@ -126,7 +124,7 @@ async function addCourse(courseData) {
     const docRef = await addDoc(collection(db, "courses"), {
       ...courseData,
       userId: userId,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     });
     return { id: docRef.id, ...courseData };
   } catch (error) {
@@ -135,7 +133,6 @@ async function addCourse(courseData) {
   }
 }
 
-// Update a course
 async function updateCourse(courseId, courseData) {
   try {
     const courseRef = doc(db, "courses", courseId);
@@ -147,7 +144,6 @@ async function updateCourse(courseId, courseData) {
   }
 }
 
-// Delete a course and all its associated deadlines
 async function deleteCourse(courseId) {
   if (!courseId) {
     console.error("deleteCourse received an empty courseId!");
@@ -159,12 +155,10 @@ async function deleteCourse(courseId) {
       const courseCode = courseSnap.data().code;
       const userId = getActiveUserId(auth.currentUser);
       if (courseCode && userId) {
-        const dlSnap = await getDocs(query(
-          collection(db, "deadlines"),
-          where("userId", "==", userId),
-          where("course", "==", courseCode)
-        ));
-        await Promise.all(dlSnap.docs.map(d => deleteDoc(doc(db, "deadlines", d.id))));
+        const dlSnap = await getDocs(
+          query(collection(db, "deadlines"), where("userId", "==", userId), where("course", "==", courseCode)),
+        );
+        await Promise.all(dlSnap.docs.map((d) => deleteDoc(doc(db, "deadlines", d.id))));
       }
     }
     await deleteDoc(doc(db, "courses", courseId));
@@ -175,7 +169,6 @@ async function deleteCourse(courseId) {
   }
 }
 
-// Handle add course form submission
 async function handleAddCourse(event) {
   event.preventDefault();
 
@@ -190,9 +183,7 @@ async function handleAddCourse(event) {
   }
 
   const courses = await getCourses(auth.currentUser);
-  const duplicate = courses.find(
-    (c) => c.code.toLowerCase() === code.toLowerCase()
-  );
+  const duplicate = courses.find((c) => c.code.toLowerCase() === code.toLowerCase());
   if (duplicate) {
     showToast(`A course with code "${code}" already exists.`, "error");
     return;
@@ -209,13 +200,12 @@ async function handleAddCourse(event) {
 
   if (added) {
     showToast(`"${name}" added successfully!`, "success");
-    window.location.href = "courses.html"; // ← removed setTimeout, redirect immediately
+    window.location.href = "courses.html";
   } else {
     showToast(`Failed to add "${name}". Please try again.`, "error");
   }
 }
 
-// Load edit form
 async function loadEditForm() {
   const id = new URLSearchParams(window.location.search).get("id");
 
@@ -234,19 +224,17 @@ async function loadEditForm() {
 
     const course = { ...snap.data(), id: snap.id };
 
-    document.getElementById("courseId").value        = course.id;
-    document.getElementById("courseName").value      = course.name        || "";
-    document.getElementById("courseCode").value      = course.code        || "";
-    document.getElementById("instructor").value      = course.instructor  || "";
-    document.getElementById("creditHours").value     = course.creditHours || "";
-
+    document.getElementById("courseId").value = course.id;
+    document.getElementById("courseName").value = course.name || "";
+    document.getElementById("courseCode").value = course.code || "";
+    document.getElementById("instructor").value = course.instructor || "";
+    document.getElementById("creditHours").value = course.creditHours || "";
   } catch (err) {
     console.error("loadEditForm error:", err);
     showToast("Failed to load course.", "error");
   }
 }
 
-// Handle edit course
 async function handleEditCourse(event) {
   event.preventDefault();
 
@@ -262,9 +250,7 @@ async function handleEditCourse(event) {
   }
 
   const courses = await getCourses(auth.currentUser);
-  const duplicate = courses.find(
-    (c) => c.code.toLowerCase() === code.toLowerCase() && c.id !== id
-  );
+  const duplicate = courses.find((c) => c.code.toLowerCase() === code.toLowerCase() && c.id !== id);
   if (duplicate) {
     showToast(`Another course already uses code "${code}".`, "error");
     return;
@@ -287,7 +273,6 @@ async function handleEditCourse(event) {
   }
 }
 
-// Load remove confirmation (backwards-compatibility fallback)
 async function loadRemoveConfirm() {
   const urlParams = new URLSearchParams(window.location.search);
   const id = urlParams.get("id");
@@ -312,7 +297,6 @@ async function loadRemoveConfirm() {
   if (displaySpan) displaySpan.textContent = `${course.name} (${course.code})`;
 }
 
-// Handle remove course (backwards-compatibility fallback)
 async function handleRemoveCourse(event) {
   event.preventDefault();
 
@@ -327,14 +311,15 @@ async function handleRemoveCourse(event) {
 
   if (success) {
     showToast("Course removed.", "success");
-    setTimeout(() => { window.location.href = "courses.html"; }, 1000);
+    setTimeout(() => {
+      window.location.href = "courses.html";
+    }, 1000);
   } else {
     showToast("Failed to remove course. Please try again.", "error");
   }
 }
 
-// Global inline delete — called directly from card buttons
-window.inlineDeleteCourse = async function(id) {
+window.inlineDeleteCourse = async function (id) {
   if (!id) return;
 
   const success = await deleteCourse(id);
@@ -347,7 +332,6 @@ window.inlineDeleteCourse = async function(id) {
   }
 };
 
-// Exports
 export {
   renderCourses,
   handleAddCourse,
@@ -355,5 +339,5 @@ export {
   handleRemoveCourse,
   loadEditForm,
   loadRemoveConfirm,
-  getCourses
+  getCourses,
 };

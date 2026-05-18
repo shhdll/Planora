@@ -1,33 +1,20 @@
-// Import Firebase
-import { db, auth } from './firebase-config.js';
+import { db, auth } from "./firebase-config.js";
 
-import {
-  Session,
-  showToast
-} from './utils.js';
+import { Session, showToast } from "./utils.js";
 
-import {
-  setDoc,
-  doc,
-  getDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { setDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 function getCurrentUserId() {
   const user = auth.currentUser;
   return user ? user.uid : null;
 }
 
-// Slots are stored per-day: [{day, startTime, endTime}, ...]
 async function loadSlots() {
-
   const userId = getCurrentUserId();
   if (!userId) return [];
 
   try {
-
-    const snap = await getDoc(
-      doc(db, "availability", userId)
-    );
+    const snap = await getDoc(doc(db, "availability", userId));
 
     if (!snap.exists()) return [];
 
@@ -35,7 +22,6 @@ async function loadSlots() {
 
     if (!Array.isArray(data.slots) || data.slots.length === 0) return [];
 
-    // Migrate old multi-day format {days: [], startTime, endTime}
     if (Array.isArray(data.slots[0].days)) {
       const perDay = [];
       data.slots.forEach((slot) => {
@@ -43,7 +29,7 @@ async function loadSlots() {
           perDay.push({
             day,
             startTime: slot.startTime,
-            endTime: slot.endTime
+            endTime: slot.endTime,
           });
         });
       });
@@ -51,16 +37,13 @@ async function loadSlots() {
     }
 
     return data.slots;
-
   } catch (error) {
-
     console.error("Error loading availability:", error);
     return [];
   }
 }
 
 async function saveSlots(slots) {
-
   const userId = getCurrentUserId();
 
   if (!userId) {
@@ -69,43 +52,31 @@ async function saveSlots(slots) {
   }
 
   try {
-
-    await setDoc(
-      doc(db, "availability", userId),
-      {
-        slots,
-        userId,
-        updatedAt: new Date().toISOString()
-      }
-    );
+    await setDoc(doc(db, "availability", userId), {
+      slots,
+      userId,
+      updatedAt: new Date().toISOString(),
+    });
 
     return true;
-
   } catch (error) {
-
     console.error("Error saving availability:", error);
     return false;
   }
 }
 
-// Merges adjacent or overlapping intervals for a single day
 function mergeIntervals(intervals) {
-
   if (intervals.length <= 1) return intervals;
 
-  intervals.sort(
-    (a, b) => a.startTime.localeCompare(b.startTime)
-  );
+  intervals.sort((a, b) => a.startTime.localeCompare(b.startTime));
 
   const merged = [{ ...intervals[0] }];
 
   for (let i = 1; i < intervals.length; i++) {
-
     const last = merged[merged.length - 1];
     const curr = intervals[i];
 
     if (curr.startTime <= last.endTime) {
-      // Adjacent or overlapping — extend end if needed
       if (curr.endTime > last.endTime) last.endTime = curr.endTime;
     } else {
       merged.push({ ...curr });
@@ -122,12 +93,10 @@ const DAY_LABELS = {
   wed: "Wednesday",
   thu: "Thursday",
   fri: "Friday",
-  sat: "Saturday"
+  sat: "Saturday",
 };
 
-const DAY_ORDER = [
-  "sun", "mon", "tue", "wed", "thu", "fri", "sat"
-];
+const DAY_ORDER = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
 function formatTime(t) {
   if (!t) return "";
@@ -139,11 +108,7 @@ function formatTime(t) {
 }
 
 function renderSchedule(slots) {
-
-  const section =
-    document.getElementById(
-      "availability-schedule"
-    );
+  const section = document.getElementById("availability-schedule");
 
   if (!section) return;
 
@@ -158,7 +123,7 @@ function renderSchedule(slots) {
     if (!byDay[slot.day]) byDay[slot.day] = [];
     byDay[slot.day].push({
       startTime: slot.startTime,
-      endTime: slot.endTime
+      endTime: slot.endTime,
     });
   });
 
@@ -166,14 +131,15 @@ function renderSchedule(slots) {
 
   const container = document.getElementById("avail-slots");
 
-  container.innerHTML =
-    DAY_ORDER
-      .filter((day) => byDay[day])
-      .map((day) => `
+  container.innerHTML = DAY_ORDER.filter((day) => byDay[day])
+    .map(
+      (day) => `
         <div class="avail-slot">
           <span class="course-badge avail-day-badge">${DAY_LABELS[day]}</span>
           <div class="avail-slot__times">
-            ${byDay[day].map((t) => `
+            ${byDay[day]
+              .map(
+                (t) => `
               <div class="avail-slot__row">
                 <p class="avail-slot__time">${formatTime(t.startTime)} – ${formatTime(t.endTime)}</p>
                 <button
@@ -184,20 +150,18 @@ function renderSchedule(slots) {
                   title="Remove"
                 >×</button>
               </div>
-            `).join("")}
+            `,
+              )
+              .join("")}
           </div>
         </div>
-      `).join("");
+      `,
+    )
+    .join("");
 }
 
 async function deleteSlot(day, startTime, endTime) {
-
-  slots = slots.filter(
-    (s) =>
-      !(s.day === day &&
-        s.startTime === startTime &&
-        s.endTime === endTime)
-  );
+  slots = slots.filter((s) => !(s.day === day && s.startTime === startTime && s.endTime === endTime));
 
   const success = await saveSlots(slots);
 
@@ -207,10 +171,9 @@ async function deleteSlot(day, startTime, endTime) {
 }
 
 function resetForm() {
-
-  document
-    .querySelectorAll('input[name="days"]')
-    .forEach((cb) => { cb.checked = false; });
+  document.querySelectorAll('input[name="days"]').forEach((cb) => {
+    cb.checked = false;
+  });
 
   document.getElementById("start-time").value = "";
   document.getElementById("end-time").value = "";
@@ -219,73 +182,45 @@ function resetForm() {
 let slots = [];
 
 async function initAvailabilityPage() {
-
   Session.require();
 
   slots = await loadSlots();
   renderSchedule(slots);
 
-  document
-    .getElementById("avail-slots")
-    .addEventListener("click", (e) => {
-      const btn = e.target.closest(".avail-delete-btn");
-      if (!btn) return;
-      deleteSlot(
-        btn.dataset.day,
-        btn.dataset.start,
-        btn.dataset.end
-      );
-    });
+  document.getElementById("avail-slots").addEventListener("click", (e) => {
+    const btn = e.target.closest(".avail-delete-btn");
+    if (!btn) return;
+    deleteSlot(btn.dataset.day, btn.dataset.start, btn.dataset.end);
+  });
 }
 
 async function handleAvailabilitySubmit(event) {
-
   event.preventDefault();
 
-  const selectedDays =
-    Array.from(
-      document.querySelectorAll(
-        'input[name="days"]:checked'
-      )
-    ).map((cb) => cb.value);
+  const selectedDays = Array.from(document.querySelectorAll('input[name="days"]:checked')).map((cb) => cb.value);
 
-  const startTime =
-    document.getElementById("start-time").value;
+  const startTime = document.getElementById("start-time").value;
 
-  const endTime =
-    document.getElementById("end-time").value;
+  const endTime = document.getElementById("end-time").value;
 
   if (selectedDays.length === 0) {
-    showToast(
-      "Please select at least one available day.",
-      "error"
-    );
+    showToast("Please select at least one available day.", "error");
     return;
   }
 
   if (startTime >= endTime) {
-    showToast(
-      "End time must be after start time.",
-      "error"
-    );
+    showToast("End time must be after start time.", "error");
     return;
   }
 
-  // For each selected day: pull existing intervals, add new one, merge, put back
   let updated = [...slots];
 
   selectedDays.forEach((day) => {
-
-    const existing = updated
-      .filter((s) => s.day === day)
-      .map((s) => ({ startTime: s.startTime, endTime: s.endTime }));
+    const existing = updated.filter((s) => s.day === day).map((s) => ({ startTime: s.startTime, endTime: s.endTime }));
 
     updated = updated.filter((s) => s.day !== day);
 
-    const merged = mergeIntervals([
-      ...existing,
-      { startTime, endTime }
-    ]);
+    const merged = mergeIntervals([...existing, { startTime, endTime }]);
 
     merged.forEach((interval) => {
       updated.push({ day, ...interval });
@@ -297,36 +232,22 @@ async function handleAvailabilitySubmit(event) {
   const success = await saveSlots(slots);
 
   if (success) {
-
     showToast("Availability saved!", "success");
     renderSchedule(slots);
     resetForm();
   }
 }
 
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
+document.addEventListener("DOMContentLoaded", () => {
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) return;
 
-    auth.onAuthStateChanged(
-      async (user) => {
+    await initAvailabilityPage();
 
-        if (!user) return;
+    const form = document.getElementById("availability-form");
 
-        await initAvailabilityPage();
-
-        const form =
-          document.getElementById(
-            "availability-form"
-          );
-
-        if (form) {
-          form.addEventListener(
-            "submit",
-            handleAvailabilitySubmit
-          );
-        }
-      }
-    );
-  }
-);
+    if (form) {
+      form.addEventListener("submit", handleAvailabilitySubmit);
+    }
+  });
+});

@@ -2,7 +2,7 @@
 import { auth } from './firebase-config.js';
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-// Storage Helpers (Now syncs with Firebase, but maintains localStorage for backward compatibility)
+// Storage Helpers: firebase, but maintains localStorage for backward compatibility
 const Storage = {
   get(key) {
     try {
@@ -21,11 +21,11 @@ const Storage = {
   },
 };
 
-// Session Helpers (Now powered by Firebase Auth)
+// Session Helpers
 const Session = {
   // Returns the currently logged-in user, or null
   getUser() {
-    // First check Firebase Auth state (source of truth)
+    // First check Firebase Auth state
     const firebaseUser = auth.currentUser;
     if (firebaseUser) {
       // Get additional user data from localStorage for compatibility
@@ -36,7 +36,7 @@ const Session = {
         name: localUser?.name || firebaseUser.email.split('@')[0]
       };
     }
-    
+
     // Fallback to localStorage for backward compatibility
     return Storage.get("currentUser");
   },
@@ -45,14 +45,12 @@ const Session = {
   setUser(user) {
     // Store in localStorage for backward compatibility
     Storage.set("currentUser", user);
-    // Note: The actual Firebase user is set by Firebase Auth during login
   },
 
   // Clear session (logout)
   async clear() {
     // Remove from localStorage
     Storage.remove("currentUser");
-    // Note: Actual Firebase logout happens in auth.js handleLogout
   },
 
   // Redirect to login if no active session
@@ -70,8 +68,7 @@ const Session = {
       window.location.href = "dashboard.html";
     }
   },
-  
-  // NEW: Listen to auth state changes (optional, for real-time updates)
+
   onAuthChange(callback) {
     return onAuthStateChanged(auth, (user) => {
       if (callback) {
@@ -81,7 +78,7 @@ const Session = {
   }
 };
 
-// Date Helpers (No changes needed - pure JS)
+// Date Helpers
 const DateUtils = {
   today() {
     return new Date().toISOString().split("T")[0];
@@ -102,7 +99,7 @@ const DateUtils = {
   },
 };
 
-// Toast notification (No changes needed - pure UI)
+// Toast notification
 function showToast(message, type = "success") {
   const existing = document.getElementById("planora-toast");
   if (existing) existing.remove();

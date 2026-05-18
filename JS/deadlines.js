@@ -1,4 +1,3 @@
-// Import Firebase
 import { db, auth } from './firebase-config.js';
 import { Session, showToast } from './utils.js';
 import { getCourses } from './courses.js';
@@ -37,7 +36,6 @@ class Deadline {
     this.completed = completed;
   }
 
-  // Get current user ID safely
   static getCurrentUserId(passedUser = null) {
 
     if (passedUser?.uid) {
@@ -115,7 +113,6 @@ class Deadline {
     }
   }
 
-  // Save deadline
   async save() {
 
     const userId =
@@ -234,7 +231,6 @@ class Deadline {
     }
   }
 
-  // Delete deadline
   static async delete(id) {
 
     if (!id) return;
@@ -263,7 +259,6 @@ class Deadline {
     }
   }
 
-  // Find deadline
   static async findById(id) {
 
     const deadlines =
@@ -277,7 +272,6 @@ class Deadline {
     );
   }
 
-  // Escape HTML
   static escapeHtml(str) {
 
     if (!str) return "";
@@ -300,7 +294,6 @@ class Deadline {
     );
   }
 
-  // Render deadlines
   static async render(
     containerId = "deadlines-list"
   ) {
@@ -409,7 +402,6 @@ class Deadline {
       ).join("");
   }
 
-  // Create object from form
   static fromForm() {
 
     const title =
@@ -458,7 +450,6 @@ class Deadline {
   }
 }
 
-// Initialize page
 async function populateCourseDropdown() {
 
   const select =
@@ -493,7 +484,6 @@ async function initDeadlinesPage() {
 
   Session.require();
 
-  // Restrict date picker to today and future
   const dateInput =
     document.getElementById("deadline-date");
 
@@ -510,7 +500,6 @@ async function initDeadlinesPage() {
   await Deadline.render();
 }
 
-// Handle submit
 async function handleDeadlineSubmit(event) {
 
   event.preventDefault();
@@ -569,7 +558,6 @@ async function handleDeadlineSubmit(event) {
   await Deadline.render();
 }
 
-// Toggle completion
 async function toggleDeadline(id) {
 
   const deadline =
@@ -582,7 +570,6 @@ async function toggleDeadline(id) {
   await Deadline.render();
 }
 
-// Remove deadline
 async function removeDeadline(id) {
 
   await Deadline.delete(id);
@@ -595,14 +582,12 @@ async function removeDeadline(id) {
   await Deadline.render();
 }
 
-// Global functions
 window.toggleDeadline =
   toggleDeadline;
 
 window.removeDeadline =
   removeDeadline;
 
-// Wait for Firebase auth
 document.addEventListener(
   "DOMContentLoaded",
   () => {

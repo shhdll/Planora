@@ -85,7 +85,7 @@ planora/
 
 ### Prerequisites
 
-- A Firebase project 
+- A Firebase project
 - A Groq API key (free at [console.groq.com](https://console.groq.com))
 - A local server — [Live Server extension](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) or `npx live-server`
 
@@ -152,8 +152,8 @@ Get a free key at [console.groq.com](https://console.groq.com).
 
 ### Step 5 — Run a local server
 
-**Open with Live Server**  
-  
+**Open with Live Server**
+
 **Or**
 
 **Terminal:**
@@ -168,13 +168,15 @@ npx live-server
 ```
 /courses/{docId}
 { userId, name, code, instructor, creditHours, createdAt }
-  
+
 /deadlines/{docId}
 { userId, title, dueDate, courseId, priority, completed  }
-  
+
 /availability/{userId}
 {  userId, days[], startTime, endTime, updatedAt  }
 
 /studyPlans/{docId}
 {  userId, course, studyDate, startTime, endTime, status  }
 ```
+## 🔗 Repository:
+https://github.com/shhdll/Planora

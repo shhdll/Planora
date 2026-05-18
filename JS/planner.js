@@ -1,6 +1,4 @@
-// JS/planner.js
-
-import { db, auth } from './firebase-config.js';
+import { db, auth } from "./firebase-config.js";
 
 import {
   collection,
@@ -10,129 +8,84 @@ import {
   addDoc,
   updateDoc,
   doc,
-  deleteDoc
+  deleteDoc,
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-import { Deadline } from './deadlines.js';
-import { showToast } from './utils.js';
+import { Deadline } from "./deadlines.js";
+import { showToast } from "./utils.js";
 
 class StudyPlanner {
-
-  // =========================
   // COLLECTION
-  // =========================
 
   static get collectionRef() {
-
     return collection(db, "studyPlans");
   }
 
-  // =========================
   // USER ID
-  // =========================
 
   static getUserId() {
-
     const user = auth.currentUser;
 
     return user ? user.uid : null;
   }
 
-  // =========================
   // COURSES
-  // =========================
 
   static async getCourses() {
-
     const userId = this.getUserId();
 
     if (!userId) return [];
 
     const q = query(
-
       collection(db, "courses"),
 
-      where(
-        "userId",
-        "==",
-        userId
-      )
+      where("userId", "==", userId),
     );
 
-    const snapshot =
-      await getDocs(q);
+    const snapshot = await getDocs(q);
 
     const courses = [];
 
     snapshot.forEach((docItem) => {
-
       courses.push({
-
         id: docItem.id,
 
-        ...docItem.data()
+        ...docItem.data(),
       });
     });
 
     return courses;
   }
 
-  // =========================
   // AVAILABILITY
-  // =========================
 
   static async getAvailability() {
-
     const userId = this.getUserId();
 
     if (!userId) return null;
 
     const q = query(
-
       collection(db, "availability"),
 
-      where(
-        "userId",
-        "==",
-        userId
-      )
+      where("userId", "==", userId),
     );
 
-    const snapshot =
-      await getDocs(q);
+    const snapshot = await getDocs(q);
 
     if (snapshot.empty) return null;
 
     const data = snapshot.docs[0].data();
 
-    // Normalize new per-day format {slots: [{day, startTime, endTime}]}
-    // into the shape the planner expects: {days, startTime, endTime}
-    if (
-      Array.isArray(data.slots) &&
-      data.slots.length > 0
-    ) {
+    if (Array.isArray(data.slots) && data.slots.length > 0) {
+      const DAY_ORDER = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
-      const DAY_ORDER = [
-        "sun", "mon", "tue", "wed", "thu", "fri", "sat"
-      ];
-
-      const days = [
-        ...new Set(data.slots.map((s) => s.day))
-      ].sort(
-        (a, b) =>
-          DAY_ORDER.indexOf(a) -
-          DAY_ORDER.indexOf(b)
+      const days = [...new Set(data.slots.map((s) => s.day))].sort(
+        (a, b) => DAY_ORDER.indexOf(a) - DAY_ORDER.indexOf(b),
       );
 
-      const startTime = data.slots.reduce(
-        (min, s) => s.startTime < min ? s.startTime : min,
-        data.slots[0].startTime
-      );
+      const startTime = data.slots.reduce((min, s) => (s.startTime < min ? s.startTime : min), data.slots[0].startTime);
 
-      const endTime = data.slots.reduce(
-        (max, s) => s.endTime > max ? s.endTime : max,
-        data.slots[0].endTime
-      );
+      const endTime = data.slots.reduce((max, s) => (s.endTime > max ? s.endTime : max), data.slots[0].endTime);
 
       return { days, startTime, endTime };
     }
@@ -140,40 +93,24 @@ class StudyPlanner {
     return data;
   }
 
-  // =========================
-  // AVAILABILITY SLOTS (per-day)
-  // =========================
+  // AVAILABILITY SLOTS
 
   static async getAvailabilitySlots() {
-
     const userId = this.getUserId();
     if (!userId) return [];
 
-    const q = query(
-      collection(db, "availability"),
-      where("userId", "==", userId)
-    );
+    const q = query(collection(db, "availability"), where("userId", "==", userId));
 
     const snapshot = await getDocs(q);
     if (snapshot.empty) return [];
 
     const data = snapshot.docs[0].data();
 
-    // Current per-day format: {slots: [{day, startTime, endTime}]}
-    if (
-      Array.isArray(data.slots) &&
-      data.slots.length > 0 &&
-      data.slots[0].day
-    ) {
+    if (Array.isArray(data.slots) && data.slots.length > 0 && data.slots[0].day) {
       return data.slots;
     }
 
-    // Old multi-day format: {slots: [{days: [], startTime, endTime}]}
-    if (
-      Array.isArray(data.slots) &&
-      data.slots.length > 0 &&
-      data.slots[0].days
-    ) {
+    if (Array.isArray(data.slots) && data.slots.length > 0 && data.slots[0].days) {
       const perDay = [];
       data.slots.forEach((slot) => {
         slot.days.forEach((day) => {
@@ -183,82 +120,54 @@ class StudyPlanner {
       return perDay;
     }
 
-    // Very old flat format: {days: [], startTime, endTime}
     if (Array.isArray(data.days) && data.days.length) {
       return data.days.map((day) => ({
         day,
         startTime: data.startTime,
-        endTime: data.endTime
+        endTime: data.endTime,
       }));
     }
 
     return [];
   }
 
-  // =========================
   // DEADLINES
-  // =========================
 
   static async getDeadlines() {
-
     return await Deadline.getAll();
   }
 
-  // =========================
-  // PRIORITY SCORE
-  // =========================
+  // PRIORITY
 
   static calculatePriority(deadline) {
+    const now = new Date();
 
-    const now =
-      new Date();
+    const due = new Date(deadline.dueDate);
 
-    const due =
-      new Date(deadline.dueDate);
-
-    const diffDays =
-      Math.ceil(
-
-        (due - now)
-
-        /
-
-        (1000 * 60 * 60 * 24)
-      );
+    const diffDays = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
 
     let score = 0;
 
     if (diffDays <= 2) {
-
       score += 100;
-
     } else if (diffDays <= 5) {
-
       score += 70;
-
     } else if (diffDays <= 10) {
-
       score += 40;
-
     } else {
-
       score += 15;
     }
 
     switch (deadline.priority) {
-
-      case 'High':
-
+      case "High":
         score += 50;
         break;
 
-      case 'Medium':
-
+      case "Medium":
         score += 30;
         break;
 
-      case 'Low':
-
+      case "Low":
         score += 10;
         break;
     }
@@ -266,9 +175,7 @@ class StudyPlanner {
     return score;
   }
 
-  // =========================
   // TIME HELPERS
-  // =========================
 
   static toLocalDateStr(date) {
     const y = date.getFullYear();
@@ -294,50 +201,20 @@ class StudyPlanner {
     return remainder === 0 ? mins : mins + (30 - remainder);
   }
 
-  // =========================
   // GENERATE PLAN
-  // =========================
 
   static async generateWeeklyPlan() {
-
-    const btn =
-      document.getElementById(
-        "generate-plan-btn"
-      );
+    const btn = document.getElementById("generate-plan-btn");
 
     if (btn) {
       btn.disabled = true;
       btn.textContent = "Generating…";
     }
 
-    const userId =
-      this.getUserId();
+    const userId = this.getUserId();
 
     if (!userId) {
-
-      showToast(
-        "Please login first.",
-        "error"
-      );
-
-      if (btn) {
-        btn.disabled = false;
-        btn.textContent =
-          "Generate Weekly Study Plan";
-      }
-
-      return;
-    }
-
-    const availSlots =
-      await this.getAvailabilitySlots();
-
-    if (!availSlots.length) {
-
-      showToast(
-        "Please set your availability first.",
-        "error"
-      );
+      showToast("Please login first.", "error");
 
       if (btn) {
         btn.disabled = false;
@@ -347,21 +224,28 @@ class StudyPlanner {
       return;
     }
 
-    const allDeadlines =
-      await this.getDeadlines();
+    const availSlots = await this.getAvailabilitySlots();
+
+    if (!availSlots.length) {
+      showToast("Please set your availability first.", "error");
+
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "Generate Weekly Study Plan";
+      }
+
+      return;
+    }
+
+    const allDeadlines = await this.getDeadlines();
 
     const deadlines = allDeadlines
       .filter((d) => !d.completed)
-      .sort((a, b) =>
-        this.calculatePriority(b) -
-        this.calculatePriority(a)
-      );
+      .sort((a, b) => this.calculatePriority(b) - this.calculatePriority(a));
 
-    const courses =
-      await this.getCourses();
+    const courses = await this.getCourses();
 
     if (!courses.length) {
-
       showToast("Add courses first.", "error");
 
       if (btn) {
@@ -373,7 +257,6 @@ class StudyPlanner {
     }
 
     if (!deadlines.length) {
-
       showToast("No active deadlines found.", "error");
 
       if (btn) {
@@ -386,8 +269,6 @@ class StudyPlanner {
 
     await this.clearExistingPlans();
 
-    // Build the next 7 days from today
-    // Availability is a weekly pattern so we match each date's weekday
     const DAY_CODES = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
     const today = new Date();
@@ -396,13 +277,11 @@ class StudyPlanner {
     const weekDays = [];
 
     for (let i = 0; i < 7; i++) {
-
       const d = new Date(today);
       d.setDate(today.getDate() + i);
       weekDays.push(d);
     }
 
-    // Group availability slots by day code
     const slotsByDay = {};
 
     availSlots.forEach((s) => {
@@ -414,22 +293,16 @@ class StudyPlanner {
     let deadlineIndex = 0;
 
     for (const date of weekDays) {
-
       if (deadlineIndex >= deadlines.length) break;
 
       const dayCode = DAY_CODES[date.getDay()];
       const daySlots = slotsByDay[dayCode] || [];
 
       for (const slot of daySlots) {
-
         let current = this.snapToHalf(this.toMinutes(slot.startTime));
         const slotEnd = this.toMinutes(slot.endTime);
 
-        while (
-          current + 120 <= slotEnd &&
-          deadlineIndex < deadlines.length
-        ) {
-
+        while (current + 120 <= slotEnd && deadlineIndex < deadlines.length) {
           const deadline = deadlines[deadlineIndex];
 
           generatedSessions.push({
@@ -443,7 +316,7 @@ class StudyPlanner {
             priority: deadline.priority,
             status: "pending",
             userId,
-            createdAt: new Date().toISOString()
+            createdAt: new Date().toISOString(),
           });
 
           current += 120;
@@ -452,163 +325,97 @@ class StudyPlanner {
       }
     }
 
-    // =========================
     // SAVE SESSIONS
-    // =========================
 
-    for (
-      const session
-      of generatedSessions
-    ) {
-
+    for (const session of generatedSessions) {
       await addDoc(
-
         this.collectionRef,
 
-        session
+        session,
       );
     }
 
     showToast(
-
       "Smart study plan generated!",
 
-      "success"
+      "success",
     );
 
     await this.renderStudyPlan();
 
     if (btn) {
       btn.disabled = false;
-      btn.textContent =
-        "Generate Weekly Study Plan";
+      btn.textContent = "Generate Weekly Study Plan";
     }
   }
 
-  // =========================
   // CLEAR OLD PLANS
-  // =========================
-
   static async clearExistingPlans() {
-
-    const userId =
-      this.getUserId();
+    const userId = this.getUserId();
 
     const q = query(
-
       this.collectionRef,
 
-      where(
-        "userId",
-        "==",
-        userId
-      )
+      where("userId", "==", userId),
     );
 
-    const snapshot =
-      await getDocs(q);
+    const snapshot = await getDocs(q);
 
-    for (
-      const docItem
-      of snapshot.docs
-    ) {
-
-      await deleteDoc(
-
-        doc(
-          db,
-          "studyPlans",
-          docItem.id
-        )
-      );
+    for (const docItem of snapshot.docs) {
+      await deleteDoc(doc(db, "studyPlans", docItem.id));
     }
   }
 
-  // =========================
   // GET PLANS
-  // =========================
-
   static async getPlans() {
-
-    const userId =
-      this.getUserId();
+    const userId = this.getUserId();
 
     const q = query(
-
       this.collectionRef,
 
-      where(
-        "userId",
-        "==",
-        userId
-      )
+      where("userId", "==", userId),
     );
 
-    const snapshot =
-      await getDocs(q);
+    const snapshot = await getDocs(q);
 
     const plans = [];
 
     snapshot.forEach((docItem) => {
-
       plans.push({
-
         id: docItem.id,
 
-        ...docItem.data()
+        ...docItem.data(),
       });
     });
 
     return plans;
   }
 
-  // =========================
   // COMPLETE
-  // =========================
-
   static async markCompleted(id) {
-
-    const ref =
-
-      doc(
-        db,
-        "studyPlans",
-        id
-      );
+    const ref = doc(db, "studyPlans", id);
 
     await updateDoc(ref, {
-
-      status: "completed"
+      status: "completed",
     });
 
-    showToast(
-      "Session completed!",
-      "success"
-    );
+    showToast("Session completed!", "success");
 
     await this.renderStudyPlan();
   }
 
-  // =========================
   // RESCHEDULE
-  // =========================
-
   static async reschedule(missed) {
-
-    const availSlots =
-      await this.getAvailabilitySlots();
+    const availSlots = await this.getAvailabilitySlots();
 
     if (!availSlots.length) return false;
 
     const allPlans = await this.getPlans();
 
     // Collect already-occupied pending slots to avoid overlap
-    const taken = allPlans
-      .filter((p) => p.status === "pending")
-      .map((p) => `${p.studyDate}|${p.startTime}`);
+    const taken = allPlans.filter((p) => p.status === "pending").map((p) => `${p.studyDate}|${p.startTime}`);
 
-    const DAY_CODES =
-      ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+    const DAY_CODES = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
     const slotsByDay = {};
     availSlots.forEach((s) => {
@@ -622,7 +429,6 @@ class StudyPlanner {
     start.setHours(0, 0, 0, 0);
 
     for (let i = 0; i < 7; i++) {
-
       const date = new Date(start);
       date.setDate(start.getDate() + i);
 
@@ -631,16 +437,13 @@ class StudyPlanner {
       const daySlots = slotsByDay[dayCode] || [];
 
       for (const slot of daySlots) {
-
         let current = this.snapToHalf(this.toMinutes(slot.startTime));
         const slotEnd = this.toMinutes(slot.endTime);
 
         while (current + 120 <= slotEnd) {
-
           const startTime = this.fromMinutes(current);
 
           if (!taken.includes(`${dateStr}|${startTime}`)) {
-
             await addDoc(this.collectionRef, {
               title: missed.title,
               course: missed.course,
@@ -653,7 +456,7 @@ class StudyPlanner {
               status: "pending",
               rescheduled: true,
               userId: this.getUserId(),
-              createdAt: new Date().toISOString()
+              createdAt: new Date().toISOString(),
             });
 
             return true;
@@ -667,51 +470,34 @@ class StudyPlanner {
     return false;
   }
 
-  // =========================
   // MISSED
-  // =========================
 
   static async markMissed(id) {
-
     const allPlans = await this.getPlans();
     const missed = allPlans.find((p) => p.id === id);
 
-    await updateDoc(
-      doc(db, "studyPlans", id),
-      { status: "missed" }
-    );
+    await updateDoc(doc(db, "studyPlans", id), { status: "missed" });
 
     if (missed) {
-
-      const rescheduled =
-        await this.reschedule(missed);
+      const rescheduled = await this.reschedule(missed);
 
       showToast(
         rescheduled
           ? "Session missed — rescheduled to the next available slot."
           : "Session missed. No free slot found in the next 7 days.",
-        "info"
+        "info",
       );
-
     } else {
-
       showToast("Session marked as missed.", "info");
     }
 
     await this.renderStudyPlan();
   }
 
-  // =========================
   // RENDER PLAN
-  // =========================
 
   static async renderStudyPlan() {
-
-    const tableBody =
-
-      document.getElementById(
-        "study-plan-body"
-      );
+    const tableBody = document.getElementById("study-plan-body");
 
     if (!tableBody) return;
 
@@ -724,11 +510,9 @@ class StudyPlanner {
       </tr>
     `;
 
-    const plans =
-      await this.getPlans();
+    const plans = await this.getPlans();
 
     if (!plans.length) {
-
       tableBody.innerHTML = `
         <tr>
           <td colspan="5" style="text-align:center; color:#94a3b8; padding:32px;">
@@ -740,22 +524,22 @@ class StudyPlanner {
       return;
     }
 
-    plans.sort(
-      (a, b) =>
-        new Date(a.studyDate) -
-        new Date(b.studyDate)
-    );
+    plans.sort((a, b) => new Date(a.studyDate) - new Date(b.studyDate));
 
     const DAY_LABELS = {
-      sun: "Sunday", mon: "Monday", tue: "Tuesday",
-      wed: "Wednesday", thu: "Thursday", fri: "Friday", sat: "Saturday"
+      sun: "Sunday",
+      mon: "Monday",
+      tue: "Tuesday",
+      wed: "Wednesday",
+      thu: "Thursday",
+      fri: "Friday",
+      sat: "Saturday",
     };
 
     const fmtDate = (d) => {
       if (!d) return "N/A";
       const [y, m, day] = d.split("-");
-      return new Date(y, m - 1, day)
-        .toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+      return new Date(y, m - 1, day).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
     };
 
     const fmtTime = (t) => {
@@ -765,16 +549,16 @@ class StudyPlanner {
       return `${hour % 12 || 12}:${min} ${hour >= 12 ? "PM" : "AM"}`;
     };
 
-    tableBody.innerHTML = plans.map((plan) => {
+    tableBody.innerHTML = plans
+      .map((plan) => {
+        const isPending = plan.status === "pending";
 
-      const isPending = plan.status === "pending";
-
-      const statusCell = isPending
-        ? `<button onclick="StudyPlanner.markCompleted('${plan.id}')">Complete</button>
+        const statusCell = isPending
+          ? `<button onclick="StudyPlanner.markCompleted('${plan.id}')">Complete</button>
            <button onclick="StudyPlanner.markMissed('${plan.id}')">Missed</button>`
-        : `<span class="planner-status ${plan.status}">${plan.status}</span>`;
+          : `<span class="planner-status ${plan.status}">${plan.status}</span>`;
 
-      return `
+        return `
         <tr>
           <td>${DAY_LABELS[plan.day] || plan.day}</td>
           <td>${fmtDate(plan.studyDate)}</td>
@@ -783,11 +567,11 @@ class StudyPlanner {
           <td>${statusCell}</td>
         </tr>
       `;
-    }).join("");
+      })
+      .join("");
   }
 }
 
-window.StudyPlanner =
-  StudyPlanner;
+window.StudyPlanner = StudyPlanner;
 
 export { StudyPlanner };

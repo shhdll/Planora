@@ -1,11 +1,9 @@
 // Import Firebase
-import { auth } from './firebase-config.js';
-import { Deadline } from './deadlines.js';
-import { showToast } from './utils.js';
+import { auth } from "./firebase-config.js";
+import { Deadline } from "./deadlines.js";
+import { showToast } from "./utils.js";
 
-// Reminder System
 class Reminder {
-
   static get storageKey() {
     const today = new Date().toISOString().split("T")[0];
     return `planora_reminded_${today}`;
@@ -23,15 +21,12 @@ class Reminder {
     }
   }
 
-  // Check upcoming deadlines
   static async checkDeadlines() {
-
     const deadlines = await Deadline.getAll();
     const now = new Date();
     const notified = this.getNotified();
 
     deadlines.forEach((deadline) => {
-
       if (deadline.completed) return;
       if (!deadline.dueDate) return;
       if (notified.includes(deadline.id)) return;
@@ -42,7 +37,6 @@ class Reminder {
       const hoursLeft = (dueDate - now) / (1000 * 60 * 60);
 
       if (hoursLeft <= 24 && hoursLeft > 0) {
-
         showToast(`Reminder: ${deadline.title} is due soon!`, "warning");
         Reminder.sendBrowserNotification(`${deadline.title} is due soon!`);
         Reminder.markNotified(deadline.id);
@@ -52,7 +46,6 @@ class Reminder {
 
   // Browser notification
   static sendBrowserNotification(message) {
-
     if (Notification.permission === "granted") {
       new Notification("Planora Reminder", { body: message });
     }
@@ -60,7 +53,6 @@ class Reminder {
 
   // Ask notification permission
   static requestPermission() {
-
     if ("Notification" in window && Notification.permission !== "granted") {
       Notification.requestPermission();
     }
@@ -69,27 +61,20 @@ class Reminder {
 
 // Run reminder system after page loads
 document.addEventListener("DOMContentLoaded", async () => {
-
   if (auth.currentUser) {
-
     Reminder.requestPermission();
 
     await Reminder.checkDeadlines();
-
   } else {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        Reminder.requestPermission();
 
-    const unsubscribe =
-      auth.onAuthStateChanged((user) => {
+        Reminder.checkDeadlines();
 
-        if (user) {
-
-          Reminder.requestPermission();
-
-          Reminder.checkDeadlines();
-
-          unsubscribe();
-        }
-      });
+        unsubscribe();
+      }
+    });
   }
 });
 

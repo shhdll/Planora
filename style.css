@@ -1,5 +1,3 @@
-/* --- Styles from Home Page Internal CSS --- */
-
 @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,600&display=swap");
 
 body {
@@ -11,17 +9,6 @@ body {
     flex-direction: column;
     min-height: 100vh;
 }
-
-
-.header-btn {
-    background-color: #103b80;
-    color: white;
-    padding: 8px 20px;
-    font-weight: 500;
-    border-radius: 25px;
-    box-shadow: 0 4px 6px rgba(102, 126, 164, 0.3);
-}
-
 .body-btn {
     position: relative;
     display: block;
@@ -77,14 +64,12 @@ nav {
 }
 
 nav a {
-    /* for a link inside a nav tag */
     color: #e2e8f0;
     text-decoration: none;
     font-size: 15px;
 }
 
 nav a:hover {
-    /* for a link inside a nav tag when hovering over it */
     color: white;
     text-decoration: underline;
 }
@@ -343,9 +328,7 @@ nav a:hover {
     text-align: center;
 }
 
-/* ========================
-   DASHBOARD REDESIGN
-======================== */
+/*  DASHBOARD REDESIGN  */
 
 .dash-greeting {
     background: linear-gradient(135deg, #1e1b4b, #312e81);
@@ -1002,97 +985,6 @@ li {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* DASHBOARD */
-.content {
-    width: 80%;
-    margin: auto;
-    padding: 20px;
-    padding-bottom: 100px;
-}
-
-.overview {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-}
-
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 200px;
-    text-align: center;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease-out;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-}
-
-.buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
-}
-
-.buttons a {
-    background: #3498db;
-    color: white;
-    padding: 12px 18px;
-    border-radius: 6px;
-}
-
-.buttons a:hover {
-    background: #2980b9;
-}
-
-.deadline,
-.studyPlan {
-    background: white;
-    padding: 15px;
-    margin-top: 10px;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* TABLE (statistics & study plan) */
-table {
-    width: 80%;
-    margin: auto;
-    border-collapse: collapse;
-    background: white;
-}
-
-th,
-td {
-    padding: 12px;
-    border: 1px solid #ddd;
-    text-align: center;
-}
-
-th {
-    background-color: #3498db;
-    color: white;
-}
-
-.bold {
-    font-weight: bold;
-}
-
-.positive {
-    background-color: #d4edda;
-    color: #155724;
-    font-weight: bold;
-}
-
-.negative {
-    background-color: #f8d7da;
-    color: #721c24;
-    font-weight: bold;
-}
 
 /* LOGIN and REGISTER PAGES */
 
@@ -1102,21 +994,17 @@ th {
     flex-direction: column;
     background: linear-gradient(135deg, #f5f7fa 0%, #eef2f7 100%);
 }
-
 .auth-top {
     padding: 24px 32px;
 }
-
 .auth-top a {
     display: inline-flex;
     align-items: center;
 }
-
 .auth-top img {
     height: 150px;
     width: auto;
 }
-
 .auth-wrap {
     flex: 1;
     display: flex;

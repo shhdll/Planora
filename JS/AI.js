@@ -1,23 +1,15 @@
-// JS/AI.js
-
-// Import Firebase (for getting real user data)
-import { db, auth } from './firebase-config.js';
-import {
-  collection,
-  query,
-  where,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { db, auth } from "./firebase-config.js";
+import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // Get the API key from config.js (Groq)
-const GROQ_API_KEY = typeof CONFIG !== 'undefined' ? CONFIG.GROQ_KEY : "";
-const GROQ_MODEL = typeof CONFIG !== 'undefined' && CONFIG.GROQ_MODEL ? CONFIG.GROQ_MODEL : "llama-4-scout";
+const GROQ_API_KEY = typeof CONFIG !== "undefined" ? CONFIG.GROQ_KEY : "";
+const GROQ_MODEL = typeof CONFIG !== "undefined" && CONFIG.GROQ_MODEL ? CONFIG.GROQ_MODEL : "llama-4-scout";
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 document.addEventListener("DOMContentLoaded", () => {
-    injectStyles();
-    injectHTML();
-    setupEventListeners();
+  injectStyles();
+  injectHTML();
+  setupEventListeners();
 });
 
 //Inject CSS and HTML
@@ -484,9 +476,9 @@ function getPlanoraUser() {
     }
     // Fallback to Firebase auth
     if (auth && auth.currentUser) {
-      return { 
-        name: auth.currentUser.displayName || auth.currentUser.email?.split('@')[0] || "Student", 
-        id: auth.currentUser.uid 
+      return {
+        name: auth.currentUser.displayName || auth.currentUser.email?.split("@")[0] || "Student",
+        id: auth.currentUser.uid,
       };
     }
     const raw = localStorage.getItem("currentUser");
@@ -508,12 +500,12 @@ async function getCoursesForUser(user) {
         courses.push({
           name: courseData.name,
           code: courseData.code,
-          id: doc.id
+          id: doc.id,
         });
       });
       return courses;
     }
-    
+
     // Fallback to localStorage
     const key = `courses_${user.id}`;
     const raw = localStorage.getItem(key);
@@ -530,10 +522,7 @@ async function handleChat() {
   if (!userText) return;
 
   if (!GROQ_API_KEY || GROQ_API_KEY === "") {
-    appendMessage(
-      "Add your Groq API key in JS/config.js to enable live answers.",
-      "bot-msg"
-    );
+    appendMessage("Add your Groq API key in JS/config.js to enable live answers.", "bot-msg");
     return;
   }
 
@@ -547,8 +536,8 @@ async function handleChat() {
     .filter(Boolean)
     .join(", ");
 
-  const systemPrompt = `You are Planora Spark, a concise, friendly AI coach for ${user.name}. 
-Their courses: ${courseNames || "none listed yet"}. 
+  const systemPrompt = `You are Planora Spark, a concise, friendly AI coach for ${user.name}.
+Their courses: ${courseNames || "none listed yet"}.
 Give short, practical study advice. Use bullet points only when helpful.`;
 
   try {
@@ -574,10 +563,7 @@ Give short, practical study advice. Use bullet points only when helpful.`;
       if (response.status === 429) {
         appendMessage("Too many requests—please wait a moment.", "bot-msg");
       } else {
-        appendMessage(
-          `Error: ${errorData.error?.message || "Something went wrong"}`,
-          "bot-msg"
-        );
+        appendMessage(`Error: ${errorData.error?.message || "Something went wrong"}`, "bot-msg");
       }
       return;
     }
@@ -596,13 +582,10 @@ function appendMessage(text, className) {
   if (!chatBody) return;
 
   const row = document.createElement("div");
-  row.className =
-    className === "user-msg" ? "ai-msg-row ai-msg-row--user" : "ai-msg-row";
+  row.className = className === "user-msg" ? "ai-msg-row ai-msg-row--user" : "ai-msg-row";
 
   const avatar = document.createElement("div");
-  avatar.className =
-    "ai-msg-avatar " +
-    (className === "user-msg" ? "ai-msg-avatar--user" : "ai-msg-avatar--bot");
+  avatar.className = "ai-msg-avatar " + (className === "user-msg" ? "ai-msg-avatar--user" : "ai-msg-avatar--bot");
   avatar.setAttribute("aria-hidden", "true");
   avatar.textContent = className === "user-msg" ? "You" : "AI";
 

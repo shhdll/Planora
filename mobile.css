@@ -1,6 +1,4 @@
-/* ========================
-   SIDEBAR OVERLAY
-======================== */
+/* SIDEBAR OVERLAY */
 
 .sidebar-overlay {
     display: none;
@@ -15,17 +13,13 @@
     display: block;
 }
 
-/* ========================
-   HAMBURGER — hidden on desktop
-======================== */
+/* HAMBURGER — hidden on desktop */
 
 .mobile-menu-btn {
     display: none;
 }
 
-/* ========================
-   MOBILE — max 768px
-======================== */
+/* MOBILE — max 768px */
 
 @media (max-width: 768px) {
 
@@ -111,9 +105,7 @@
     }
 }
 
-/* ========================
-   SMALL SCREENS — max 600px
-======================== */
+/* SMALL SCREENS — max 600px */
 
 @media (max-width: 600px) {
 

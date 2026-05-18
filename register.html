@@ -29,7 +29,8 @@
                 <input id="reg-email" class="input-format" type="email" placeholder="you@ksu.edu" required>
 
                 <label for="reg-password">Password</label>
-                <input id="reg-password" class="input-format" type="password" placeholder="At least 6 characters" required>
+                <input id="reg-password" class="input-format" type="password" placeholder="At least 6 characters"
+                    required>
 
                 <label for="reg-confirm">Confirm password</label>
                 <input id="reg-confirm" class="input-format" type="password" placeholder="Re-enter password" required>
@@ -57,22 +58,18 @@
             }
         }
     </script>
-    
+
     <script type="module">
-        // Import everything we need
         import { auth } from './JS/firebase-config.js';
         import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        
-        // Get DOM elements
+
         const form = document.getElementById("register-form");
         const nameInput = document.getElementById("reg-name");
         const emailInput = document.getElementById("reg-email");
         const passwordInput = document.getElementById("reg-password");
         const confirmInput = document.getElementById("reg-confirm");
-        
-        // Helper function for toast notifications (if showToast doesn't exist)
+
         function showMessage(message, type) {
-            // Create a simple toast if showToast doesn't exist
             const toast = document.createElement("div");
             toast.textContent = message;
             toast.style.cssText = `
@@ -90,58 +87,53 @@
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
-        
-        // Use window.showToast if available, otherwise use our fallback
+
         const toast = (typeof showToast !== 'undefined') ? showToast : showMessage;
-        
-        // Handle form submission
+
         async function handleRegister(event) {
             event.preventDefault();
-            console.log("Register function called!"); // Debug log
-            
+            console.log("Register function called!");
+
             const name = nameInput.value.trim();
             const email = emailInput.value.trim().toLowerCase();
             const password = passwordInput.value;
             const confirm = confirmInput.value;
-            
-            console.log("Form values:", { name, email, password: "***", confirm: "***" }); // Debug
-            
+
+            console.log("Form values:", { name, email, password: "***", confirm: "***" });
+
             if (!name || !email || !password || !confirm) {
                 toast("Fill all fields", "error");
                 return;
             }
-            
             if (password !== confirm) {
                 toast("Passwords do not match", "error");
                 return;
             }
-            
             if (password.length < 4) {
                 toast("Password must be at least 4 characters", "error");
                 return;
             }
-            
             try {
-                console.log("Creating user in Firebase..."); // Debug
+                console.log("Creating user in Firebase...");
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
-                console.log("User created:", user); // Debug
-                
+                console.log("User created:", user);
+
                 // Store user data in localStorage (for compatibility)
                 const users = JSON.parse(localStorage.getItem("users") || "[]");
                 users.push({ name, email, password: "FIREBASE_AUTH", uid: user.uid });
                 localStorage.setItem("users", JSON.stringify(users));
-                
+
                 // Save current user session
                 localStorage.setItem("currentUser", JSON.stringify({ name, email, uid: user.uid }));
-                
+
                 toast("Account created successfully!", "success");
-                
-                console.log("Redirecting to dashboard..."); // Debug
+
+                console.log("Redirecting to dashboard...");
                 setTimeout(() => {
                     window.location.href = "dashboard.html";
                 }, 500);
-                
+
             } catch (error) {
                 console.error("Registration error:", error);
                 let errorMessage = "Registration failed";
@@ -155,20 +147,19 @@
                 toast(errorMessage, "error");
             }
         }
-        
-        // Attach event listener
+
         if (form) {
             form.addEventListener("submit", handleRegister);
             console.log("Form listener attached!"); // Debug
         } else {
             console.error("Form not found!");
         }
-        
-        // Check if user is already logged in
+
         if (auth.currentUser) {
             window.location.href = "dashboard.html";
         }
     </script>
 
 </body>
+
 </html>

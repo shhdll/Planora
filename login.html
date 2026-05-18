@@ -53,18 +53,16 @@
             }
         }
     </script>
-    
+
     <script type="module">
         // Import Firebase
         import { auth } from './JS/firebase-config.js';
         import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        
-        // Get DOM elements
+
         const form = document.getElementById("login-form");
         const emailInput = document.getElementById("login-email");
         const passwordInput = document.getElementById("login-password");
-        
-        // Helper function for toast notifications
+
         function showMessage(message, type) {
             const toast = document.createElement("div");
             toast.textContent = message;
@@ -85,47 +83,47 @@
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3000);
         }
-        
+
         // Handle form submission
         async function handleLogin(event) {
             event.preventDefault();
-            console.log("Login function called!"); // Debug log
-            
+            console.log("Login function called!");
+
             const email = emailInput.value.trim().toLowerCase();
             const password = passwordInput.value;
-            
-            console.log("Attempting login for:", email); // Debug
-            
+
+            console.log("Attempting login for:", email);
+
             if (!email || !password) {
                 showMessage("Enter email and password", "error");
                 return;
             }
-            
+
             try {
-                console.log("Signing in with Firebase..."); // Debug
+                console.log("Signing in with Firebase...");
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
-                console.log("Login successful:", user.email); // Debug
-                
+                console.log("Login successful:", user.email);
+
                 // Get user name from localStorage (from registration)
                 const users = JSON.parse(localStorage.getItem("users") || "[]");
                 const userData = users.find(u => u.email === email);
                 const userName = userData ? userData.name : email.split('@')[0];
-                
+
                 // Save current user session
-                localStorage.setItem("currentUser", JSON.stringify({ 
-                    name: userName, 
-                    email: user.email, 
-                    uid: user.uid 
+                localStorage.setItem("currentUser", JSON.stringify({
+                    name: userName,
+                    email: user.email,
+                    uid: user.uid
                 }));
-                
+
                 showMessage(`Welcome back, ${userName}!`, "success");
-                
-                console.log("Redirecting to dashboard..."); // Debug
+
+                console.log("Redirecting to dashboard...");
                 setTimeout(() => {
                     window.location.href = "dashboard.html";
                 }, 500);
-                
+
             } catch (error) {
                 console.error("Login error:", error);
                 let errorMessage = "Invalid credentials";
@@ -141,15 +139,14 @@
                 showMessage(errorMessage, "error");
             }
         }
-        
-        // Attach event listener
+
         if (form) {
             form.addEventListener("submit", handleLogin);
             console.log("Form listener attached!"); // Debug
         } else {
             console.error("Login form not found!");
         }
-        
+
         // Check if user is already logged in (via Firebase)
         if (auth.currentUser) {
             console.log("User already logged in, redirecting...");
@@ -158,4 +155,5 @@
     </script>
 
 </body>
+
 </html>
